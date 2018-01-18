@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorAccent"
+    android:orientation="vertical"
+    android:paddingBottom="5dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="我的歌单"
+        android:padding="10dp"/>
+
+    <TextView
+        android:id="@+id/mTvCreateList"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@mipmap/add_music_list"
+        android:text="@string/tv_create_list"
+        android:drawablePadding="5dp"
+        android:textSize="16sp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"/>
+    <View
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@color/color_light_gray"/>
+
+    <TextView
+        android:id="@+id/mTvManagerList"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_manage_list"
+        android:drawableLeft="@mipmap/edit_music_list"
+        android:drawablePadding="5dp"
+        android:textSize="16sp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"/>
+
+    <View
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@color/color_light_gray"/>
+</LinearLayout>

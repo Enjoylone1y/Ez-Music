@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    android:background="@color/colorAccent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_create_list"
+        android:textSize="16sp"/>
+
+    <EditText
+        android:id="@+id/mEtListTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:hint="请输入歌单标题"
+        android:textSize="14sp"
+        android:padding="5dp"
+        android:background="@drawable/edit_text_back"/>
+
+    <TextView
+        android:id="@+id/mTvCancel"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/mEtListTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="@string/tv_cancel"
+        android:layout_toLeftOf="@+id/mTvConform"
+        android:layout_marginRight="30dp"/>
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/mTvConform"
+        android:layout_below="@+id/mEtListTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:layout_alignParentRight="true"
+        android:text="@string/tv_conform"/>
+
+</RelativeLayout>

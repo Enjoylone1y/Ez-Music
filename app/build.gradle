@@ -1,0 +1,60 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'realm-android'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    defaultConfig {
+        applicationId "com.ezreal.huanting"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+    implementation 'com.android.support:design:27.0.2'
+    implementation 'com.android.support:recyclerview-v7:27.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:palette-v7:27.0.2'
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
+    // rxJava + rxAndroid + Retrofit 异步和网络访问库
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    // 公用util库
+    compile 'cn.hotapk:fastandrutils:1.0.0'
+    // 图片加载库
+    compile 'com.github.bumptech.glide:glide:3.8.0'
+    // 图片高斯模糊
+    compile 'jp.wasabeef:glide-transformations:2.0.1'
+    // recycler-view  item分割线
+    compile 'com.github.fondesa:recycler-view-divider:1.4.0'
+    // 事件总线
+    compile 'org.greenrobot:eventbus:3.1.1'
+    // 歌词 View
+    compile project(':lrcview')
+    // 动画支持库
+    compile 'com.nineoldandroids:library:2.4.0'
+
+    compile 'com.jcodecraeer:xrecyclerview:1.5.7'
+}

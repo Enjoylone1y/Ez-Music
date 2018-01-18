@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_song"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:gravity="center_vertical"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
+
+    <ImageView
+        android:id="@+id/iv_play_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:scaleType="center"
+        android:src="@mipmap/play"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/mTvSongTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/iv_play_status"
+        android:ellipsize="marquee"
+        android:maxWidth="220dp"
+        android:singleLine="true"
+        android:text="@string/app_name"
+        android:textColor="@color/color_black"
+        android:textSize="16sp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mTvSongTitle"
+        android:layout_toRightOf="@+id/iv_play_status"
+        android:layout_marginTop="5dp">
+
+        <TextView
+            android:id="@+id/mTvArtist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:ellipsize="marquee"
+            android:maxWidth="100dp"
+            android:singleLine="true"
+            android:text="@string/tv_singer_name"
+            android:textColor="@color/color_light_black"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:id="@+id/tv_line"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_toRightOf="@+id/mTvArtist"
+            android:layout_centerVertical="true"
+            android:text="-"
+            android:textColor="@color/color_gray"/>
+
+        <TextView
+            android:id="@+id/tv_album"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/tv_line"
+            android:ellipsize="marquee"
+            android:maxWidth="100dp"
+            android:singleLine="true"
+            android:text="@string/tv_album_name"
+            android:textColor="@color/color_light_black"
+            android:textSize="12sp"/>
+
+
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/iv_item_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/item_menu_p"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_light_gray"/>
+
+</RelativeLayout>

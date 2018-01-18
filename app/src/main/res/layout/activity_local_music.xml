@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--标题栏-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/mIvBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/title_back"/>
+
+        <TextView
+            android:id="@+id/mTvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/mIvBack"
+            android:text="@string/tv_local_music"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"/>
+
+        <ImageView
+            android:id="@+id/mIvSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@+id/mIvMenu"
+            android:src="@mipmap/search"/>
+
+
+        <ImageView
+            android:id="@+id/mIvMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/menu_point"/>
+
+    </RelativeLayout>
+
+    <!--导航栏-->
+    <android.support.design.widget.TabLayout
+        android:id="@+id/mTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/mViewPage"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <com.ezreal.huanting.widget.MusicPlayLayout
+        android:id="@+id/mLayoutPlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

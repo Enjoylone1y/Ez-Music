@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:id="@+id/layout_song"
+    android:gravity="center_vertical"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
+
+    <ImageView
+        android:id="@+id/iv_playing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:src="@mipmap/sound_playing"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/mTvSongTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/color_black"
+        android:text="@string/app_name"
+        android:layout_toRightOf="@+id/iv_playing"
+        android:textSize="16sp"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/tv_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" - "
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/mTvSongTitle"/>
+
+    <TextView
+        android:id="@+id/mTvArtist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_singer_name"
+        android:textColor="@color/color_light_black"
+        android:textSize="12sp"
+        android:layout_toRightOf="@+id/tv_center"
+        android:layout_centerVertical="true"/>
+
+
+    <ImageView
+        android:id="@+id/iv_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/delete_close"
+        android:scaleType="centerCrop"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"/>
+</RelativeLayout>

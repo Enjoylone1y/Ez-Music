@@ -1,0 +1,32 @@
+<resources>
+    <string name="tv_local_music">本地音乐</string>
+    <string name="tv_online_music">在线音乐</string>
+    <string name="tv_music_name">歌曲名</string>
+    <string name="tv_singer_name">歌手名</string>
+    <string name="tv_recent_play">最近播放</string>
+    <string name="tv_download_manager">下载管理</string>
+    <string name="tv_my_create">我创建的歌单</string>
+    <string name="tv_my_collect">我收藏的歌单</string>
+    <string name="tv_zero">0</string>
+    <string name="tv_album_name">专辑名</string>
+    <string name="tv_list_recycle">列表循环</string>
+    <string name="tvStartTime">00:00</string>
+    <string name="tv_clear_list">清空</string>
+    <string name="tv_create_list">新建歌单</string>
+    <string name="tv_manage_list">管理歌单</string>
+    <string name="tv_cancel">取消</string>
+    <string name="tv_conform">确定</string>
+    <string name="tv_my_love_music">我喜欢的音乐</string>
+    <string name="tv_music">歌曲：</string>
+    <string name="add_to_list">收藏到歌单</string>
+    <string name="tv_singer">歌手：</string>
+    <string name="tv_album">专辑：</string>
+    <string name="tv_delete">删除</string>
+    <string name="tv_list_creator">歌单创建者</string>
+
+    <string name="app_name">EZ Music</string>
+    <string name="app_version">v 1.0</string>
+    <string name="tv_intro">EZ Music 是以 网易云音乐 为模板，使用 Kotlin 语言打造的一款 音乐播放 APP。
+        将会实现本地和在线音乐播放、歌单创建和管理、歌词和音乐下载等，各功能在会逐步完成。项目已开源至GitHub
+        (见于本人主页 https://github.com/Enjoylone1y 欢迎 Fork Or Star）</string>
+</resources>

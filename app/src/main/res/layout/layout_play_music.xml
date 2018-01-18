@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:padding="5dp"
+    android:background="@android:color/white"
+    android:id="@+id/layout_music_play">
+
+    <ImageView
+        android:id="@+id/mIvMusicCover"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/local_music_white"
+        android:scaleType="center"
+        android:background="@color/color_gray"/>
+
+    <com.ezreal.huanting.widget.MarqueeTextView
+        android:id="@+id/mTvMusicTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:text="@string/tv_music_name"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:maxWidth="180dp"
+        android:singleLine="true"
+        android:layout_toRightOf="@+id/mIvMusicCover"
+        android:layout_marginLeft="10dp"/>
+
+    <com.ezreal.huanting.widget.MarqueeTextView
+        android:id="@+id/mTvArtist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:text="@string/tv_singer_name"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:maxWidth="150dp"
+        android:singleLine="true"
+        android:layout_toRightOf="@+id/mIvMusicCover"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/mTvMusicTitle"/>
+
+    <ImageView
+        android:id="@+id/mIvPlay"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@mipmap/ic_play"
+        android:scaleType="centerInside"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/mIvMusicList"
+        android:layout_marginRight="20dp"/>
+
+
+    <ImageView
+        android:id="@+id/mIvMusicList"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@mipmap/ic_music_list_b"
+        android:layout_centerVertical="true"
+        android:scaleType="centerInside"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"/>
+
+</RelativeLayout>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="5dp">
+
+    <ImageView
+        android:id="@+id/mIvListCover"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="center"
+        android:background="#bb000000"/>
+
+    <TextView
+        android:id="@+id/mTvListTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:text="@string/tv_my_love_music"
+        android:textColor="@color/color_black"
+        android:layout_toRightOf="@+id/mIvListCover"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:maxWidth="200dp"/>
+
+    <TextView
+        android:id="@+id/mTvMusicNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_zero"
+        android:textSize="12sp"
+        android:layout_toRightOf="@+id/mIvListCover"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/mTvListTitle"
+        android:layout_marginTop="5dp"/>
+
+    <TextView
+        android:id="@+id/mTvTip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="首"
+        android:textSize="12sp"
+        android:layout_toRightOf="@+id/mTvMusicNum"
+        android:layout_below="@+id/mTvListTitle"
+        android:layout_marginTop="5dp"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/item_menu_p"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@color/color_light_gray"
+        android:layout_toRightOf="@+id/mIvListCover"
+        android:layout_below="@+id/mIvListCover"/>
+</RelativeLayout>

@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_light_gray">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--本地音乐-->
+        <RelativeLayout
+            android:id="@+id/layout_loc_music"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:gravity="center_vertical"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/iv_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="center"
+                android:src="@mipmap/ic_local_music"/>
+
+            <TextView
+                android:id="@+id/tv_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/iv_1"
+                android:text="@string/tv_local_music"
+                android:textColor="@color/color_black"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/bracket_l_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_1"
+                android:textSize="16sp"
+                android:text="("
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/color_gray"/>
+
+            <TextView
+                android:id="@+id/mLocalMusicCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/bracket_l_1"
+                android:text="@string/tv_zero"
+                android:textColor="@color/color_gray"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/bracket_r_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/mLocalMusicCount"
+                android:textSize="16sp"
+                android:text=")"
+                android:textColor="@color/color_gray"/>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@color/color_gray"/>
+
+        <!--最近播放-->
+        <RelativeLayout
+            android:id="@+id/layout_rec_play"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/iv_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="center"
+                android:src="@mipmap/ic_recent_b"/>
+
+            <TextView
+                android:id="@+id/tv_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/iv_2"
+                android:text="@string/tv_recent_play"
+                android:textColor="@color/color_black"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/bracket_l_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_2"
+                android:textSize="16sp"
+                android:text="("
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/color_gray"/>
+
+            <TextView
+                android:id="@+id/mRecentPlayCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/bracket_l_2"
+                android:text="@string/tv_zero"
+                android:textSize="16sp"
+                android:textColor="@color/color_gray"/>
+
+            <TextView
+                android:id="@+id/bracket_r_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/mRecentPlayCount"
+                android:textSize="16sp"
+                android:text=")"
+                android:textColor="@color/color_gray"/>
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@color/color_gray"/>
+
+        <!--下载管理-->
+        <RelativeLayout
+            android:id="@+id/layout_down_manager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/iv_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="center"
+                android:src="@mipmap/ic_download"/>
+
+            <TextView
+                android:id="@+id/tv_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/iv_3"
+                android:text="@string/tv_download_manager"
+                android:textColor="@color/color_black"
+                android:textSize="16sp"
+                android:layout_marginLeft="10dp"/>
+
+            <TextView
+                android:id="@+id/bracket_l_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_3"
+                android:textSize="16sp"
+                android:text="("
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/color_gray"/>
+
+            <TextView
+                android:id="@+id/mDownLoadCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/bracket_l_3"
+                android:text="@string/tv_zero"
+                android:textSize="16sp"
+                android:textColor="@color/color_gray"/>
+
+            <TextView
+                android:id="@+id/bracket_r_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/mDownLoadCount"
+                android:textSize="16sp"
+                android:text=")"
+                android:textColor="@color/color_gray"/>
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@color/color_gray"/>
+
+        <!--我创建的歌单标题-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/iv_arrow"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:scaleType="center"
+                android:src="@mipmap/arrow_down"/>
+
+            <TextView
+                android:id="@+id/tv_create_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/iv_arrow"
+                android:text="@string/tv_my_create"
+                android:textColor="#5a5a5a"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/mTvMyListNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/tv_create_list"
+                android:text="@string/tv_zero"
+                android:textColor="#5a5a5a"
+                android:textSize="12sp"/>
+
+            <ImageView
+                android:id="@+id/mIvListSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/setting"/>
+        </RelativeLayout>
+
+        <!--我创建的歌单列表-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mRvMyMusicList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
+
+        <!--我收藏的歌单标题-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/iv_arrow_collect"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:scaleType="center"
+                android:src="@mipmap/arrow_right"/>
+
+            <TextView
+                android:id="@+id/tv_collect_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/iv_arrow_collect"
+                android:text="@string/tv_my_collect"
+                android:textColor="#5a5a5a"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/tv_collect_list_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/tv_collect_list"
+                android:text="@string/tv_zero"
+                android:textColor="#5a5a5a"
+                android:textSize="12sp"/>
+
+            <ImageView
+                android:id="@+id/iv_collect_list_setting"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/setting"/>
+        </RelativeLayout>
+
+        <!--我收藏的歌单列表-->
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/list_my_collect"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@android:color/white"-->
+            <!--android:paddingLeft="10dp"-->
+            <!--android:paddingRight="10dp"/>-->
+
+    </LinearLayout>
+</ScrollView>

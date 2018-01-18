@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/mIvBackGround"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/default_play_bg"
+        android:scaleType="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!--标题-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:paddingBottom="2dp"
+            android:paddingTop="2dp">
+
+            <ImageView
+                android:id="@+id/mIvBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:src="@mipmap/title_back"/>
+
+            <com.ezreal.huanting.widget.MarqueeTextView
+                android:id="@+id/mTvMusicTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/mIvBack"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:maxWidth="200dp"
+                android:singleLine="true"
+                android:text="@string/app_name"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"/>
+
+            <com.ezreal.huanting.widget.MarqueeTextView
+                android:id="@+id/mTvArtist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mTvMusicTitle"
+                android:layout_marginTop="2dp"
+                android:layout_toRightOf="@+id/mIvBack"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:maxWidth="150dp"
+                android:singleLine="true"
+                android:text="@string/tv_singer_name"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp"/>
+        </RelativeLayout>
+
+        <!--胶片/歌词-->
+        <FrameLayout
+            android:id="@+id/mCoverLrcView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <!--进度指示器-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/mTvCurrentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/colorAccent"
+                android:textSize="12sp"/>
+
+            <SeekBar
+                android:id="@+id/mProcessBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@+id/mTvTotalTime"
+                android:layout_toRightOf="@+id/mTvCurrentTime"/>
+
+            <TextView
+                android:id="@+id/mTvTotalTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="00:00"
+                android:textColor="@color/colorAccent"
+                android:textSize="12sp"/>
+
+        </RelativeLayout>
+
+        <!--播放控制器-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/mIvPlayMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scaleType="center"
+                android:src="@mipmap/list_recycle"/>
+
+            <ImageView
+                android:id="@+id/mIvPre"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:scaleType="center"
+                android:src="@mipmap/ic_pre_item_w"/>
+
+            <ImageView
+                android:id="@+id/mIvPlay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:scaleType="center"
+                android:src="@mipmap/ic_play_w"/>
+
+            <ImageView
+                android:id="@+id/mIvNext"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:scaleType="center"
+                android:src="@mipmap/ic_next_item_w"/>
+
+            <ImageView
+                android:id="@+id/mIvList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scaleType="center"
+                android:src="@mipmap/ic_music_list_g"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
