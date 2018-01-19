@@ -47,8 +47,6 @@ object GlobalMusicList {
         sMCurrentPlay = mPlayList[mCurrentPlayIndex]
         mCurrentProcess = 0
 
-        EventBus.getDefault().post(PlayMusicChangeEvent(newIndex))
-
         val musicRecentPlay = MusicRecentPlay()
         musicRecentPlay.musicId = sMCurrentPlay?.musicId
         musicRecentPlay.lastPlayTime = System.currentTimeMillis()
@@ -56,6 +54,8 @@ object GlobalMusicList {
         if (mListId != Constant.RECENT_MUSIC_LIST_ID){
             MusicDataHelper.addRecentPlay2DB(musicRecentPlay)
         }
+
+        EventBus.getDefault().post(PlayMusicChangeEvent(newIndex))
     }
 
     /**
