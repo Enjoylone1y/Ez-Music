@@ -17,3 +17,8 @@ APP 部分界面截图：
 歌曲播放-封面页                              歌曲播放-歌词页
 
 ![image](images/img_5.jpg)                ![image](imges/img_6.jpg)
+
+
+歌曲菜单
+
+![image](images/img_7.jpg)  
