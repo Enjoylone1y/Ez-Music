@@ -4,39 +4,42 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:padding="10dp"
+    android:background="@color/colorAccent">
 
     <LinearLayout
         android:id="@+id/layout_sort"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="30dp"
         android:orientation="horizontal"
-        android:gravity="clip_vertical">
+        android:gravity="center_vertical">
 
         <ImageView
             android:id="@+id/iv_list_sort"
-            android:layout_width="25dp"
-            android:layout_height="match_parent"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:scaleType="centerCrop"
             android:src="@mipmap/list_recycle_g"/>
 
         <TextView
             android:id="@+id/tv_list_sort"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
-            android:gravity="center"
+            android:gravity="left|center_vertical"
             android:text="@string/tv_list_recycle"
             android:textColor="@color/color_black"/>
+
+        <ImageView
+            android:id="@+id/iv_delete"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@mipmap/delete"
+            android:layout_alignParentRight="true"/>
+
     </LinearLayout>
 
-
-    <ImageView
-        android:id="@+id/iv_delete"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignParentRight="true"
-        android:src="@mipmap/delete"/>
 
     <View
         android:id="@+id/view_decoration"

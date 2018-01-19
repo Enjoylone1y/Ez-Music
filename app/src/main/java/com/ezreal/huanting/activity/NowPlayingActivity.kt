@@ -3,6 +3,7 @@ package com.ezreal.huanting.activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import android.widget.SeekBar
 import com.ezreal.huanting.R
 import com.ezreal.huanting.bean.MusicBean
@@ -12,6 +13,7 @@ import com.ezreal.huanting.fragment.MusicLrcFragment
 import com.ezreal.huanting.helper.GlobalMusicList
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.ConvertUtils
+import com.ezreal.huanting.widget.NowPlayListWindow
 import kotlinx.android.synthetic.main.activty_now_playing.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -28,6 +30,7 @@ class NowPlayingActivity : AppCompatActivity() {
     private val mLrcFragment by lazy { MusicLrcFragment() }
     private var mCurrentView: Fragment? = null
     private var showCover = false
+    private var mListWindow: NowPlayListWindow ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +50,7 @@ class NowPlayingActivity : AppCompatActivity() {
         initListener()
         EventBus.getDefault().register(this)
     }
+
 
     /**
      * 初始化各控件事件监听
@@ -91,7 +95,20 @@ class NowPlayingActivity : AppCompatActivity() {
         })
         // 打开播放列表
         mIvList.setOnClickListener {
-
+            if (mListWindow == null){
+            mListWindow = NowPlayListWindow(this)
+            mListWindow?.isOutsideTouchable = true
+            mListWindow?.animationStyle = R.style.MyPopupStyle
+            mListWindow?.setOnDismissListener {
+                lightOn()
+            }
+        }
+        mListWindow?.loadMusicList()
+        val location = IntArray(2)
+        it.getLocationOnScreen(location)
+        lightOff()
+        mListWindow?.showAtLocation(it, Gravity.START or Gravity.BOTTOM,
+                0, -location[1])
         }
         // 返回前一页页面
         mIvBack.setOnClickListener {
@@ -107,6 +124,29 @@ class NowPlayingActivity : AppCompatActivity() {
                 switchFragment(mCoverFragment)
             }
         }
+    }
+
+
+    private fun lightOn() {
+        try {
+            val attributes = window?.attributes
+            attributes?.alpha = 1.0f
+            window?.attributes = attributes
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun lightOff() {
+        try {
+            val attributes = window?.attributes
+            attributes?.alpha = 0.6f
+            window?.attributes = attributes
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     /**

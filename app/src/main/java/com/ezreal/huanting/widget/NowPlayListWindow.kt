@@ -3,6 +3,7 @@ package com.ezreal.huanting.widget
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -13,14 +14,13 @@ import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.helper.GlobalMusicList
-import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import java.util.ArrayList
 
 /**
  * 当前播放列表弹窗
  * Created by wudeng on 2017/12/4.
  */
-class NowPlayListWindow(context: Context) : PopupWindow(context) {
+class NowPlayListWindow: PopupWindow{
 
     private var mLayoutSort: LinearLayout? = null
     private var mIvSortMode: ImageView? = null
@@ -30,30 +30,28 @@ class NowPlayListWindow(context: Context) : PopupWindow(context) {
     private var mSongList = ArrayList<MusicBean>()
     private var mAdapter: RecycleViewAdapter<MusicBean>? = null
 
-    init {
+    constructor(context: Context?) : this(context,null)
+    constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs,0)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
+            : super(context, attrs, defStyleAttr){
         val root = LayoutInflater.from(context).inflate(R.layout.popup_now_play_list,
                 null, true)
-        this.contentView = root
-        this.height = context.resources.displayMetrics.heightPixels / 2
+        contentView = root
+        this.height = context?.resources?.displayMetrics?.heightPixels!! / 2
+        this.width = context.resources?.displayMetrics?.widthPixels!!
         mLayoutSort = root.findViewById(R.id.layout_sort) as LinearLayout?
         mIvSortMode = root.findViewById(R.id.iv_list_sort) as ImageView?
         mTvSortMode = root.findViewById(R.id.tv_list_sort) as TextView?
         mIvDelete = root.findViewById(R.id.iv_delete) as ImageView?
         mRecyclerView = root.findViewById(R.id.rcv_playing_list) as RecyclerView?
-
         initList(context)
         initEvent()
+        loadMusicList()
     }
 
     private fun initList(context: Context) {
         // 播放列表初始化
         mRecyclerView?.layoutManager = LinearLayoutManager(context)
-        mRecyclerView?.addItemDecoration(
-                RecyclerViewDivider
-                        .with(context)
-                        .color(R.color.color_light_gray)
-                        .size(1)
-                        .build())
         mAdapter = object : RecycleViewAdapter<MusicBean>(context, mSongList) {
             override fun setItemLayoutId(position: Int): Int = R.layout.item_music_in_popu
 
@@ -80,7 +78,6 @@ class NowPlayListWindow(context: Context) : PopupWindow(context) {
         mRecyclerView?.adapter = mAdapter
     }
 
-
     private fun initEvent() {
         mLayoutSort?.setOnClickListener {
             // TODO 改变播放列表排序
@@ -91,4 +88,11 @@ class NowPlayListWindow(context: Context) : PopupWindow(context) {
         }
     }
 
+    fun loadMusicList(){
+        if (GlobalMusicList.getListId() != -1L){
+            mSongList.clear()
+            mSongList.addAll(GlobalMusicList.getNowPlayingList())
+            mAdapter?.notifyDataSetChanged()
+        }
+    }
 }

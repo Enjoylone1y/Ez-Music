@@ -32,13 +32,13 @@ import org.greenrobot.eventbus.EventBus
  * Created by wudeng on 2017/11/27.
  */
 
-class MusicAdapter(private val mContext: Context,private val listId:Long,
+class MusicAdapter(private val mContext: Context, private val listId: Long,
                    private val mList: List<MusicBean>)
     : RecycleViewAdapter<MusicBean>(mContext, mList) {
 
     init {
-        if (listId == GlobalMusicList.getListId() && mList.isNotEmpty()){
-            mList[GlobalMusicList.getCurrentIndex()].status =  Constant.PLAY_STATUS_PLAYING
+        if (listId == GlobalMusicList.getListId() && mList.isNotEmpty()) {
+            mList[GlobalMusicList.getCurrentIndex()].status = Constant.PLAY_STATUS_PLAYING
         }
     }
 
@@ -50,7 +50,7 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
         holder.setText(R.id.tv_album, mList[position].album!!)
         holder.getImageView(R.id.iv_play_status)?.visibility = View.GONE
         when {
-            mList[position].status == Constant.PLAY_STATUS_PLAYING-> {
+            mList[position].status == Constant.PLAY_STATUS_PLAYING -> {
                 holder.setImageResource(R.id.iv_play_status, R.mipmap.play)
                 holder.getImageView(R.id.iv_play_status)?.visibility = View.VISIBLE
             }
@@ -59,13 +59,13 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
                 holder.getImageView(R.id.iv_play_status)?.visibility = View.VISIBLE
             }
         }
-       val view = holder.convertView.findViewById<ImageView>(R.id.iv_item_menu)
-        view .setOnClickListener {
-            showPopupWindow(view,mList[position])
+        val view = holder.convertView.findViewById<ImageView>(R.id.iv_item_menu)
+        view.setOnClickListener {
+            showPopupWindow(view, mList[position])
         }
     }
 
-    private fun showPopupWindow(view: View,music: MusicBean){
+    private fun showPopupWindow(view: View, music: MusicBean) {
         val rootView = LayoutInflater.from(mContext)
                 .inflate(R.layout.popu_music_menu, null, false)
         val popupWindow = PopupWindow(rootView, ViewGroup.LayoutParams.MATCH_PARENT,
@@ -75,7 +75,7 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
         rootView.findViewById<TextView>(R.id.mTvArtist).text = music.artist
         rootView.findViewById<TextView>(R.id.mTvAlbum).text = music.album
         rootView.findViewById<RelativeLayout>(R.id.mLayoutPlayNext).setOnClickListener {
-            // TODO  添加到播放列表的第一首歌曲
+            playMusicNext(music)
             popupWindow.dismiss()
         }
         rootView.findViewById<RelativeLayout>(R.id.mLayoutAdd2List).setOnClickListener {
@@ -98,10 +98,10 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
         lightOff()
     }
 
-    private fun add2MusicList(music: MusicBean){
-        MusicDataHelper.loadMusicListAll(object :MusicDataHelper.OnListLoadListener{
+    private fun add2MusicList(music: MusicBean) {
+        MusicDataHelper.loadMusicListAll(object : MusicDataHelper.OnListLoadListener {
             override fun loadSuccess(list: List<MusicListBean>) {
-                showSelectList(music,list)
+                showSelectList(music, list)
             }
 
             override fun loadFailed(message: String) {
@@ -111,7 +111,75 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
         })
     }
 
-    fun checkPlaySong(musicPosition: Int,viewPosition:Int) {
+
+    private fun playMusicNext(music: MusicBean) {
+        val currentIndex = GlobalMusicList.getCurrentIndex()
+        when (GlobalMusicList.getListId()) {
+        // 当前播放列表为空,创建临时播放列表并播放该歌曲,打开播放页
+            -1L -> {
+                music.status = Constant.PLAY_STATUS_PLAYING
+                val tempList = listOf(music)
+                GlobalMusicList.updateList(Constant.TEMP_MUSIL_LIST_ID, tempList)
+                GlobalMusicList.updatePlayIndex(0)
+                EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY))
+                mContext.startActivity(Intent(mContext, NowPlayingActivity::class.java))
+            }
+
+        // 在原播放列表中操作
+            listId -> {
+                val itemIndex = GlobalMusicList.getNowPlayingList().indexOf(music)
+                if (music.status == Constant.PLAY_STATUS_PLAYING) {
+                    return
+                }
+                // 未在播放，并且已经在下一首播放位置，什么都不做
+                if (itemIndex == currentIndex + 1) {
+                    return
+                }
+                // 否则，改变播放列表歌曲位置，将该歌曲移动到下一首播放的位置
+                changePlayListIndex(music, currentIndex, itemIndex)
+            }
+
+        // 其他情况
+            else -> {
+                // 判断要加入播放列表的歌曲是否已存在于列表内
+                val first = GlobalMusicList.getNowPlayingList().firstOrNull { it.musicId == music.musicId }
+
+                // 已存在,则判断播放状态和所在位置
+                if (first != null) {
+                    // 找到歌曲在列表中的位置
+                    val itemIndex = GlobalMusicList.getNowPlayingList().indexOf(first)
+                    // 已存在且已经在播放，什么都不做
+                    if (first.status == Constant.PLAY_STATUS_PLAYING) {
+                        return
+                    }
+                    // 已存在，未在播放，并且已经在下一首播放位置，什么都不做
+                    if (itemIndex == currentIndex + 1) {
+                        return
+                    }
+                    // 否则，改变播放列表歌曲位置，将该歌曲移动到下一首播放的位置
+                    changePlayListIndex(music, currentIndex, itemIndex)
+                }
+                // 不存在，添加该歌曲到播放列表中，且在当前的播放歌曲的后一位置
+                else {
+                    GlobalMusicList.getNowPlayingList().add(currentIndex + 1, music)
+                }
+            }
+        }
+    }
+
+    private fun changePlayListIndex(music: MusicBean, currentIndex: Int, itemIndex: Int) {
+        val list = GlobalMusicList.getNowPlayingList()
+        if (itemIndex < currentIndex) {
+            list.remove(music)
+            list.add(currentIndex, music)
+            GlobalMusicList.updatePlayIndex(currentIndex - 1)
+        }else {
+            list.remove(music)
+            list.add(currentIndex + 1, music)
+        }
+    }
+
+    fun checkPlaySong(musicPosition: Int, viewPosition: Int) {
         // 如果当前播放列表不是本地音乐列表，更新播放列表，并切换播放歌曲
         if (GlobalMusicList.getListId() != listId) {
             // 恢复旧播放列表歌曲状态
@@ -121,7 +189,7 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
                         Constant.PLAY_STATUS_NORMAL
             }
             // 切换播放歌曲
-            playNewMusic(musicPosition,viewPosition)
+            playNewMusic(musicPosition, viewPosition)
             return
         }
 
@@ -139,10 +207,10 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
         }
 
         // 更新播放歌曲状态
-        playNewMusic(musicPosition,viewPosition)
+        playNewMusic(musicPosition, viewPosition)
     }
 
-    private fun playNewMusic(musicPosition: Int,viewPosition:Int) {
+    private fun playNewMusic(musicPosition: Int, viewPosition: Int) {
         GlobalMusicList.updateList(listId, mList)
         GlobalMusicList.updatePlayIndex(musicPosition)
         mList[musicPosition].status = Constant.PLAY_STATUS_PLAYING
@@ -150,7 +218,7 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
         EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY))
     }
 
-    private fun showSelectList(music: MusicBean,list: List<MusicListBean>){
+    private fun showSelectList(music: MusicBean, list: List<MusicListBean>) {
         // 构造 dialog
         val rootView = LayoutInflater.from(mContext)
                 .inflate(R.layout.dialog_add_2_list, null, false)
@@ -158,7 +226,7 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
         dialog.setCanceledOnTouchOutside(true)
         val layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT)
-        dialog.addContentView(rootView,layoutParams)
+        dialog.addContentView(rootView, layoutParams)
         dialog.show()
         // 设置大小
         val attributes = dialog.window?.attributes
@@ -168,15 +236,15 @@ class MusicAdapter(private val mContext: Context,private val listId:Long,
         // 绑定数据
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.mRcvMusicList)
         recyclerView.layoutManager = LinearLayoutManager(mContext)
-        val adapter = MusicListAdapter(mContext,list)
-        adapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
+        val adapter = MusicListAdapter(mContext, list)
+        adapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                MusicDataHelper.addMusic2List(music,list[position].listId,
-                        object :MusicDataHelper.OnAddMusic2ListListener{
-                    override fun addResult(code: Int, message: String) {
-                        FToastUtils.init().show(message)
-                    }
-                })
+                MusicDataHelper.addMusic2List(music, list[position].listId,
+                        object : MusicDataHelper.OnAddMusic2ListListener {
+                            override fun addResult(code: Int, message: String) {
+                                FToastUtils.init().show(message)
+                            }
+                        })
                 dialog.dismiss()
             }
 

@@ -1,11 +1,14 @@
 package com.ezreal.huanting.widget
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
+import cn.hotapk.fastandrutils.utils.FScreenUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.ezreal.huanting.R
@@ -25,7 +28,9 @@ import org.greenrobot.eventbus.Subscribe
 
 class MusicPlayLayout : RelativeLayout {
 
+    private var mListWindow: NowPlayListWindow ?= null
     private var mCurrentPlay: MusicBean? = null
+
     constructor(context: Context?) : this(context, null)
     constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) :
@@ -58,9 +63,47 @@ class MusicPlayLayout : RelativeLayout {
             }
         }
         mIvMusicList.setOnClickListener {
-            //TODO 打开播放列表
+            if (mListWindow == null){
+                mListWindow = NowPlayListWindow(context)
+                mListWindow?.isOutsideTouchable = true
+                mListWindow?.animationStyle = R.style.MyPopupStyle
+                mListWindow?.setOnDismissListener {
+                    lightOn()
+                }
+            }
+            mListWindow?.loadMusicList()
+            val location = IntArray(2)
+            it.getLocationOnScreen(location)
+            lightOff()
+            mListWindow?.showAtLocation(it, Gravity.START or Gravity.BOTTOM,
+                    0, -location[1])
         }
     }
+
+    private fun lightOn() {
+        try {
+            val activity = context as Activity
+            val attributes = activity.window?.attributes
+            attributes?.alpha = 1.0f
+            activity.window?.attributes = attributes
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun lightOff() {
+        try {
+            val activity = context as Activity
+            val attributes = activity.window?.attributes
+            attributes?.alpha = 0.6f
+            activity.window?.attributes = attributes
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
 
     /**
      * 监听歌曲切换

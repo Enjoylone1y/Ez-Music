@@ -95,29 +95,4 @@ object GlobalMusicList {
     fun getCurrentPlay(): MusicBean? = sMCurrentPlay
 
     fun getListSize():Int = mPlayList.size
-
-    fun addSong2List(index: Int, localMusicBean: MusicBean) {
-        if (index < 0) return
-        if (index > mPlayList.size) {
-            mPlayList.add(localMusicBean)
-        } else {
-            mPlayList.add(index, localMusicBean)
-        }
-    }
-
-    fun getSongByIndex(index: Int): MusicBean? {
-        if (index < -1) return null
-        if (mPlayList.isEmpty()) return null
-        if (index >= mPlayList.size) return null
-        return mPlayList[index]
-    }
-
-    fun isContaint(musicBean: MusicBean): Boolean {
-        return if (mPlayList.isEmpty()) {
-            false
-        } else {
-            mPlayList.contains(musicBean)
-        }
-    }
-
 }
