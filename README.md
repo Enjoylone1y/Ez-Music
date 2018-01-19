@@ -6,17 +6,17 @@ APP 部分界面截图：
 
 侧滑菜单                                   主页面
 
-![image](images/img_1.jpg)                ![image](imges/img_3.jpg)
+![image](images/img_1.jpg)                ![image](images/img_3.jpg)
 
 
 本地音乐                                    歌单
 
-![image](images/img_2.jpg)                ![image](imges/img_4.jpg)
+![image](images/img_2.jpg)                ![image](images/img_4.jpg)
 
 
 歌曲播放-封面页                              歌曲播放-歌词页
 
-![image](images/img_5.jpg)                ![image](imges/img_6.jpg)
+![image](images/img_5.jpg)                ![image](images/img_6.jpg)
 
 
 歌曲菜单
