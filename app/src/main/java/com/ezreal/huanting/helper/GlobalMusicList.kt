@@ -4,8 +4,11 @@ import android.util.Log
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.bean.MusicRecentPlay
 import com.ezreal.huanting.event.PlayMusicChangeEvent
+import com.ezreal.huanting.event.PlayProcessChangeEvent
+import com.ezreal.huanting.event.PlayStatusChangeEvent
 import com.ezreal.huanting.utils.Constant
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 /**
  * 播放歌曲列表
@@ -22,7 +25,10 @@ object GlobalMusicList {
     private var mCurrentPlayIndex = -1 // 默认-1，无歌曲播放
     private var sMCurrentPlay: MusicBean? = null
     private var mCurrentProcess = 0
-    private var isPause = false
+
+    init {
+        EventBus.getDefault().register(this)
+    }
 
     /**
      * 更新当前播放列表
@@ -58,18 +64,16 @@ object GlobalMusicList {
         EventBus.getDefault().post(PlayMusicChangeEvent(newIndex))
     }
 
-    /**
-     * 更细当前
-     */
-    fun updatePlayStatus(status: Int){
-        sMCurrentPlay?.status = status
+
+    @Subscribe
+    fun updatePlayStatus(event: PlayStatusChangeEvent){
+        sMCurrentPlay?.status = event.status
     }
 
-    /**
-     * 更新当前播放进度
-     */
-    fun updatePlayProcess(newProcess:Int) {
-        mCurrentProcess = newProcess
+
+    @Subscribe
+    fun updatePlayProcess(event:PlayProcessChangeEvent) {
+        mCurrentProcess = event.process
     }
 
     /**
@@ -81,11 +85,6 @@ object GlobalMusicList {
      * 获取档期播放列表 ID
      */
     fun getListId(): Long = mListId
-
-    /**
-     *
-     */
-    fun isPause():Boolean = isPause
 
     /**
      * 获取当前播放歌曲索引

@@ -25,11 +25,19 @@ import org.greenrobot.eventbus.Subscribe
 
 class NowPlayingActivity : AppCompatActivity() {
 
-    private var mCurrentPlay: MusicBean? = null
+    // 专辑封面 Fragment
     private val mCoverFragment by lazy { MusicCoverFragment() }
+    // 歌词 Fragment
     private val mLrcFragment by lazy { MusicLrcFragment() }
+    // 记录当前的 Fragment
     private var mCurrentView: Fragment? = null
+    // 记录当前显示的是“专辑封面”还是“歌词”
     private var showCover = false
+    // 是否正在拖动进度条，是的情况下不会根据事件更新进度条
+    private var isSeeking = false
+    // 当前播放歌曲的引用
+    private var mCurrentPlay: MusicBean? = null
+    // 播放列表 view
     private var mListWindow: NowPlayListWindow ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,32 +68,34 @@ class NowPlayingActivity : AppCompatActivity() {
         mIvPlay.setOnClickListener {
             when (mCurrentPlay?.status) {
                 Constant.PLAY_STATUS_PLAYING -> {
-                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PAUSE))
+                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PAUSE,-1))
                 }
                 Constant.PLAY_STATUS_PAUSE -> {
-                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.RESUME))
+                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.RESUME,-1))
                 }
                 Constant.PLAY_STATUS_NORMAL -> {
-                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY))
+                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY,-1))
                 }
             }
         }
         // 下一曲
         mIvNext.setOnClickListener {
-            EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.NEXT))
+            EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.NEXT,-1))
         }
         // 上一曲
         mIvPre.setOnClickListener {
-            EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PRE))
+            EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PRE,-1))
         }
-        // 进度条拖动监听
+        // 进度条拖动事件
         mProcessBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
+                isSeeking = true
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                EventBus.getDefault().post(SeekActionEvent(seekBar?.progress!!))
+                isSeeking = false
+                // 拖动结束时，发送进度更新指令
+                EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.SEEK,mProcessBar.progress))
             }
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -150,7 +160,7 @@ class NowPlayingActivity : AppCompatActivity() {
     }
 
     /**
-     * 监听歌曲切换
+     * 监听歌曲切换事件
      */
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
@@ -172,18 +182,17 @@ class NowPlayingActivity : AppCompatActivity() {
     }
 
     /**
-     * 监听播放进度更新,此方法将会由子线程发起
+     * 监听播放进度更新
      */
     @Subscribe
     fun onProcessChange(event: PlayProcessChangeEvent) {
+        if (isSeeking) return
         mProcessBar.progress = event.process
-        runOnUiThread {
-            mTvCurrentTime.text = ConvertUtils.getTimeWithProcess(event.process)
-        }
+        mTvCurrentTime.text = ConvertUtils.getTimeWithProcess(event.process)
     }
 
     /**
-     * 绑定歌曲数据
+     * 绑定当前播放歌曲数据，更新界面
      */
     private fun bindView() {
         if (mCurrentPlay == null) return
@@ -199,7 +208,6 @@ class NowPlayingActivity : AppCompatActivity() {
             mIvPlay.setImageResource(R.mipmap.song_play)
         }
     }
-
 
     /**
      * Fragment 跳转

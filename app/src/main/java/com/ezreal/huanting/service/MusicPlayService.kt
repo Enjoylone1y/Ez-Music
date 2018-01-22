@@ -3,11 +3,11 @@ package com.ezreal.huanting.service
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
-import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import cn.hotapk.fastandrutils.utils.FToastUtils
@@ -18,15 +18,25 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 /**
- * 后台播放音乐服务
+ * 音乐播放后台服务
+ * 1、负责音乐播放任务
+ * 2、监听并执行从各个界面发出的播放控制指令
+ * 3、推送指令执行结果
+ * 4、推送播放状态和进度
  * Created by wudeng on 2017/11/27.
  */
 
 class MusicPlayService : Service() {
-    private val TAG = MusicPlayService::class.java.name
     private val mPlayer: MediaPlayer = MediaPlayer()
     private var mAudioManager: AudioManager? = null
     private var mTimeCountThread: TimeCountThread? = null
+    private val mUpdateProcessMsg = 0x1111
+    private val mHandler: Handler = Handler(Looper.getMainLooper()) { msg ->
+        if (msg.what == mUpdateProcessMsg) {
+            EventBus.getDefault().post(PlayProcessChangeEvent(mPlayer.currentPosition))
+        }
+        true
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -40,30 +50,28 @@ class MusicPlayService : Service() {
      */
     private fun initPlayerListener() {
 
-        // 装载流媒体文件监听
+        // 播放器初始化监听
         mPlayer.setOnPreparedListener { mp ->
             // 开始播放
             mp.start()
-            // 启动播放事件记录线程
+            // 启动播放时间记录线程
             mTimeCountThread = TimeCountThread()
             mTimeCountThread?.start()
             // 推送播放状态更新事件
-            GlobalMusicList.updatePlayStatus(Constant.PLAY_STATUS_PLAYING)
             EventBus.getDefault().post(PlayStatusChangeEvent(Constant.PLAY_STATUS_PLAYING))
         }
 
-        // 播放结束监听
+        // 播放结束监听，根据当前播放模式执行不同操作
         mPlayer.setOnCompletionListener { mp ->
             val mode = FSharedPrefsUtils.getInt(Constant.OPTION_TABLE,
-                    Constant.OPTION_PLAY_MODE)
+                    Constant.OPTION_PLAY_MODE, Constant.PLAY_MODE_LIST_RECYCLE)
             when (mode) {
                 Constant.PLAY_MODE_SINGLE_RECYCLE -> {
-                    // 开始播放音乐并启动播放进度统计线程
                     mp?.start()
                 }
 
                 Constant.PLAY_MODE_LIST_RECYCLE -> {
-                    // TODO PlayNext
+                    dealNextAction()
                 }
 
                 Constant.PLAY_MODE_RANDOM -> {
@@ -74,7 +82,7 @@ class MusicPlayService : Service() {
         }
 
         // 播放出错监听
-        mPlayer.setOnErrorListener { mp, what, extra ->
+        mPlayer.setOnErrorListener { _, what, _ ->
             when (what) {
                 MediaPlayer.MEDIA_ERROR_IO ->
                     FToastUtils.init().show("Play Error IO ")
@@ -87,9 +95,8 @@ class MusicPlayService : Service() {
         }
     }
 
-
     /**
-     * 监听由各个页面发送的音乐播放指令，并进行相应处理
+     *  监听由各个页面推送的播放控制事件
      */
     @Subscribe
     fun recivePlayAction(event: PlayActionEvent) {
@@ -99,27 +106,25 @@ class MusicPlayService : Service() {
             MusicPlayAction.PRE -> dealPreAction()
             MusicPlayAction.PAUSE -> dealPauseAction()
             MusicPlayAction.RESUME -> dealResumeAction()
+            MusicPlayAction.SEEK -> dealSeekAction(event.seekTo)
         }
     }
 
     /**
-     * 监听播放进度拖动事件
+     * 处理 “播放事件”
      */
-    @Subscribe
-    fun reciveSeekAction(event: SeekActionEvent) {
-        dealSeekAction(event.seekTo)
-    }
-
     private fun dealPlayAction() {
         val currentPlay = GlobalMusicList.getCurrentPlay() ?: return
         val path = currentPlay.dataPath!!
         playImp(path)
     }
 
+    /**
+     * 处理 “播放-暂停” 事件
+     */
     private fun dealPauseAction() {
         try {
             mPlayer.pause()
-            GlobalMusicList.updatePlayStatus(Constant.PLAY_STATUS_PAUSE)
             EventBus.getDefault().post(PlayStatusChangeEvent(Constant.PLAY_STATUS_PAUSE))
         } catch (e: Exception) {
             e.printStackTrace()
@@ -127,58 +132,68 @@ class MusicPlayService : Service() {
 
     }
 
+    /**
+     * 处理 “暂停->恢复” 事件
+     */
     private fun dealResumeAction() {
         try {
             mPlayer.start()
-            GlobalMusicList.updatePlayStatus(Constant.PLAY_STATUS_PLAYING)
             EventBus.getDefault().post(PlayStatusChangeEvent(Constant.PLAY_STATUS_PLAYING))
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+    /**
+     * 处理 “下一曲” 事件
+     */
     private fun dealNextAction() {
         try {
             // 停止当前播放
             if (mPlayer.isPlaying) mPlayer.stop()
-            GlobalMusicList.updatePlayProcess(0)
+            EventBus.getDefault().post(PlayProcessChangeEvent(0))
             // 更新播放音乐
             val currentIndex = GlobalMusicList.getCurrentIndex()
             var newIndex = 0
-            if (GlobalMusicList.getCurrentIndex() != GlobalMusicList.getListSize() - 1){
+            if (GlobalMusicList.getCurrentIndex() != GlobalMusicList.getListSize() - 1) {
                 newIndex = currentIndex + 1
             }
             GlobalMusicList.updatePlayIndex(newIndex)
             // 执行播放逻辑
             dealPlayAction()
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+    /**
+     * 处理 “上一曲” 事件
+     */
     private fun dealPreAction() {
         try {
             // 停止当前播放
             if (mPlayer.isPlaying) mPlayer.stop()
-            GlobalMusicList.updatePlayProcess(0)
+            EventBus.getDefault().post(PlayProcessChangeEvent(0))
             // 更新播放音乐
             val currentIndex = GlobalMusicList.getCurrentIndex()
             var newIndex = currentIndex - 1
-            if (currentIndex == 0){
+            if (currentIndex == 0) {
                 newIndex = GlobalMusicList.getListSize() - 1
             }
             GlobalMusicList.updatePlayIndex(newIndex)
             // 执行播放逻辑
             dealPlayAction()
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+    /**
+     * 处理进度拖动事件
+     */
     private fun dealSeekAction(seekTo: Int) {
         try {
             mPlayer.seekTo(seekTo)
-            EventBus.getDefault().post(SeekActionEvent(seekTo))
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -207,16 +222,15 @@ class MusicPlayService : Service() {
     }
 
     /**
-     * 播放过程进程，记录播放进度并每隔一秒钟推送一次进度更新事件
+     * 播放过程进程，每隔一秒钟推送一次进度更新事件
      */
     inner class TimeCountThread : Thread() {
         override fun run() {
             super.run()
             do {
                 Thread.sleep(1000)
-                if (mPlayer.isPlaying){
-                    GlobalMusicList.updatePlayProcess(mPlayer.currentPosition)
-                    EventBus.getDefault().post(PlayProcessChangeEvent(mPlayer.currentPosition))
+                if (mPlayer.isPlaying) {
+                    mHandler.sendEmptyMessage(mUpdateProcessMsg)
                 }
             } while (!isInterrupted)
         }
@@ -229,18 +243,19 @@ class MusicPlayService : Service() {
         override fun onAudioFocusChange(focusChange: Int) {
 
         }
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mHandler.removeCallbacks(null)
+        mPlayer.release()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.e("MusicPlayService", "onStartCommand")
+        Log.i("MusicPlayService", "onStartCommand")
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
-
-    override fun onDestroy() {
-        super.onDestroy()
-        EventBus.getDefault().unregister(this)
-    }
 }

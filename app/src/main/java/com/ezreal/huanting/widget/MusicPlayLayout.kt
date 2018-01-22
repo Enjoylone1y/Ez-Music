@@ -50,15 +50,15 @@ class MusicPlayLayout : RelativeLayout {
             when (mCurrentPlay?.status) {
                 Constant.PLAY_STATUS_PLAYING -> {
                     // 发送暂停令
-                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PAUSE))
+                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PAUSE,-1))
                 }
                 Constant.PLAY_STATUS_PAUSE -> {
                     // 发送恢复播放指令
-                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.RESUME))
+                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.RESUME,-1))
                 }
                 Constant.PLAY_STATUS_NORMAL -> {
                     // 发送播放指令
-                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY))
+                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY,-1))
                 }
             }
         }

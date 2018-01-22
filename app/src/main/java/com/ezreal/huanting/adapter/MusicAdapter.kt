@@ -121,7 +121,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
                 val tempList = listOf(music)
                 GlobalMusicList.updateList(Constant.TEMP_MUSIL_LIST_ID, tempList)
                 GlobalMusicList.updatePlayIndex(0)
-                EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY))
+                EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY,-1))
                 mContext.startActivity(Intent(mContext, NowPlayingActivity::class.java))
             }
 
@@ -215,7 +215,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         GlobalMusicList.updatePlayIndex(musicPosition)
         mList[musicPosition].status = Constant.PLAY_STATUS_PLAYING
         notifyItemChanged(viewPosition)
-        EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY))
+        EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY,-1))
     }
 
     private fun showSelectList(music: MusicBean, list: List<MusicListBean>) {
