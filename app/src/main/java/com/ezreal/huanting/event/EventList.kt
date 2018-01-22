@@ -11,6 +11,11 @@ data class PlayActionEvent(val action: MusicPlayAction,val seekTo: Int)
 data class PlayMusicChangeEvent(val newIndex:Int)
 
 /**
+ * 当前播放列表更新事件
+ */
+ data class PlayListChangeEvent(val listId: Long)
+
+/**
  * 播放状态改变事件
  */
 data class PlayStatusChangeEvent(val status: Int)
@@ -25,4 +30,5 @@ data class PlayProcessChangeEvent(val process:Int)
  * 歌单变化事件
  */
 data class MusicListChangeEvent(val listId:Long)
+
 

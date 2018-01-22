@@ -36,13 +36,6 @@ class RecentPlayActivity : AppCompatActivity() {
         mRvRecentPlay.layoutManager = LinearLayoutManager(this)
         mRvRecentPlay.setLoadingMoreEnabled(false)
         mRvRecentPlay.setPullRefreshEnabled(false)
-        mAdapter = MusicAdapter(this,Constant.RECENT_MUSIC_LIST_ID ,mSongList)
-        mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter?.checkPlaySong(position-1,position)
-            }
-        })
-        mRvRecentPlay.adapter = mAdapter
     }
 
     private fun initListener() {
@@ -68,8 +61,18 @@ class RecentPlayActivity : AppCompatActivity() {
     private fun loadSongList() {
         MusicDataHelper.loadRecentPlayFromDB(object : MusicDataHelper.OnMusicLoadListener {
             override fun loadSuccess(musicList: List<MusicBean>) {
+                for (music in musicList){
+                    music.playFromList = Constant.RECENT_MUSIC_LIST_ID
+                }
                 mSongList.addAll(musicList)
-                mAdapter?.notifyDataSetChanged()
+                mAdapter = MusicAdapter(this@RecentPlayActivity,
+                        Constant.RECENT_MUSIC_LIST_ID ,mSongList)
+                mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
+                    override fun onItemClick(holder: RViewHolder, position: Int) {
+                        mAdapter?.checkPlaySong(position-1,position)
+                    }
+                })
+                mRvRecentPlay.adapter = mAdapter
             }
 
             override fun loadFailed(message: String) {

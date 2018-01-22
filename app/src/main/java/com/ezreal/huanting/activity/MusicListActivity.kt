@@ -45,10 +45,8 @@ class MusicListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music_list)
-        getMusicList()
         initActionBar()
-        initHeadView()
-        initMusicList()
+        getMusicList()
     }
 
     private fun getMusicList() {
@@ -60,7 +58,13 @@ class MusicListActivity : AppCompatActivity() {
                     finish()
                 } else {
                     mList = list[0]
-                    mMusicList.addAll(mList?.musicList!!)
+                    val musicList = mList?.musicList
+                    if (musicList != null) {
+                        musicList.forEach { it?.playFromList = listId }
+                        mMusicList.addAll(musicList)
+                    }
+                    initHeadView()
+                    initMusicList()
                 }
             }
 
@@ -80,7 +84,7 @@ class MusicListActivity : AppCompatActivity() {
 
         FStatusBarUtils.translucent(this)
         val list = mList?.musicList
-        if (list == null || list.isEmpty()){
+        if (list == null || list.isEmpty()) {
             return
         }
         val albumUri = list[0].albumUri
@@ -91,8 +95,7 @@ class MusicListActivity : AppCompatActivity() {
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource(resources, R.drawable.splash)
         }
-        mBackColor = Palette.from(bitmap).generate().darkVibrantSwatch?.rgb ?:
-                ContextCompat.getColor(this, R.color.color_gray)
+        mBackColor = Palette.from(bitmap).generate().darkVibrantSwatch?.rgb ?: ContextCompat.getColor(this, R.color.color_gray)
 
         setHeadViewDrawable()
 
@@ -115,10 +118,10 @@ class MusicListActivity : AppCompatActivity() {
         mRcvMusic.isNestedScrollingEnabled = false
         mRcvMusic.setHasFixedSize(false)
         mRcvMusic.addHeaderView(createHeadView())
-        mAdapter = MusicAdapter(this, mList?.listId!!,mMusicList)
-        mAdapter?.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
+        mAdapter = MusicAdapter(this, mList?.listId!!, mMusicList)
+        mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter?.checkPlaySong(position-2,position)
+                mAdapter?.checkPlaySong(position - 2, position)
             }
         })
         mRcvMusic.adapter = mAdapter
@@ -131,18 +134,18 @@ class MusicListActivity : AppCompatActivity() {
             if (scroll in 1..mHeadViewHeight) {
                 alpha = scroll * 1.0F / mHeadViewHeight
 
-            }else if (scroll > mHeadViewHeight){
+            } else if (scroll > mHeadViewHeight) {
                 alpha = 1F
             }
 
-            if (scroll > mHeadViewHeight / 2){
+            if (scroll > mHeadViewHeight / 2) {
                 mTvTitle.text = mList?.listName
-            }else{
+            } else {
                 mTvTitle.text = "歌单"
             }
 
-            val drawable = mActionBar.background ?:
-                    ContextCompat.getDrawable(this,R.drawable.action_bar_bg_black)
+            val drawable = mActionBar.background
+                    ?: ContextCompat.getDrawable(this, R.drawable.action_bar_bg_black)
             drawable?.mutate()?.alpha = (alpha * 255).toInt()
             mActionBar.background = drawable
         }

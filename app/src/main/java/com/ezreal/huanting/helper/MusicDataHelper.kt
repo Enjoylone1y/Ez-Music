@@ -232,9 +232,11 @@ object MusicDataHelper {
                         arrayOf(filterSize.toString(), filterTime.toString()), null)
                 var music: MusicBean?
                 while (cursor.moveToNext()) {
-                    val isMusic = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.IS_MUSIC))
+                    val isMusic = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio
+                            .AudioColumns.IS_MUSIC))
                     if (!FDeviceUtils.isFlyme() && isMusic == 0) continue
-                    val displayName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME))
+                    val displayName = cursor.getString(cursor.getColumnIndex(MediaStore
+                            .Audio.AudioColumns.DISPLAY_NAME))
                     if (!displayName.endsWith(".mp3")) continue
                     val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns._ID))
                     val title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE))
@@ -293,7 +295,8 @@ object MusicDataHelper {
             while (cursor.moveToNext()) {
                 val isMusic = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.IS_MUSIC))
                 if (!FDeviceUtils.isFlyme() && isMusic == 0) continue
-                val displayName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME))
+                val displayName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio
+                        .AudioColumns.DISPLAY_NAME))
                 if (!displayName.endsWith(".mp3")) continue
                 count++
             }

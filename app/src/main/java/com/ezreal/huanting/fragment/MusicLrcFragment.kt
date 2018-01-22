@@ -10,7 +10,7 @@ import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.event.PlayProcessChangeEvent
 import com.ezreal.huanting.event.PlayStatusChangeEvent
-import com.ezreal.huanting.helper.GlobalMusicList
+import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.utils.Constant
 import kotlinx.android.synthetic.main.fragment_music_lrc.*
 import org.greenrobot.eventbus.EventBus
@@ -37,7 +37,7 @@ class MusicLrcFragment :Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mCurrentPlay = GlobalMusicList.getCurrentPlay()
+        mCurrentPlay = GlobalMusicData.getCurrentPlay()
         if (mCurrentPlay != null && mCurrentPlay?.musicTitle?.equals("成都")!!){
             val lrcPath = Constant.APP_LRC_PATH + File.separator + "成都_赵雷" + ".lrc"
             mLrcView.loadLrc(File(lrcPath))
@@ -49,7 +49,7 @@ class MusicLrcFragment :Fragment() {
      */
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
-        mCurrentPlay = GlobalMusicList.getCurrentPlay()
+        mCurrentPlay = GlobalMusicData.getCurrentPlay()
         if (mCurrentPlay != null && mCurrentPlay?.musicTitle?.equals("成都")!!){
             val lrcPath = Constant.APP_LRC_PATH + File.separator + "成都_赵雷" + ".lrc"
             mLrcView.loadLrc(File(lrcPath))

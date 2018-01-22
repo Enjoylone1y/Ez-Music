@@ -10,7 +10,7 @@
         android:orientation="vertical">
 
         <!--歌曲列表-->
-        <com.ezreal.huanting.widget.MyNestedScrollView
+        <com.ezreal.huanting.widget.ReNestedScrollView
             android:id="@+id/mScrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-        </com.ezreal.huanting.widget.MyNestedScrollView>
+        </com.ezreal.huanting.widget.ReNestedScrollView>
 
         <!--播放控制-->
         <com.ezreal.huanting.widget.MusicPlayLayout

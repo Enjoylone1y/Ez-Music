@@ -13,14 +13,14 @@ import com.ezreal.huanting.R
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.helper.GlobalMusicList
+import com.ezreal.huanting.helper.GlobalMusicData
 import java.util.ArrayList
 
 /**
- * 当前播放列表弹窗
+ * 播放列表弹窗
  * Created by wudeng on 2017/12/4.
  */
-class NowPlayListWindow: PopupWindow{
+class PlayListPopup : PopupWindow{
 
     private var mLayoutSort: LinearLayout? = null
     private var mIvSortMode: ImageView? = null
@@ -46,7 +46,7 @@ class NowPlayListWindow: PopupWindow{
         mRecyclerView = root.findViewById(R.id.rcv_playing_list) as RecyclerView?
         initList(context)
         initEvent()
-        loadMusicList()
+        loadPlayList()
     }
 
     private fun initList(context: Context) {
@@ -58,7 +58,7 @@ class NowPlayListWindow: PopupWindow{
             override fun bindView(holder: RViewHolder, position: Int) {
                 val item = mSongList[position]
                 holder.setVisible(R.id.iv_playing, false)
-                if (position == GlobalMusicList.getCurrentIndex()) {
+                if (position == GlobalMusicData.getCurrentIndex()) {
                     holder.setVisible(R.id.iv_playing, true)
                 }
                 holder.setText(R.id.mTvSongTitle, item.musicTitle!!)
@@ -88,10 +88,11 @@ class NowPlayListWindow: PopupWindow{
         }
     }
 
-    fun loadMusicList(){
-        if (GlobalMusicList.getListId() != -1L){
+
+    fun loadPlayList(){
+        if (GlobalMusicData.getListId() != -1L){
             mSongList.clear()
-            mSongList.addAll(GlobalMusicList.getNowPlayingList())
+            mSongList.addAll(GlobalMusicData.getNowPlayingList())
             mAdapter?.notifyDataSetChanged()
         }
     }

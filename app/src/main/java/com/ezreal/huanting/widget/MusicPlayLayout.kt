@@ -8,15 +8,15 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
-import cn.hotapk.fastandrutils.utils.FScreenUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.ezreal.huanting.R
 import com.ezreal.huanting.activity.NowPlayingActivity
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.*
-import com.ezreal.huanting.helper.GlobalMusicList
+import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.utils.Constant
+import com.ezreal.huanting.utils.PopupShowUtils
 import kotlinx.android.synthetic.main.layout_play_music.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -28,7 +28,7 @@ import org.greenrobot.eventbus.Subscribe
 
 class MusicPlayLayout : RelativeLayout {
 
-    private var mListWindow: NowPlayListWindow ?= null
+    private var mListPopup: PlayListPopup?= null
     private var mCurrentPlay: MusicBean? = null
 
     constructor(context: Context?) : this(context, null)
@@ -40,7 +40,7 @@ class MusicPlayLayout : RelativeLayout {
         view.setOnClickListener {
             context?.startActivity(Intent(context, NowPlayingActivity::class.java))
         }
-        mCurrentPlay = GlobalMusicList.getCurrentPlay()
+        mCurrentPlay = GlobalMusicData.getCurrentPlay()
         bindView()
         initListener()
     }
@@ -63,63 +63,34 @@ class MusicPlayLayout : RelativeLayout {
             }
         }
         mIvMusicList.setOnClickListener {
-            if (mListWindow == null){
-                mListWindow = NowPlayListWindow(context)
-                mListWindow?.isOutsideTouchable = true
-                mListWindow?.animationStyle = R.style.MyPopupStyle
-                mListWindow?.setOnDismissListener {
-                    lightOn()
+            if (mListPopup == null){
+                mListPopup = PlayListPopup(context)
+                mListPopup?.isOutsideTouchable = true
+                mListPopup?.animationStyle = R.style.MyPopupStyle
+                mListPopup?.setOnDismissListener {
+                    PopupShowUtils.lightOn(context as Activity)
                 }
             }
-            mListWindow?.loadMusicList()
             val location = IntArray(2)
             it.getLocationOnScreen(location)
-            lightOff()
-            mListWindow?.showAtLocation(it, Gravity.START or Gravity.BOTTOM,
+            PopupShowUtils.lightOff(context as Activity)
+            mListPopup?.showAtLocation(it, Gravity.START or Gravity.BOTTOM,
                     0, -location[1])
         }
     }
 
-    private fun lightOn() {
-        try {
-            val activity = context as Activity
-            val attributes = activity.window?.attributes
-            attributes?.alpha = 1.0f
-            activity.window?.attributes = attributes
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-    }
-
-    private fun lightOff() {
-        try {
-            val activity = context as Activity
-            val attributes = activity.window?.attributes
-            attributes?.alpha = 0.6f
-            activity.window?.attributes = attributes
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-    }
-
-
     /**
      * 监听歌曲切换
      */
-
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
-        mCurrentPlay = GlobalMusicList.getCurrentPlay()
+        mCurrentPlay = GlobalMusicData.getCurrentPlay()
         bindView()
     }
 
     /**
      * 监听播放状态改变
-     * 播放状态改变事件，MusicPlayService 发出
      */
-
     @Subscribe
     fun onPlayStatusChange(event: PlayStatusChangeEvent) {
         when (event.status) {
@@ -139,6 +110,16 @@ class MusicPlayLayout : RelativeLayout {
             }
         }
     }
+
+    /**
+     * 监听播放列表更新事件
+     */
+    @Subscribe
+    fun onPlayListChange(event: PlayListChangeEvent) {
+        if (mListPopup == null) return
+        mListPopup?.loadPlayList()
+    }
+
 
     private fun bindView() {
         if (mCurrentPlay == null){

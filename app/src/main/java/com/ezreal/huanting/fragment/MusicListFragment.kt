@@ -35,35 +35,32 @@ class MusicListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // 初始化歌曲列表
         mRecyclerView.layoutManager = LinearLayoutManager(context)
         mRecyclerView.setLoadingMoreEnabled(false)
         mRecyclerView.setPullRefreshEnabled(false)
-        mAdapter = MusicAdapter(context!!,Constant.LOCAL_MUSIC_LIST_ID,mSongList)
-        mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter?.checkPlaySong(position-1,position)
-            }
-        })
-        mRecyclerView.adapter = mAdapter
         loadSongList()
     }
 
-    /**
-     * 加载歌曲列表
-     */
     private fun loadSongList() {
         MusicDataHelper.loadLocalMusic(context!!, false,
                 object : MusicDataHelper.OnMusicLoadListener {
                     override fun loadSuccess(musicList: List<MusicBean>) {
+                        for (music in musicList){
+                            music.playFromList = Constant.LOCAL_MUSIC_LIST_ID
+                        }
                         mSongList.addAll(musicList)
-                        mAdapter?.notifyDataSetChanged()
+                        mAdapter = MusicAdapter(context!!,Constant.LOCAL_MUSIC_LIST_ID,mSongList)
+                        mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
+                            override fun onItemClick(holder: RViewHolder, position: Int) {
+                                mAdapter?.checkPlaySong(position-1,position)
+                            }
+                        })
+                        mRecyclerView.adapter = mAdapter
                     }
 
                     override fun loadFailed(message: String) {
-                        FToastUtils.init().show("load song list fail :" + message)
+                        FToastUtils.init().show("歌曲加载失败:" + message)
                     }
                 })
     }
-
 }

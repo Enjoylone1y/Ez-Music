@@ -24,8 +24,14 @@ open class MusicBean : RealmObject() {
     var duration: Int? = null
 
     /**
-     * 歌曲播放状态，不保存入数据库中
+     * 歌曲播放状态，辅助变量，不保存入数据库中
      */
     @Ignore
     var status:Int =  Constant.PLAY_STATUS_NORMAL
+
+    /**
+     * 当歌曲被手动添加到播放列表时，记录歌曲来源的歌单 ID，辅助变量，不保存入数据库中
+     */
+    @Ignore
+    var playFromList:Long  = -1L
 }

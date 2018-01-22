@@ -11,7 +11,7 @@ import com.ezreal.huanting.R
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.event.PlayStatusChangeEvent
-import com.ezreal.huanting.helper.GlobalMusicList
+import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.utils.Constant
 import kotlinx.android.synthetic.main.fragment_music_cover.*
 import org.greenrobot.eventbus.EventBus
@@ -36,7 +36,7 @@ class MusicCoverFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mCurrentPlay = GlobalMusicList.getCurrentPlay()
+        mCurrentPlay = GlobalMusicData.getCurrentPlay()
         mCoverView.initNeedle(false)
         bindView()
     }
@@ -46,7 +46,7 @@ class MusicCoverFragment : Fragment() {
      */
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
-        mCurrentPlay = GlobalMusicList.getCurrentPlay()
+        mCurrentPlay = GlobalMusicData.getCurrentPlay()
         bindView()
     }
 

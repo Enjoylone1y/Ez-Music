@@ -13,7 +13,7 @@ import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.event.*
 import com.ezreal.huanting.utils.Constant
-import com.ezreal.huanting.helper.GlobalMusicList
+import com.ezreal.huanting.helper.GlobalMusicData
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -114,7 +114,7 @@ class MusicPlayService : Service() {
      * 处理 “播放事件”
      */
     private fun dealPlayAction() {
-        val currentPlay = GlobalMusicList.getCurrentPlay() ?: return
+        val currentPlay = GlobalMusicData.getCurrentPlay() ?: return
         val path = currentPlay.dataPath!!
         playImp(path)
     }
@@ -153,12 +153,12 @@ class MusicPlayService : Service() {
             if (mPlayer.isPlaying) mPlayer.stop()
             EventBus.getDefault().post(PlayProcessChangeEvent(0))
             // 更新播放音乐
-            val currentIndex = GlobalMusicList.getCurrentIndex()
+            val currentIndex = GlobalMusicData.getCurrentIndex()
             var newIndex = 0
-            if (GlobalMusicList.getCurrentIndex() != GlobalMusicList.getListSize() - 1) {
+            if (GlobalMusicData.getCurrentIndex() != GlobalMusicData.getListSize() - 1) {
                 newIndex = currentIndex + 1
             }
-            GlobalMusicList.updatePlayIndex(newIndex)
+            GlobalMusicData.updateCurrentPlay(newIndex)
             // 执行播放逻辑
             dealPlayAction()
         } catch (e: Exception) {
@@ -175,12 +175,12 @@ class MusicPlayService : Service() {
             if (mPlayer.isPlaying) mPlayer.stop()
             EventBus.getDefault().post(PlayProcessChangeEvent(0))
             // 更新播放音乐
-            val currentIndex = GlobalMusicList.getCurrentIndex()
+            val currentIndex = GlobalMusicData.getCurrentIndex()
             var newIndex = currentIndex - 1
             if (currentIndex == 0) {
-                newIndex = GlobalMusicList.getListSize() - 1
+                newIndex = GlobalMusicData.getListSize() - 1
             }
-            GlobalMusicList.updatePlayIndex(newIndex)
+            GlobalMusicData.updateCurrentPlay(newIndex)
             // 执行播放逻辑
             dealPlayAction()
         } catch (e: Exception) {

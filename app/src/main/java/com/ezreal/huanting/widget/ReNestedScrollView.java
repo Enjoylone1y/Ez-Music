@@ -5,7 +5,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
 
 
-public class MyNestedScrollView extends NestedScrollView {
+public class ReNestedScrollView extends NestedScrollView {
 
     private ScrollInterface scrollInterface;
 
@@ -16,15 +16,15 @@ public class MyNestedScrollView extends NestedScrollView {
         void onScrollChange(int scrollX, int scrollY, int oldScrollX, int oldScrollY);
     }
 
-    public MyNestedScrollView(Context context) {
+    public ReNestedScrollView(Context context) {
         super(context);
     }
 
-    public MyNestedScrollView(Context context, AttributeSet attrs) {
+    public ReNestedScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MyNestedScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ReNestedScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

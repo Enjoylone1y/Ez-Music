@@ -10,10 +10,11 @@ import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.*
 import com.ezreal.huanting.fragment.MusicCoverFragment
 import com.ezreal.huanting.fragment.MusicLrcFragment
-import com.ezreal.huanting.helper.GlobalMusicList
+import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.ConvertUtils
-import com.ezreal.huanting.widget.NowPlayListWindow
+import com.ezreal.huanting.utils.PopupShowUtils
+import com.ezreal.huanting.widget.PlayListPopup
 import kotlinx.android.synthetic.main.activty_now_playing.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -38,7 +39,7 @@ class NowPlayingActivity : AppCompatActivity() {
     // 当前播放歌曲的引用
     private var mCurrentPlay: MusicBean? = null
     // 播放列表 view
-    private var mListWindow: NowPlayListWindow ?= null
+    private var mListPopup: PlayListPopup? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +52,7 @@ class NowPlayingActivity : AppCompatActivity() {
         showCover = true
 
         // 当前播放歌曲信息
-        mCurrentPlay = GlobalMusicList.getCurrentPlay()
+        mCurrentPlay = GlobalMusicData.getCurrentPlay()
         bindView()
 
         // 初始化监听事件
@@ -68,23 +69,23 @@ class NowPlayingActivity : AppCompatActivity() {
         mIvPlay.setOnClickListener {
             when (mCurrentPlay?.status) {
                 Constant.PLAY_STATUS_PLAYING -> {
-                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PAUSE,-1))
+                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PAUSE, -1))
                 }
                 Constant.PLAY_STATUS_PAUSE -> {
-                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.RESUME,-1))
+                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.RESUME, -1))
                 }
                 Constant.PLAY_STATUS_NORMAL -> {
-                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY,-1))
+                    EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY, -1))
                 }
             }
         }
         // 下一曲
         mIvNext.setOnClickListener {
-            EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.NEXT,-1))
+            EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.NEXT, -1))
         }
         // 上一曲
         mIvPre.setOnClickListener {
-            EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PRE,-1))
+            EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PRE, -1))
         }
         // 进度条拖动事件
         mProcessBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -95,7 +96,7 @@ class NowPlayingActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 isSeeking = false
                 // 拖动结束时，发送进度更新指令
-                EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.SEEK,mProcessBar.progress))
+                EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.SEEK, mProcessBar.progress))
             }
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -105,25 +106,26 @@ class NowPlayingActivity : AppCompatActivity() {
         })
         // 打开播放列表
         mIvList.setOnClickListener {
-            if (mListWindow == null){
-            mListWindow = NowPlayListWindow(this)
-            mListWindow?.isOutsideTouchable = true
-            mListWindow?.animationStyle = R.style.MyPopupStyle
-            mListWindow?.setOnDismissListener {
-                lightOn()
+            if (mListPopup == null) {
+                mListPopup = PlayListPopup(this)
+                mListPopup?.isOutsideTouchable = true
+                mListPopup?.animationStyle = R.style.MyPopupStyle
+                mListPopup?.setOnDismissListener {
+                    PopupShowUtils.lightOn(this)
+                }
             }
+            val location = IntArray(2)
+            it.getLocationOnScreen(location)
+            PopupShowUtils.lightOff(this)
+            mListPopup?.showAtLocation(it, Gravity.START or Gravity.BOTTOM,
+                    0, -location[1])
         }
-        mListWindow?.loadMusicList()
-        val location = IntArray(2)
-        it.getLocationOnScreen(location)
-        lightOff()
-        mListWindow?.showAtLocation(it, Gravity.START or Gravity.BOTTOM,
-                0, -location[1])
-        }
+
         // 返回前一页页面
         mIvBack.setOnClickListener {
             finish()
         }
+
         // 封面/歌词页面切换
         mCoverLrcView.setOnClickListener {
             if (showCover) {
@@ -136,40 +138,17 @@ class NowPlayingActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun lightOn() {
-        try {
-            val attributes = window?.attributes
-            attributes?.alpha = 1.0f
-            window?.attributes = attributes
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-    }
-
-    private fun lightOff() {
-        try {
-            val attributes = window?.attributes
-            attributes?.alpha = 0.6f
-            window?.attributes = attributes
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-    }
-
     /**
      * 监听歌曲切换事件
      */
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
-        mCurrentPlay = GlobalMusicList.getCurrentPlay()
+        mCurrentPlay = GlobalMusicData.getCurrentPlay()
         bindView()
     }
 
     /**
-     * 监听播放状态改变
+     * 监听播放状态改变事件
      */
     @Subscribe
     fun onPlayStatusChange(event: PlayStatusChangeEvent) {
@@ -182,13 +161,22 @@ class NowPlayingActivity : AppCompatActivity() {
     }
 
     /**
-     * 监听播放进度更新
+     * 监听播放进度更新事件
      */
     @Subscribe
     fun onProcessChange(event: PlayProcessChangeEvent) {
         if (isSeeking) return
         mProcessBar.progress = event.process
         mTvCurrentTime.text = ConvertUtils.getTimeWithProcess(event.process)
+    }
+
+    /**
+     * 监听播放列表更新事件
+     */
+    @Subscribe
+    fun onPlayListChange(event: PlayListChangeEvent) {
+        if (mListPopup == null) return
+        mListPopup?.loadPlayList()
     }
 
     /**
@@ -199,12 +187,12 @@ class NowPlayingActivity : AppCompatActivity() {
         mTvMusicTitle.text = mCurrentPlay?.musicTitle
         mTvArtist.text = mCurrentPlay?.artist
         mProcessBar.max = mCurrentPlay?.duration!!
-        mProcessBar.progress = GlobalMusicList.getProcess()
-        mTvCurrentTime.text = ConvertUtils.getTimeWithProcess(GlobalMusicList.getProcess())
+        mProcessBar.progress = GlobalMusicData.getProcess()
+        mTvCurrentTime.text = ConvertUtils.getTimeWithProcess(GlobalMusicData.getProcess())
         mTvTotalTime.text = ConvertUtils.getTimeWithProcess(mCurrentPlay?.duration!!)
-        if (mCurrentPlay?.status == Constant.PLAY_STATUS_PLAYING){
+        if (mCurrentPlay?.status == Constant.PLAY_STATUS_PLAYING) {
             mIvPlay.setImageResource(R.mipmap.ic_pause_main)
-        }else{
+        } else {
             mIvPlay.setImageResource(R.mipmap.song_play)
         }
     }

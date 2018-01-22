@@ -1,5 +1,6 @@
 package com.ezreal.huanting.fragment
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -28,6 +29,7 @@ import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicListBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
+import com.ezreal.huanting.utils.PopupShowUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -38,7 +40,7 @@ import org.greenrobot.eventbus.Subscribe
 class PersonalFragment : Fragment() {
 
     private val mMusicList = ArrayList<MusicListBean>()
-    private var mListAdapter: MusicListAdapter  ?= null
+    private var mListAdapter: MusicListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,11 +61,11 @@ class PersonalFragment : Fragment() {
 
     private fun initView() {
         mRvMyMusicList.layoutManager = LinearLayoutManager(context!!)
-        mListAdapter = MusicListAdapter(context!!,mMusicList)
-        mListAdapter?.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
+        mListAdapter = MusicListAdapter(context!!, mMusicList)
+        mListAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                val intent = Intent(context,MusicListActivity::class.java)
-                intent.putExtra("ListId",mMusicList[position].listId)
+                val intent = Intent(context, MusicListActivity::class.java)
+                intent.putExtra("ListId", mMusicList[position].listId)
                 context?.startActivity(intent)
             }
 
@@ -113,16 +115,17 @@ class PersonalFragment : Fragment() {
     }
 
     @Subscribe
-    fun onMusicListChange(event:MusicListChangeEvent){
+    fun onMusicListChange(event: MusicListChangeEvent) {
         val changeItem = mMusicList.first { it.listId == event.listId }
         val index = mMusicList.indexOf(changeItem)
-        MusicDataHelper.getMusicListById(event.listId,object :MusicDataHelper.OnListLoadListener{
+        MusicDataHelper.getMusicListById(event.listId, object : MusicDataHelper.OnListLoadListener {
             override fun loadSuccess(list: List<MusicListBean>) {
-                if (list.isNotEmpty()){
+                if (list.isNotEmpty()) {
                     mMusicList[index] = list[0]
                     mListAdapter?.notifyItemChanged(index)
                 }
             }
+
             override fun loadFailed(message: String) {}
         })
     }
@@ -135,17 +138,17 @@ class PersonalFragment : Fragment() {
         popupWindow.isOutsideTouchable = true
         popupWindow.animationStyle = R.style.MyPopupStyle
         popupWindow.setOnDismissListener {
-            lightOn()
+            PopupShowUtils.lightOn(context as Activity)
         }
         val location = IntArray(2)
         view.getLocationOnScreen(location)
         popupWindow.showAtLocation(view, Gravity.START or Gravity.BOTTOM,
                 0, -location[1])
-        lightOff()
+        PopupShowUtils.lightOff(context as Activity)
 
         rootView.findViewById<TextView>(R.id.mTvCreateList).setOnClickListener {
-            popupWindow.dismiss()
             showCreateListDialog()
+            popupWindow.dismiss()
         }
 
         rootView.findViewById<TextView>(R.id.mTvManagerList).setOnClickListener {
@@ -162,65 +165,46 @@ class PersonalFragment : Fragment() {
         dialog.addContentView(rootView, layoutParams)
         dialog.setCanceledOnTouchOutside(false)
         val et = rootView.findViewById<EditText>(R.id.mEtListTitle)
+        rootView.findViewById<TextView>(R.id.mTvConform).setOnClickListener {
+            if (TextUtils.isEmpty(et.text.toString())) {
+                FToastUtils.init().show("标题不能为空~~")
+            } else {
+                createMusicList(et.text.toString())
+            }
+            dialog.dismiss()
+        }
         rootView.findViewById<TextView>(R.id.mTvCancel).setOnClickListener {
             dialog.dismiss()
         }
-        rootView.findViewById<TextView>(R.id.mTvConform).setOnClickListener {
-            val title = et.text.toString()
-            if (TextUtils.isEmpty(title)) {
-                FToastUtils.init().show("标题不能为空~~")
-            } else {
-                MusicDataHelper.createMusicList(title, object :
-                        MusicDataHelper.OnListCreateListener {
-                    override fun createdResult(code: Int, listId: Long, message: String) {
-                        if (code == 0) {
-                            FToastUtils.init().show("创建成功~~")
-                            MusicDataHelper.getMusicListById(listId, object :
-                                    MusicDataHelper.OnListLoadListener {
-                                override fun loadSuccess(list: List<MusicListBean>) {
-                                     if (list.isNotEmpty()){
-                                         mMusicList.add(list[0])
-                                         mListAdapter?.notifyDataSetChanged()
-                                         mTvMyListNum.text = mMusicList.size.toString()
-                                     }
-                                }
+        dialog.show()
+    }
 
-                                override fun loadFailed(message: String) {
-                                    FToastUtils.init().show("读取新歌单失败：" + message)
-                                }
-                            })
-                        } else {
-                            FToastUtils.init().show("创建失败：" + message)
+    private fun createMusicList(title: String) {
+        MusicDataHelper.createMusicList(title, object : MusicDataHelper.OnListCreateListener {
+            override fun createdResult(code: Int, listId: Long, message: String) {
+                if (code != 0) {
+                    FToastUtils.init().show("创建失败:" + message)
+                    return
+                }
+
+                FToastUtils.init().show("创建成功~~")
+
+                MusicDataHelper.getMusicListById(listId, object : MusicDataHelper.OnListLoadListener {
+                    override fun loadSuccess(list: List<MusicListBean>) {
+                        if (list.isNotEmpty()) {
+                            mMusicList.add(list[0])
+                            mListAdapter?.notifyDataSetChanged()
+                            mTvMyListNum.text = mMusicList.size.toString()
                         }
                     }
+
+                    override fun loadFailed(message: String) {
+                        FToastUtils.init().show("读取新歌单失败：" + message)
+                    }
                 })
-                dialog.dismiss()
             }
-        }
-        dialog.show()
 
-    }
-
-    private fun lightOn() {
-        try {
-            val attributes = activity?.window?.attributes
-            attributes?.alpha = 1.0f
-            activity?.window?.attributes = attributes
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-    }
-
-    private fun lightOff() {
-        try {
-            val attributes = activity?.window?.attributes
-            attributes?.alpha = 0.6f
-            activity?.window?.attributes = attributes
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
+        })
     }
 
     override fun onDestroy() {
