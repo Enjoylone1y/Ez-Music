@@ -77,7 +77,7 @@ class MusicPlayService : Service() {
                 }
 
                 Constant.PLAY_MODE_RANDOM -> {
-                    val newIndex = Math.ceil(Math.random() * GlobalMusicData.getListSize())
+                    val newIndex = Math.round(Math.random() * GlobalMusicData.getListSize())
                     GlobalMusicData.updateCurrentPlay(newIndex.toInt())
                     dealPlayAction()
                 }

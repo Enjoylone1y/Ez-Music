@@ -47,11 +47,13 @@
         android:layout_marginTop="5dp"/>
 
     <ImageView
+        android:id="@+id/mIvListMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/item_menu_p"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0.1dp"

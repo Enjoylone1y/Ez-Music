@@ -30,6 +30,7 @@ import com.ezreal.huanting.bean.MusicListBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.utils.PopupShowUtils
+import com.ezreal.huanting.widget.ListMenuPopup
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -40,7 +41,7 @@ import org.greenrobot.eventbus.Subscribe
 class PersonalFragment : Fragment() {
 
     private val mMusicList = ArrayList<MusicListBean>()
-    private var mListAdapter: MusicListAdapter? = null
+    private var mListAdapter: MusicListAdapter ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +99,7 @@ class PersonalFragment : Fragment() {
     private fun loadMyMusicList() {
         MusicDataHelper.loadMusicListAll(object : MusicDataHelper.OnListLoadListener {
             override fun loadSuccess(list: List<MusicListBean>) {
+                mMusicList.clear()
                 mMusicList.addAll(list)
                 mListAdapter?.notifyDataSetChanged()
                 mTvMyListNum.text = mMusicList.size.toString()
@@ -116,6 +118,12 @@ class PersonalFragment : Fragment() {
 
     @Subscribe
     fun onMusicListChange(event: MusicListChangeEvent) {
+        // -1 代表歌单被删除
+        if (event.listId == -1L){
+            loadMyMusicList()
+            return
+        }
+        // 否则是歌单信息更新
         val changeItem = mMusicList.first { it.listId == event.listId }
         val index = mMusicList.indexOf(changeItem)
         MusicDataHelper.getMusicListById(event.listId, object : MusicDataHelper.OnListLoadListener {
@@ -125,7 +133,6 @@ class PersonalFragment : Fragment() {
                     mListAdapter?.notifyItemChanged(index)
                 }
             }
-
             override fun loadFailed(message: String) {}
         })
     }

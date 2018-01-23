@@ -138,6 +138,15 @@ object MusicDataHelper {
         }
     }
 
+    fun deleteMusicList(listId: Long){
+        val instance = Realm.getDefaultInstance()
+        instance.beginTransaction()
+        instance.where(MusicListBean::class.java)
+                .equalTo("listId",listId)
+                .findFirst().deleteFromRealm()
+        instance.commitTransaction()
+    }
+
     fun loadMusicListAll(listener: OnListLoadListener?) {
         try {
             val realm = Realm.getDefaultInstance()
