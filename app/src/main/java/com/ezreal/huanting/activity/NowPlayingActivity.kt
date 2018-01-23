@@ -1,6 +1,9 @@
 package com.ezreal.huanting.activity
 
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
@@ -15,9 +18,11 @@ import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.ConvertUtils
 import com.ezreal.huanting.utils.PopupShowUtils
 import com.ezreal.huanting.widget.PlayListPopup
+import com.zhouwei.blurlibrary.EasyBlur
 import kotlinx.android.synthetic.main.activty_now_playing.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+
 
 /**
  * 音乐播放页
@@ -195,6 +200,20 @@ class NowPlayingActivity : AppCompatActivity() {
         } else {
             mIvPlay.setImageResource(R.mipmap.song_play)
         }
+
+        val uri = mCurrentPlay?.albumUri
+        val srcBitmap = if (uri == null) {
+            BitmapFactory.decodeResource(resources, R.drawable.default_play_bg)
+        }else{
+            MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(uri))
+        }
+        val blurBitmap = EasyBlur.with(this)
+                .bitmap(srcBitmap) //要模糊的图片
+                .radius(10)//模糊半径
+                .scale(8)//指定模糊前缩小的倍数
+                .blur()
+        mIvBackGround.setImageBitmap(blurBitmap)
+
     }
 
     /**

@@ -21,7 +21,7 @@ object GlobalMusicData {
 
     private var mCurrentListId = -1L
     private var mCurrentPlayList = ArrayList<MusicBean>()
-    private var mCurrentPlayIndex = -1 // 默认-1，无歌曲播放
+    private var mCurrentPlayIndex = -1
     private var mCurrentPlay: MusicBean? = null
     private var mCurrentProcess = 0
 
@@ -55,7 +55,7 @@ object GlobalMusicData {
         mCurrentListId = listId
         mCurrentPlayList.clear()
         mCurrentPlayList.addAll(list)
-
+        list.forEach { it.playFromList = listId }
         // 推送列表更新事件
         EventBus.getDefault().post(PlayListChangeEvent(mCurrentListId))
     }
@@ -64,6 +64,7 @@ object GlobalMusicData {
      * 将歌曲添加到播放列表的下一首播放位置
      */
     fun addMusic2NextPlay(music: MusicBean, listId: Long) {
+        music.playFromList = listId
         when (mCurrentListId) {
             -1L -> {
                 music.status = Constant.PLAY_STATUS_PLAYING

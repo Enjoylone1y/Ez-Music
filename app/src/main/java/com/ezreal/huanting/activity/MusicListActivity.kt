@@ -25,6 +25,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
+import com.ezreal.huanting.event.PlayMusicChangeEvent
+import com.ezreal.huanting.helper.GlobalMusicData
+import com.ezreal.huanting.utils.Constant
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 
 /**
@@ -47,6 +52,8 @@ class MusicListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_music_list)
         initActionBar()
         getMusicList()
+
+        EventBus.getDefault().register(this)
     }
 
     private fun getMusicList() {
@@ -60,7 +67,6 @@ class MusicListActivity : AppCompatActivity() {
                     mList = list[0]
                     val musicList = mList?.musicList
                     if (musicList != null) {
-                        musicList.forEach { it?.playFromList = listId }
                         mMusicList.addAll(musicList)
                     }
                     initHeadView()
@@ -178,6 +184,29 @@ class MusicListActivity : AppCompatActivity() {
                     .into(listCover)
         }
         return head
+    }
+
+    @Subscribe
+    fun onPlayMusicChange(event:PlayMusicChangeEvent){
+        // 恢复前一首播放状态
+        val prePlay = mMusicList.firstOrNull { it.status == Constant.PLAY_STATUS_PLAYING }
+        if (prePlay != null){
+            val preIndex = mMusicList.indexOf(prePlay)
+            prePlay.status = Constant.PLAY_STATUS_NORMAL
+            mAdapter?.notifyItemChanged(preIndex + 2)
+        }
+        // 更新新播放歌曲状态
+        val currentPlay = GlobalMusicData.getCurrentPlay()
+        if (currentPlay != null && currentPlay.playFromList == mList?.listId){
+            val currentIndex = mMusicList.indexOf(currentPlay)
+            mMusicList[currentIndex].status = Constant.PLAY_STATUS_PLAYING
+            mAdapter?.notifyItemChanged(currentIndex + 2)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 }
 

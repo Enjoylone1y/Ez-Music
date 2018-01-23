@@ -13,6 +13,10 @@ android {
         versionCode rootProject.versionCode
         versionName rootProject.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        //使用renderscript 兼容包
+        renderscriptTargetApi 25
+        renderscriptSupportModeEnabled true
     }
     buildTypes {
         release {
@@ -45,8 +49,6 @@ dependencies {
     compile 'cn.hotapk:fastandrutils:1.0.0'
     // 图片加载库
     compile 'com.github.bumptech.glide:glide:3.8.0'
-    // 图片高斯模糊
-    compile 'jp.wasabeef:glide-transformations:2.0.1'
     // recycler-view  item分割线
     compile 'com.github.fondesa:recycler-view-divider:1.4.0'
     // 事件总线
@@ -55,6 +57,8 @@ dependencies {
     compile project(':lrcview')
     // 动画支持库
     compile 'com.nineoldandroids:library:2.4.0'
-
+    // 高斯模糊
+    compile 'com.github.pinguo-zhouwei:EasyBlur:v1.0.0'
+    // 可添加head的 recyclerview
     compile 'com.jcodecraeer:xrecyclerview:1.5.7'
 }

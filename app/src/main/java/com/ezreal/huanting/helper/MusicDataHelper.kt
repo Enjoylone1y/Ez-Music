@@ -66,7 +66,6 @@ object MusicDataHelper {
         val realm = Realm.getDefaultInstance()
         try {
             count = realm.where(MusicRecentPlay::class.java).count().toInt()
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
