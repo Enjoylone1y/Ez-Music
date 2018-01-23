@@ -27,6 +27,7 @@ import org.greenrobot.eventbus.Subscribe
  */
 
 class MusicPlayService : Service() {
+    private var havePlayStop = false
     private val mPlayer: MediaPlayer = MediaPlayer()
     private var mAudioManager: AudioManager? = null
     private var mTimeCountThread: TimeCountThread? = null
@@ -55,6 +56,7 @@ class MusicPlayService : Service() {
             // 开始播放
             mp.start()
             // 启动播放时间记录线程
+            havePlayStop = false
             mTimeCountThread = TimeCountThread()
             mTimeCountThread?.start()
             // 推送播放状态更新事件
@@ -75,7 +77,9 @@ class MusicPlayService : Service() {
                 }
 
                 Constant.PLAY_MODE_RANDOM -> {
-                    // TODO PlayRandom
+                    val newIndex = Math.ceil(Math.random() * GlobalMusicData.getListSize())
+                    GlobalMusicData.updateCurrentPlay(newIndex.toInt())
+                    dealPlayAction()
                 }
             }
 
@@ -107,6 +111,7 @@ class MusicPlayService : Service() {
             MusicPlayAction.PAUSE -> dealPauseAction()
             MusicPlayAction.RESUME -> dealResumeAction()
             MusicPlayAction.SEEK -> dealSeekAction(event.seekTo)
+            MusicPlayAction.STOP -> dealStopAction()
         }
     }
 
@@ -201,6 +206,21 @@ class MusicPlayService : Service() {
     }
 
     /**
+     * 处理 停止播放 事件
+     */
+    private fun dealStopAction(){
+        try {
+            if (mPlayer.isPlaying){
+                mPlayer.stop()
+                havePlayStop = true
+            }
+            mPlayer.reset()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
      * 播放音乐具体实现
      */
     private fun playImp(path: String) {
@@ -227,12 +247,12 @@ class MusicPlayService : Service() {
     inner class TimeCountThread : Thread() {
         override fun run() {
             super.run()
-            do {
+            while (!havePlayStop){
                 Thread.sleep(1000)
                 if (mPlayer.isPlaying) {
                     mHandler.sendEmptyMessage(mUpdateProcessMsg)
                 }
-            } while (!isInterrupted)
+            }
         }
     }
 

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
 import android.widget.SeekBar
+import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import com.ezreal.huanting.R
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.*
@@ -30,6 +31,12 @@ import org.greenrobot.eventbus.Subscribe
  */
 
 class NowPlayingActivity : AppCompatActivity() {
+
+    private val mPlayMode = listOf(Constant.PLAY_MODE_LIST_RECYCLE,
+            Constant.PLAY_MODE_SINGLE_RECYCLE, Constant.PLAY_MODE_RANDOM)
+    private val mPlayModeIcon = listOf(R.mipmap.list_recycle_g,
+            R.mipmap.single_recycle_g, R.mipmap.random_play_g)
+    private var mCurrentModeIndex = 0
 
     // 专辑封面 Fragment
     private val mCoverFragment by lazy { MusicCoverFragment() }
@@ -58,8 +65,15 @@ class NowPlayingActivity : AppCompatActivity() {
 
         // 当前播放歌曲信息
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
-        bindView()
+        if (mCurrentPlay == null) finish()
 
+        val mode = FSharedPrefsUtils.getInt(Constant.OPTION_TABLE,
+                Constant.OPTION_PLAY_MODE, Constant.PLAY_MODE_LIST_RECYCLE)
+        mCurrentModeIndex = mPlayMode.indexOf(mode)
+
+        mIvPlayMode.setImageResource(mPlayModeIcon[mCurrentModeIndex])
+
+        bindView()
         // 初始化监听事件
         initListener()
         EventBus.getDefault().register(this)
@@ -141,6 +155,17 @@ class NowPlayingActivity : AppCompatActivity() {
                 switchFragment(mCoverFragment)
             }
         }
+
+        mIvPlayMode.setOnClickListener {
+            mCurrentModeIndex = (mCurrentModeIndex + 1) % mPlayMode.size
+            mIvPlayMode.setImageResource(mPlayModeIcon[mCurrentModeIndex])
+            FSharedPrefsUtils.putInt(Constant.OPTION_TABLE,
+                    Constant.OPTION_PLAY_MODE,mPlayMode[mCurrentModeIndex])
+            EventBus.getDefault().post(PlayModeChangeEvent(mPlayMode[mCurrentModeIndex]))
+
+            if (mListPopup == null) return@setOnClickListener
+            mListPopup?.updatePlayModeByEvent(mPlayMode[mCurrentModeIndex])
+        }
     }
 
     /**
@@ -149,6 +174,10 @@ class NowPlayingActivity : AppCompatActivity() {
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
+        if (mCurrentPlay == null){
+            finish()
+            return
+        }
         bindView()
     }
 
@@ -185,10 +214,23 @@ class NowPlayingActivity : AppCompatActivity() {
     }
 
     /**
+     * 监听播放模式更新事件
+     */
+    @Subscribe
+    fun updatePlayModeByEvent(event: PlayModeChangeEvent){
+        val index = mPlayMode.indexOf(event.mode)
+        if (index == mCurrentModeIndex) return
+        mCurrentModeIndex = mPlayMode.indexOf(event.mode)
+        mIvPlayMode?.setImageResource(mPlayModeIcon[mCurrentModeIndex])
+
+        if (mListPopup == null) return
+        mListPopup?.updatePlayModeByEvent(event.mode)
+    }
+
+    /**
      * 绑定当前播放歌曲数据，更新界面
      */
     private fun bindView() {
-        if (mCurrentPlay == null) return
         mTvMusicTitle.text = mCurrentPlay?.musicTitle
         mTvArtist.text = mCurrentPlay?.artist
         mProcessBar.max = mCurrentPlay?.duration!!

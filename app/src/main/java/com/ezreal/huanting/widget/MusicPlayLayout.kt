@@ -17,6 +17,7 @@ import com.ezreal.huanting.event.*
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.PopupShowUtils
+import kotlinx.android.synthetic.main.activty_now_playing.*
 import kotlinx.android.synthetic.main.layout_play_music.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -118,6 +119,15 @@ class MusicPlayLayout : RelativeLayout {
     fun onPlayListChange(event: PlayListChangeEvent) {
         if (mListPopup == null) return
         mListPopup?.loadPlayList()
+    }
+
+    /**
+     * 监听播放模式更新事件
+     */
+    @Subscribe
+    fun updatePlayModeByEvent(event: PlayModeChangeEvent){
+        if (mListPopup == null) return
+        mListPopup?.updatePlayModeByEvent(event.mode)
     }
 
 

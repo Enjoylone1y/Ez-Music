@@ -77,7 +77,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
     }
 
     fun checkPlaySong(musicPosition: Int, viewPosition: Int) {
-        // 如果当前播放列表不是本地音乐列表，更新播放列表，并切换播放歌曲
+
         if (GlobalMusicData.getListId() != listId) {
             // 恢复旧播放列表歌曲状态
             if (!GlobalMusicData.getNowPlayingList().isEmpty()
@@ -90,7 +90,6 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
             return
         }
 
-        // 当前播放列表是本地音乐列表，若点击了当前播放的 item 打开音乐播放页，否则切换歌曲
         if (GlobalMusicData.getCurrentIndex() == musicPosition) {
             mContext.startActivity(Intent(mContext, NowPlayingActivity::class.java))
             return

@@ -103,6 +103,7 @@ object GlobalMusicData {
      * 更新当前播放歌曲，并推送播放歌曲发生变化事件
      */
     fun updateCurrentPlay(newIndex: Int) {
+
         mCurrentPlayIndex = newIndex
         mCurrentPlay = mCurrentPlayList[mCurrentPlayIndex]
         mCurrentProcess = 0
@@ -117,6 +118,30 @@ object GlobalMusicData {
 
         // 推送播放歌曲改变事件
         EventBus.getDefault().post(PlayMusicChangeEvent(newIndex))
+    }
+
+    /**
+     * 从播放列表中删除指定歌曲
+     */
+    fun deleteMusicFromList(music: MusicBean){
+        val index = mCurrentPlayList.indexOf(music)
+        mCurrentPlayList.remove(music)
+        if (index < mCurrentPlayIndex){
+            mCurrentPlayIndex -= 1
+        }
+        EventBus.getDefault().post(PlayListChangeEvent(mCurrentListId))
+    }
+
+    /**
+     *  清空播放列表，清空当前播放
+     */
+    fun clearPlayList(){
+        mCurrentPlayList.clear()
+        mCurrentPlay = null
+        mCurrentPlayIndex = -1
+        mCurrentProcess = 0
+        EventBus.getDefault().post(PlayListChangeEvent(mCurrentListId))
+        EventBus.getDefault().post(PlayMusicChangeEvent(-1))
     }
 
     /**

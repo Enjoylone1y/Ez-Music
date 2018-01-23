@@ -31,4 +31,9 @@ data class PlayProcessChangeEvent(val process:Int)
  */
 data class MusicListChangeEvent(val listId:Long)
 
+/**
+ * 播放模式变化事件
+ */
+data class PlayModeChangeEvent(val mode:Int)
+
 
