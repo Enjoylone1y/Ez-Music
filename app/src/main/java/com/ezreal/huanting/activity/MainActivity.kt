@@ -7,8 +7,10 @@ import android.support.v4.app.Fragment
 import android.view.KeyEvent
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.R
+import com.ezreal.huanting.http.MusicRearchResult
 import com.ezreal.huanting.fragment.PersonalFragment
 import com.ezreal.huanting.fragment.OnlineFragment
+import com.ezreal.huanting.http.HttpRequest
 import com.ezreal.huanting.widget.MainMenuLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_main_title.*
@@ -47,6 +49,21 @@ class MainActivity : AppCompatActivity(){
         }
         mIvSearch.setOnClickListener{
             // TODO 搜索本地音乐
+            HttpRequest.searchMusicByKey("演员 薛之谦",object : HttpRequest.OnMusicSearchListener {
+                override fun onResult(code: Int, result: MusicRearchResult.SongBean?, message: String?) {
+
+                }
+
+            })
+
+            HttpRequest.searchLrcById("242078437",object : HttpRequest.OnLrcSearchListener{
+                override fun onResult(code: Int, lrcString: String?, message: String?) {
+                    if (code == 0){
+
+                        val lrc = lrcString
+                    }
+                }
+            })
         }
 
         // 先显示本地音乐列表

@@ -56,18 +56,6 @@ class MusicLrcFragment :Fragment() {
         }
     }
 
-    /**
-     * 监听播放状态改变
-     */
-    @Subscribe
-    fun onPlayStatusChange(event: PlayStatusChangeEvent) {
-        mCurrentPlay?.status = event.status
-        if (event.status == Constant.PLAY_STATUS_PLAYING) {
-
-        } else {
-
-        }
-    }
 
     /**
      * 监听播放进度更新,此方法将会由子线程发起

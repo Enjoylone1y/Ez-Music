@@ -39,12 +39,12 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    // rxJava + rxAndroid + Retrofit 异步和网络访问库
+    // rxJava + rxAndroid + okgo 异步和网络访问库
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.1'
+    compile 'com.lzy.net:okgo:3.0.4'
+    // Json Gson
+    compile 'com.google.code.gson:gson:2.8.2'
     // 公用util库
     compile 'cn.hotapk:fastandrutils:1.0.0'
     // 图片加载库
@@ -53,8 +53,6 @@ dependencies {
     compile 'com.github.fondesa:recycler-view-divider:1.4.0'
     // 事件总线
     compile 'org.greenrobot:eventbus:3.1.1'
-    // 歌词 View
-    compile project(':lrcview')
     // 动画支持库
     compile 'com.nineoldandroids:library:2.4.0'
     // 高斯模糊

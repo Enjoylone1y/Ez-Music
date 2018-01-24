@@ -7,4 +7,10 @@
     <color name="color_gray">#bdbdbd</color>
     <color name="color_light_black">#5a5a5a</color>
     <color name="color_light_gray">#e6e6e6</color>
+
+    <color name="lrc_normal_text_color">#9E9E9E</color>
+    <color name="lrc_current_text_color">#FFFFFF</color>
+    <color name="lrc_timeline_text_color">#809E9E9E</color>
+    <color name="lrc_timeline_color">#809E9E9E</color>
+    <color name="lrc_time_text_color">#809E9E9E</color>
 </resources>
