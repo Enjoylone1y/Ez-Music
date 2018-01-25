@@ -11,7 +11,7 @@
         android:layout_height="1dp"
         android:background="#14FFFFFF"/>
 
-    <com.ezreal.huanting.widget.LrcView
+    <com.ezreal.huanting.lrc.LrcView
         android:layout_below="@+id/view"
         android:id="@+id/mLrcView"
         android:layout_width="match_parent"

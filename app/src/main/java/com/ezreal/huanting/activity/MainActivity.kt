@@ -49,21 +49,6 @@ class MainActivity : AppCompatActivity(){
         }
         mIvSearch.setOnClickListener{
             // TODO 搜索本地音乐
-            HttpRequest.searchMusicByKey("演员 薛之谦",object : HttpRequest.OnMusicSearchListener {
-                override fun onResult(code: Int, result: MusicRearchResult.SongBean?, message: String?) {
-
-                }
-
-            })
-
-            HttpRequest.searchLrcById("242078437",object : HttpRequest.OnLrcSearchListener{
-                override fun onResult(code: Int, lrcString: String?, message: String?) {
-                    if (code == 0){
-
-                        val lrc = lrcString
-                    }
-                }
-            })
         }
 
         // 先显示本地音乐列表
