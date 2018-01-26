@@ -79,8 +79,15 @@ object MusicDataHelper {
             val findFirst = realm.where(RecentPlayBean::class.java)
                     .equalTo("musicId", recentPlayBean.musicId)
                     .findFirst()
-            findFirst?.deleteFromRealm()
-            realm.insert(recentPlayBean)
+            if (findFirst != null) {
+                findFirst.lastPlayTime = System.currentTimeMillis()
+                realm.where(MusicBean::class.java)
+                        .equalTo("musicId", findFirst.musicId)
+                        .findFirst().lastPlayTime = findFirst.lastPlayTime
+            } else {
+                recentPlayBean.lastPlayTime = System.currentTimeMillis()
+                realm.insert(recentPlayBean)
+            }
             val count = realm.where(RecentPlayBean::class.java).count()
             if (count > 100) {
                 realm.where(RecentPlayBean::class.java).findFirst().deleteFromRealm()
@@ -130,7 +137,7 @@ object MusicDataHelper {
             realm.beginTransaction()
             realm.insert(listBean)
             realm.commitTransaction()
-            listener?.createdResult(0, listBean.listId!!, "Create Success")
+            listener?.createdResult(0, listBean.listId, "Create Success")
             realm.close()
         } catch (e: Exception) {
             e.printStackTrace()

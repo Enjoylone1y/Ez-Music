@@ -17,7 +17,7 @@ import com.ezreal.huanting.utils.Constant
 import kotlinx.android.synthetic.main.activity_recnet_play.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import java.util.ArrayList
+import java.util.*
 
 /**
  * 最近播放列表
@@ -67,6 +67,7 @@ class RecentPlayActivity : AppCompatActivity() {
         MusicDataHelper.loadRecentPlayFromDB(object : MusicDataHelper.OnMusicLoadListener {
             override fun loadSuccess(musicList: List<MusicBean>) {
                 mMusicList.addAll(musicList)
+                mMusicList.sortBy { it.lastPlayTime }
                 mAdapter = MusicAdapter(this@RecentPlayActivity,
                         Constant.RECENT_MUSIC_LIST_ID ,mMusicList)
                 mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{

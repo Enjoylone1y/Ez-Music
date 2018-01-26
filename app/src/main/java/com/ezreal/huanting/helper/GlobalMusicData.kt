@@ -2,7 +2,10 @@ package com.ezreal.huanting.helper
 
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.bean.RecentPlayBean
-import com.ezreal.huanting.event.*
+import com.ezreal.huanting.event.PlayListChangeEvent
+import com.ezreal.huanting.event.PlayMusicChangeEvent
+import com.ezreal.huanting.event.PlayProcessChangeEvent
+import com.ezreal.huanting.event.PlayStatusChangeEvent
 import com.ezreal.huanting.utils.Constant
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -109,7 +112,7 @@ object GlobalMusicData {
         mCurrentProcess = 0
 
         val musicRecentPlay = RecentPlayBean()
-        musicRecentPlay.musicId = mCurrentPlay?.musicId
+        musicRecentPlay.musicId = mCurrentPlay?.musicId!!
         musicRecentPlay.lastPlayTime = System.currentTimeMillis()
 
         if (mCurrentListId != Constant.RECENT_MUSIC_LIST_ID) {

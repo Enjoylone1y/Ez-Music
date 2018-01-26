@@ -6,7 +6,7 @@ EZ Music 是以 网易云音乐 为模板，使用 Kotlin 语言打造的一款 
 通过类似广播的方式进行页面的联动更新，降低了各页面的耦合度。
 
 项目数据库框架：realm   
-网络访问和异步框架：RxJava + RxAndroid + Retrofit
+网络访问和异步框架：RxJava + RxAndroid + [OKGo](https://github.com/jeasonlzy/okhttp-OkGo)
 
 项目中歌曲播放模块 黑胶专辑和歌词控件，引用了 Github 上开源的 [PonyMusic](https://github.com/wangchenyan/PonyMusic)，
 云感谢一波~~

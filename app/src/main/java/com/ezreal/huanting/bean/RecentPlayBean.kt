@@ -9,7 +9,7 @@ import io.realm.annotations.PrimaryKey
 
 open class RecentPlayBean :RealmObject(){
     @PrimaryKey
-    var musicId:Long ?= null
+    var musicId: Long = -1L
 
-    var lastPlayTime:Long ?= null
+    var lastPlayTime: Long = 0
 }

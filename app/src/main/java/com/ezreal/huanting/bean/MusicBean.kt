@@ -1,6 +1,5 @@
 package com.ezreal.huanting.bean
 
-import android.net.Uri
 import com.ezreal.huanting.utils.Constant
 import io.realm.RealmObject
 import io.realm.annotations.Ignore
