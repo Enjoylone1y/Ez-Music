@@ -25,6 +25,10 @@ data class PlayStatusChangeEvent(val status: Int)
  */
 data class PlayProcessChangeEvent(val process:Int)
 
+/**
+ * 播放缓冲更新事件
+ */
+data class PlayBufferUpdateEvent(val percent: Int)
 
 /**
  * 歌单变化事件

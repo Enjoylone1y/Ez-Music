@@ -3,7 +3,7 @@ package com.ezreal.huanting.helper
 import android.text.TextUtils
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.http.HttpRequest
-import com.ezreal.huanting.http.MusicRearchResult
+import com.ezreal.huanting.http.KeywordSearchResult
 import com.ezreal.huanting.utils.Constant
 import java.io.File
 import java.io.FileWriter
@@ -16,10 +16,10 @@ object LrcLoadHelper {
 
     fun loadLrcFile(musicBean: MusicBean, listener: OnLoadLrcListener) {
         try {
-            val name =  if (musicBean.musicTitle?.length!! < 50)  musicBean.musicTitle
-                else  musicBean.musicTitle?.substring(0, 50)
-            val artist = if (musicBean.artist?.length!! < 50)  musicBean.artist
-                 else  musicBean.artist?.substring(0, 50)
+            val name =  if (musicBean.musicTitle.length < 50)  musicBean.musicTitle
+                else  musicBean.musicTitle.substring(0, 50)
+            val artist = if (musicBean.artistName.length < 50)  musicBean.artistName
+                 else  musicBean.artistName.substring(0, 50)
             val path = Constant.APP_LRC_PATH + File.separator + name + "_" + artist + ".lrc"
             if (File(path).exists()) {
                 listener.onSuccess(File(path))
@@ -27,10 +27,10 @@ object LrcLoadHelper {
             }
 
             listener.onLoadOnline()
-            val keyWord = musicBean.musicTitle + " " + musicBean.artist
+            val keyWord = musicBean.musicTitle + " " + musicBean.artistName
             // 搜索歌曲 ID
-            HttpRequest.searchMusicByKey(keyWord, object : HttpRequest.OnMusicSearchListener {
-                override fun onResult(code: Int, result: MusicRearchResult.SongBean?, message: String?) {
+            HttpRequest.searchMusicByKey(keyWord, object : HttpRequest.OnKeywordSearchListener {
+                override fun onResult(code: Int, result: KeywordSearchResult.SongBean?, message: String?) {
                     if (code != 0 || TextUtils.isEmpty(result?.songid)) {
                         listener.onFailed()
                         return

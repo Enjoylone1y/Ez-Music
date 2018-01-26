@@ -1,37 +1,58 @@
 package com.ezreal.huanting.bean
+
+import android.net.Uri
 import com.ezreal.huanting.utils.Constant
 import io.realm.RealmObject
 import io.realm.annotations.Ignore
 import io.realm.annotations.PrimaryKey
 
 /**
- * 单曲 bean
- * Created by wudeng on 2017/12/29.
+ * 歌曲 bean 基类
+ * Created by wudeng on 2018/1/26.
  */
+open class MusicBean :RealmObject() {
 
-open class MusicBean : RealmObject() {
     @PrimaryKey
-    var musicId: Long? = null
+    var musicId:Long = 0
 
-    var musicTitle: String? = null
-    var artist: String? = null
-    var dataPath:String ?= null
-    var album: String? = null
-    var albumId: Long? = null
-    var albumUri: String? = null
-    var size: Long? = null
-    var lrcPath:String ?= null
-    var duration: Int? = null
+    lateinit var musicTitle:String
+    lateinit var artistName:String
+    lateinit var albumName:String
 
     /**
-     * 歌曲播放状态，辅助变量，不保存入数据库中
+     * 是否为在线音乐
      */
-    @Ignore
-    var status:Int =  Constant.PLAY_STATUS_NORMAL
+    var isOnline:Boolean = false
+
+    var artistId:Long = 0
+    var albumId:Long = 0
+    var duration:Long = 0
+    var fileSize:Long = 0
+
+    var playCount:Long = 0
+    var lastPlayTime:Long = 0
 
     /**
-     * 当歌曲被手动添加到播放列表时，记录歌曲来源的歌单 ID，辅助变量，不保存入数据库中
+     * 本地音乐独有
+     */
+    lateinit var filePath:String
+    lateinit var lrcPath:String
+    lateinit var albumUri:String
+
+    /**
+     * 在线音乐独有
+     */
+    lateinit var bigPic:String
+    lateinit var tingUid:String
+    lateinit var lrcLink:String
+    lateinit var fileLink:String
+
+    /**
+     * 播放辅助变量，不会存入数据库
      */
     @Ignore
-    var playFromList:Long  = -1L
+    var playStatus:Int = Constant.PLAY_STATUS_NORMAL
+
+    @Ignore
+    var playFromListId:Long = 0
 }

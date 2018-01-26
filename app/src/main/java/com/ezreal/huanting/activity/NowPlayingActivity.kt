@@ -86,7 +86,7 @@ class NowPlayingActivity : AppCompatActivity() {
     private fun initListener() {
         // 播放/暂停
         mIvPlay.setOnClickListener {
-            when (mCurrentPlay?.status) {
+            when (mCurrentPlay?.playStatus) {
                 Constant.PLAY_STATUS_PLAYING -> {
                     EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PAUSE, -1))
                 }
@@ -160,7 +160,7 @@ class NowPlayingActivity : AppCompatActivity() {
             mCurrentModeIndex = (mCurrentModeIndex + 1) % mPlayMode.size
             mIvPlayMode.setImageResource(mPlayModeIcon[mCurrentModeIndex])
             FSharedPrefsUtils.putInt(Constant.OPTION_TABLE,
-                    Constant.OPTION_PLAY_MODE,mPlayMode[mCurrentModeIndex])
+                    Constant.OPTION_PLAY_MODE, mPlayMode[mCurrentModeIndex])
             EventBus.getDefault().post(PlayModeChangeEvent(mPlayMode[mCurrentModeIndex]))
 
             if (mListPopup == null) return@setOnClickListener
@@ -174,7 +174,7 @@ class NowPlayingActivity : AppCompatActivity() {
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
-        if (mCurrentPlay == null){
+        if (mCurrentPlay == null) {
             finish()
             return
         }
@@ -186,8 +186,8 @@ class NowPlayingActivity : AppCompatActivity() {
      */
     @Subscribe
     fun onPlayStatusChange(event: PlayStatusChangeEvent) {
-        mCurrentPlay?.status = event.status
-        if (mCurrentPlay?.status == Constant.PLAY_STATUS_PLAYING) {
+        mCurrentPlay?.playStatus = event.status
+        if (mCurrentPlay?.playStatus == Constant.PLAY_STATUS_PLAYING) {
             mIvPlay.setImageResource(R.mipmap.ic_pause_main)
         } else {
             mIvPlay.setImageResource(R.mipmap.song_play)
@@ -217,7 +217,7 @@ class NowPlayingActivity : AppCompatActivity() {
      * 监听播放模式更新事件
      */
     @Subscribe
-    fun updatePlayModeByEvent(event: PlayModeChangeEvent){
+    fun updatePlayModeByEvent(event: PlayModeChangeEvent) {
         val index = mPlayMode.indexOf(event.mode)
         if (index == mCurrentModeIndex) return
         mCurrentModeIndex = mPlayMode.indexOf(event.mode)
@@ -232,27 +232,34 @@ class NowPlayingActivity : AppCompatActivity() {
      */
     private fun bindView() {
         mTvMusicTitle.text = mCurrentPlay?.musicTitle
-        mTvArtist.text = mCurrentPlay?.artist
-        mProcessBar.max = mCurrentPlay?.duration!!
+        mTvArtist.text = mCurrentPlay?.artistName
+        mProcessBar.max = mCurrentPlay?.duration?.toInt()!!
         mProcessBar.progress = GlobalMusicData.getProcess()
         mTvCurrentTime.text = ConvertUtils.getTimeWithProcess(GlobalMusicData.getProcess())
-        mTvTotalTime.text = ConvertUtils.getTimeWithProcess(mCurrentPlay?.duration!!)
-        if (mCurrentPlay?.status == Constant.PLAY_STATUS_PLAYING) {
+        mTvTotalTime.text = ConvertUtils.getTimeWithProcess(mCurrentPlay?.duration?.toInt()!!)
+        if (mCurrentPlay?.playStatus == Constant.PLAY_STATUS_PLAYING) {
             mIvPlay.setImageResource(R.mipmap.ic_pause_main)
         } else {
             mIvPlay.setImageResource(R.mipmap.song_play)
         }
 
         val uri = mCurrentPlay?.albumUri
+        var scale = 8
         val srcBitmap = if (uri == null) {
             BitmapFactory.decodeResource(resources, R.drawable.default_play_bg)
-        }else{
-            MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(uri))
+        } else {
+            try {
+                MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(uri))
+            } catch (e: Exception) {
+                e.printStackTrace()
+                scale = 1
+                BitmapFactory.decodeResource(resources, R.drawable.default_play_bg)
+            }
         }
         val blurBitmap = EasyBlur.with(this)
                 .bitmap(srcBitmap) //要模糊的图片
                 .radius(10)//模糊半径
-                .scale(8)//指定模糊前缩小的倍数
+                .scale(scale)//指定模糊前缩小的倍数
                 .blur()
         mIvBackGround.setImageBitmap(blurBitmap)
 

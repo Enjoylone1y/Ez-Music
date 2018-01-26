@@ -85,6 +85,10 @@ class MusicPlayService : Service() {
 
         }
 
+        mPlayer.setOnBufferingUpdateListener { _, percent ->
+            EventBus.getDefault().post(PlayBufferUpdateEvent(percent))
+        }
+
         // 播放出错监听
         mPlayer.setOnErrorListener { _, what, _ ->
             when (what) {
@@ -118,9 +122,10 @@ class MusicPlayService : Service() {
     /**
      * 处理 “播放事件”
      */
+
     private fun dealPlayAction() {
         val currentPlay = GlobalMusicData.getCurrentPlay() ?: return
-        val path = currentPlay.dataPath!!
+        val path = if (currentPlay.isOnline) currentPlay.fileLink else currentPlay.filePath
         playImp(path)
     }
 
@@ -233,6 +238,7 @@ class MusicPlayService : Service() {
             }
             mPlayer.reset()
             mPlayer.setDataSource(path)
+
             // 异步装载音乐文件
             mPlayer.prepareAsync()
         } catch (e: Exception) {
@@ -258,12 +264,27 @@ class MusicPlayService : Service() {
 
     /**
      * 音频焦点监听
+     * // TODO 音频焦点处理
      */
     inner class MyAudioFocusListener : AudioManager.OnAudioFocusChangeListener {
         override fun onAudioFocusChange(focusChange: Int) {
-
+            when(focusChange){
+                AudioManager.AUDIOFOCUS_GAIN->{
+                  //  dealPlayAction()
+                }
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT ->{
+                  //  dealPlayAction()
+                }
+                AudioManager.AUDIOFOCUS_LOSS -> {
+                  //  dealStopAction()
+                }
+                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ->{
+                  // dealPauseAction()
+                }
+            }
         }
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

@@ -22,15 +22,14 @@ import java.io.File
 import android.view.Gravity
 import android.widget.EditText
 import cn.hotapk.fastandrutils.utils.FToastUtils
-import com.ezreal.huanting.activity.MusicListActivity
-import com.ezreal.huanting.adapter.MusicListAdapter
+import com.ezreal.huanting.activity.MusicBillActivity
+import com.ezreal.huanting.adapter.MusicBillAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
-import com.ezreal.huanting.bean.MusicListBean
+import com.ezreal.huanting.bean.MusicBillBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.utils.PopupShowUtils
-import com.ezreal.huanting.widget.ListMenuPopup
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -40,8 +39,8 @@ import org.greenrobot.eventbus.Subscribe
  */
 class PersonalFragment : Fragment() {
 
-    private val mMusicList = ArrayList<MusicListBean>()
-    private var mListAdapter: MusicListAdapter ?= null
+    private val mMusicList = ArrayList<MusicBillBean>()
+    private var mBillAdapter: MusicBillAdapter?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,16 +61,16 @@ class PersonalFragment : Fragment() {
 
     private fun initView() {
         mRvMyMusicList.layoutManager = LinearLayoutManager(context!!)
-        mListAdapter = MusicListAdapter(context!!, mMusicList)
-        mListAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
+        mBillAdapter = MusicBillAdapter(context!!, mMusicList)
+        mBillAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                val intent = Intent(context, MusicListActivity::class.java)
+                val intent = Intent(context, MusicBillActivity::class.java)
                 intent.putExtra("ListId", mMusicList[position].listId)
                 context?.startActivity(intent)
             }
 
         })
-        mRvMyMusicList.adapter = mListAdapter
+        mRvMyMusicList.adapter = mBillAdapter
         mLocalMusicCount.text = MusicDataHelper.getLocalMusicCount(context!!).toString()
         mRecentPlayCount.text = MusicDataHelper.getRecentPlayCount().toString()
         mDownLoadCount.text = File(Constant.APP_MUSIC_PATH).list().size.toString()
@@ -98,10 +97,10 @@ class PersonalFragment : Fragment() {
 
     private fun loadMyMusicList() {
         MusicDataHelper.loadMusicListAll(object : MusicDataHelper.OnListLoadListener {
-            override fun loadSuccess(list: List<MusicListBean>) {
+            override fun loadSuccess(bill: List<MusicBillBean>) {
                 mMusicList.clear()
-                mMusicList.addAll(list)
-                mListAdapter?.notifyDataSetChanged()
+                mMusicList.addAll(bill)
+                mBillAdapter?.notifyDataSetChanged()
                 mTvMyListNum.text = mMusicList.size.toString()
             }
 
@@ -127,10 +126,10 @@ class PersonalFragment : Fragment() {
         val changeItem = mMusicList.first { it.listId == event.listId }
         val index = mMusicList.indexOf(changeItem)
         MusicDataHelper.getMusicListById(event.listId, object : MusicDataHelper.OnListLoadListener {
-            override fun loadSuccess(list: List<MusicListBean>) {
-                if (list.isNotEmpty()) {
-                    mMusicList[index] = list[0]
-                    mListAdapter?.notifyItemChanged(index)
+            override fun loadSuccess(bill: List<MusicBillBean>) {
+                if (bill.isNotEmpty()) {
+                    mMusicList[index] = bill[0]
+                    mBillAdapter?.notifyItemChanged(index)
                 }
             }
             override fun loadFailed(message: String) {}
@@ -197,10 +196,10 @@ class PersonalFragment : Fragment() {
                 FToastUtils.init().show("创建成功~~")
 
                 MusicDataHelper.getMusicListById(listId, object : MusicDataHelper.OnListLoadListener {
-                    override fun loadSuccess(list: List<MusicListBean>) {
-                        if (list.isNotEmpty()) {
-                            mMusicList.add(list[0])
-                            mListAdapter?.notifyDataSetChanged()
+                    override fun loadSuccess(bill: List<MusicBillBean>) {
+                        if (bill.isNotEmpty()) {
+                            mMusicList.add(bill[0])
+                            mBillAdapter?.notifyDataSetChanged()
                             mTvMyListNum.text = mMusicList.size.toString()
                         }
                     }

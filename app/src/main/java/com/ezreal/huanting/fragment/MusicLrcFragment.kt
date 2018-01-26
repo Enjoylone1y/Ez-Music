@@ -9,10 +9,8 @@ import com.ezreal.huanting.R
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.event.PlayProcessChangeEvent
-import com.ezreal.huanting.event.PlayStatusChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.LrcLoadHelper
-import com.ezreal.huanting.utils.Constant
 import kotlinx.android.synthetic.main.fragment_music_lrc.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe

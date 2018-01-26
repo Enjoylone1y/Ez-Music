@@ -31,24 +31,24 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
 
     init {
         val currentPlay = GlobalMusicData.getCurrentPlay()
-        if (currentPlay != null && currentPlay.playFromList == listId) {
-            mList.first { it.musicId == currentPlay.musicId }.status = Constant.PLAY_STATUS_PLAYING
+        if (currentPlay != null && currentPlay.playFromListId == listId) {
+            mList.first { it.musicId == currentPlay.musicId }.playStatus = Constant.PLAY_STATUS_PLAYING
         }
     }
 
     override fun setItemLayoutId(position: Int): Int = R.layout.item_music
 
     override fun bindView(holder: RViewHolder, position: Int) {
-        holder.setText(R.id.mTvSongTitle, mList[position].musicTitle!!)
-        holder.setText(R.id.mTvArtist, mList[position].artist!!)
-        holder.setText(R.id.tv_album, mList[position].album!!)
+        holder.setText(R.id.mTvSongTitle, mList[position].musicTitle)
+        holder.setText(R.id.mTvArtist, mList[position].artistName)
+        holder.setText(R.id.tv_album, mList[position].albumName)
         holder.getImageView(R.id.iv_play_status)?.visibility = View.GONE
         when {
-            mList[position].status == Constant.PLAY_STATUS_PLAYING -> {
+            mList[position].playStatus == Constant.PLAY_STATUS_PLAYING -> {
                 holder.setImageResource(R.id.iv_play_status, R.mipmap.play)
                 holder.getImageView(R.id.iv_play_status)?.visibility = View.VISIBLE
             }
-            mList[position].status == Constant.PLAY_STATUS_PAUSE -> {
+            mList[position].playStatus == Constant.PLAY_STATUS_PAUSE -> {
                 holder.setImageResource(R.id.iv_play_status, R.mipmap.pause)
                 holder.getImageView(R.id.iv_play_status)?.visibility = View.VISIBLE
             }
@@ -82,7 +82,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
             // 恢复旧播放列表歌曲状态
             if (!GlobalMusicData.getNowPlayingList().isEmpty()
                     && GlobalMusicData.getCurrentIndex() != -1) {
-                GlobalMusicData.getNowPlayingList()[GlobalMusicData.getCurrentIndex()].status =
+                GlobalMusicData.getNowPlayingList()[GlobalMusicData.getCurrentIndex()].playStatus =
                         Constant.PLAY_STATUS_NORMAL
             }
             // 切换播放歌曲
@@ -98,7 +98,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         // 将原来播放的 item 状态重置
         if (GlobalMusicData.getCurrentIndex() != -1) {
             val oldPosition = GlobalMusicData.getCurrentIndex()
-            mList[oldPosition].status = Constant.PLAY_STATUS_NORMAL
+            mList[oldPosition].playStatus = Constant.PLAY_STATUS_NORMAL
             notifyItemChanged(oldPosition + (viewPosition - musicPosition))
         }
 
@@ -109,7 +109,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
     private fun playNewMusic(musicPosition: Int, viewPosition: Int) {
         GlobalMusicData.updatePlayList(listId, mList)
         GlobalMusicData.updateCurrentPlay(musicPosition)
-        mList[musicPosition].status = Constant.PLAY_STATUS_PLAYING
+        mList[musicPosition].playStatus = Constant.PLAY_STATUS_PLAYING
         notifyItemChanged(viewPosition)
         EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY, -1))
     }

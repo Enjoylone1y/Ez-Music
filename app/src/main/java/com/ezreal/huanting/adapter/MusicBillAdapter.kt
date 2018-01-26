@@ -7,25 +7,25 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.ezreal.huanting.R
-import com.ezreal.huanting.bean.MusicListBean
+import com.ezreal.huanting.bean.MusicBillBean
 import com.ezreal.huanting.utils.PopupShowUtils
-import com.ezreal.huanting.widget.ListMenuPopup
+import com.ezreal.huanting.widget.BillMenuPopup
 
 /**
  * 歌单列表适配器
  * Created by wudeng on 2018/1/8.
  */
-class MusicListAdapter(private val mContext: Context, private val mList: List<MusicListBean>)
-    : RecycleViewAdapter<MusicListBean>(mContext, mList) {
+class MusicBillAdapter(private val mContext: Context, private val mBill: List<MusicBillBean>)
+    : RecycleViewAdapter<MusicBillBean>(mContext, mBill) {
 
-    private var mListMenuPopup: ListMenuPopup? = null
+    private var mBillMenuPopup: BillMenuPopup? = null
 
     override fun setItemLayoutId(position: Int): Int {
         return R.layout.item_music_list
     }
 
     override fun bindView(holder: RViewHolder, position: Int) {
-        val bean = mList[position]
+        val bean = mBill[position]
         holder.setText(R.id.mTvListTitle, bean.listName!!)
         val size = bean.musicList.size
         holder.setText(R.id.mTvMusicNum, size.toString())
@@ -49,19 +49,19 @@ class MusicListAdapter(private val mContext: Context, private val mList: List<Mu
 
     }
 
-    private fun showPopupWindow(listBean: MusicListBean, view: View) {
-        if (mListMenuPopup == null) {
-            mListMenuPopup = ListMenuPopup(mContext)
+    private fun showPopupWindow(billBean: MusicBillBean, view: View) {
+        if (mBillMenuPopup == null) {
+            mBillMenuPopup = BillMenuPopup(mContext)
         }
-        mListMenuPopup?.setMusicList(listBean)
-        mListMenuPopup?.isOutsideTouchable = true
-        mListMenuPopup?.animationStyle = R.style.MyPopupStyle
-        mListMenuPopup?.setOnDismissListener {
+        mBillMenuPopup?.setMusicList(billBean)
+        mBillMenuPopup?.isOutsideTouchable = true
+        mBillMenuPopup?.animationStyle = R.style.MyPopupStyle
+        mBillMenuPopup?.setOnDismissListener {
             PopupShowUtils.lightOn(mContext as Activity)
         }
         val location = IntArray(2)
         view.getLocationOnScreen(location)
-        mListMenuPopup?.showAtLocation(view, Gravity.START or Gravity.BOTTOM,
+        mBillMenuPopup?.showAtLocation(view, Gravity.START or Gravity.BOTTOM,
                 0, -location[1])
         PopupShowUtils.lightOff(mContext as Activity)
     }

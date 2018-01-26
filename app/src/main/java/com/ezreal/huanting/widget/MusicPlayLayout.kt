@@ -3,6 +3,7 @@ package com.ezreal.huanting.widget
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -17,7 +18,6 @@ import com.ezreal.huanting.event.*
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.PopupShowUtils
-import kotlinx.android.synthetic.main.activty_now_playing.*
 import kotlinx.android.synthetic.main.layout_play_music.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -48,7 +48,7 @@ class MusicPlayLayout : RelativeLayout {
 
     private fun initListener() {
         mIvPlay.setOnClickListener {
-            when (mCurrentPlay?.status) {
+            when (mCurrentPlay?.playStatus) {
                 Constant.PLAY_STATUS_PLAYING -> {
                     // 发送暂停令
                     EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PAUSE,-1))
@@ -96,17 +96,17 @@ class MusicPlayLayout : RelativeLayout {
     fun onPlayStatusChange(event: PlayStatusChangeEvent) {
         when (event.status) {
             Constant.PLAY_STATUS_PLAYING -> {
-                mCurrentPlay?.status = event.status
+                mCurrentPlay?.playStatus = event.status
                 mIvPlay.setImageResource(R.mipmap.ic_pause)
             }
 
             Constant.PLAY_STATUS_PAUSE -> {
-                mCurrentPlay?.status = event.status
+                mCurrentPlay?.playStatus = event.status
                 mIvPlay.setImageResource(R.mipmap.ic_play)
             }
 
             Constant.PLAY_STATUS_NORMAL -> {
-                mCurrentPlay?.status = event.status
+                mCurrentPlay?.playStatus = event.status
                 mIvPlay.setImageResource(R.mipmap.ic_play)
             }
         }
@@ -136,16 +136,16 @@ class MusicPlayLayout : RelativeLayout {
             rootView.findViewById<View>(R.id.layout_music_play).visibility = View.GONE
         }else{
             Glide.with(context)
-                    .load(mCurrentPlay?.albumUri)
+                    .load(Uri.parse(mCurrentPlay?.albumUri))
                     .asBitmap()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .error(R.drawable.local_music_white)
                     .into(mIvMusicCover)
             mTvMusicTitle.text = mCurrentPlay?.musicTitle
-            mTvArtist.text = mCurrentPlay?.artist
+            mTvArtist.text = mCurrentPlay?.artistName
             rootView.findViewById<View>(R.id.layout_music_play).visibility = View.VISIBLE
 
-            when (mCurrentPlay?.status) {
+            when (mCurrentPlay?.playStatus) {
                 Constant.PLAY_STATUS_PLAYING -> {
                     mIvPlay.setImageResource(R.mipmap.ic_pause)
                 }

@@ -7,8 +7,8 @@ import cn.hotapk.fastandrutils.utils.FDeviceUtils
 import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import com.ezreal.huanting.bean.AlbumBean
 import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.bean.MusicListBean
-import com.ezreal.huanting.bean.MusicRecentPlay
+import com.ezreal.huanting.bean.MusicBillBean
+import com.ezreal.huanting.bean.RecentPlayBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.utils.Constant
 import io.reactivex.Observable
@@ -27,7 +27,7 @@ object MusicDataHelper {
     fun loadMusicFromDB(listener: OnMusicLoadListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            realm.where(MusicBean::class.java).findAllSortedAsync("")
+            realm.where(MusicBean::class.java).findAllSortedAsync("musicTitle")
                     .addChangeListener { element ->
                         listener?.loadSuccess(element)
                     }
@@ -40,7 +40,7 @@ object MusicDataHelper {
     fun loadRecentPlayFromDB(listener: OnMusicLoadListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            val results = realm.where(MusicRecentPlay::class.java)
+            val results = realm.where(RecentPlayBean::class.java)
                     .findAllSorted("lastPlayTime")
             if (results.isEmpty()) {
                 listener?.loadSuccess(arrayListOf())
@@ -65,25 +65,25 @@ object MusicDataHelper {
         var count = 0
         val realm = Realm.getDefaultInstance()
         try {
-            count = realm.where(MusicRecentPlay::class.java).count().toInt()
+            count = realm.where(RecentPlayBean::class.java).count().toInt()
         } catch (e: Exception) {
             e.printStackTrace()
         }
         return count
     }
 
-    fun addRecentPlay2DB(recentPlay: MusicRecentPlay) {
+    fun addRecentPlay2DB(recentPlayBean: RecentPlayBean) {
         try {
             val realm = Realm.getDefaultInstance()
             realm.beginTransaction()
-            val findFirst = realm.where(MusicRecentPlay::class.java)
-                    .equalTo("musicId", recentPlay.musicId)
+            val findFirst = realm.where(RecentPlayBean::class.java)
+                    .equalTo("musicId", recentPlayBean.musicId)
                     .findFirst()
             findFirst?.deleteFromRealm()
-            realm.insert(recentPlay)
-            val count = realm.where(MusicRecentPlay::class.java).count()
+            realm.insert(recentPlayBean)
+            val count = realm.where(RecentPlayBean::class.java).count()
             if (count > 100) {
-                realm.where(MusicRecentPlay::class.java).findFirst().deleteFromRealm()
+                realm.where(RecentPlayBean::class.java).findFirst().deleteFromRealm()
             }
             realm.commitTransaction()
         } catch (e: Exception) {
@@ -95,7 +95,7 @@ object MusicDataHelper {
         try {
             val realm = Realm.getDefaultInstance()
             realm.beginTransaction()
-            realm.delete(MusicRecentPlay::class.java)
+            realm.delete(RecentPlayBean::class.java)
             realm.commitTransaction()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -110,18 +110,18 @@ object MusicDataHelper {
                     Constant.PRE_USER_NAME, "unKnow")
 
             val realm = Realm.getDefaultInstance()
-            val exit = realm.where(MusicListBean::class.java)
+            val exit = realm.where(MusicBillBean::class.java)
                     .beginsWith("listName", title)
                     .equalTo("creatorId", userId)
                     .count()
             if (exit > 0) {
-                listener?.createdResult(-1, -1,"歌单已存在")
+                listener?.createdResult(-1, -1, "歌单已存在")
                 realm.close()
                 return
             }
 
-            var count = realm.where(MusicListBean::class.java).count()
-            val listBean = MusicListBean()
+            var count = realm.where(MusicBillBean::class.java).count()
+            val listBean = MusicBillBean()
             listBean.listId = ++count
             listBean.listName = title
             listBean.createTime = System.currentTimeMillis()
@@ -130,7 +130,7 @@ object MusicDataHelper {
             realm.beginTransaction()
             realm.insert(listBean)
             realm.commitTransaction()
-            listener?.createdResult(0, listBean.listId!!,"Create Success")
+            listener?.createdResult(0, listBean.listId!!, "Create Success")
             realm.close()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -138,11 +138,11 @@ object MusicDataHelper {
         }
     }
 
-    fun deleteMusicList(listId: Long){
+    fun deleteMusicList(listId: Long) {
         val instance = Realm.getDefaultInstance()
         instance.beginTransaction()
-        instance.where(MusicListBean::class.java)
-                .equalTo("listId",listId)
+        instance.where(MusicBillBean::class.java)
+                .equalTo("listId", listId)
                 .findFirst().deleteFromRealm()
         instance.commitTransaction()
     }
@@ -150,7 +150,7 @@ object MusicDataHelper {
     fun loadMusicListAll(listener: OnListLoadListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            val realmResults = realm.where(MusicListBean::class.java).findAll()
+            val realmResults = realm.where(MusicBillBean::class.java).findAll()
             listener?.loadSuccess(realmResults)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -158,10 +158,10 @@ object MusicDataHelper {
         }
     }
 
-    fun getMusicListById(listId: Long,listener: OnListLoadListener?){
+    fun getMusicListById(listId: Long, listener: OnListLoadListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            val results = realm.where(MusicListBean::class.java)
+            val results = realm.where(MusicBillBean::class.java)
                     .equalTo("listId", listId)
                     .findAll()
             listener?.loadSuccess(results)
@@ -173,7 +173,7 @@ object MusicDataHelper {
 
     fun createLoveList(listener: OnListCreateListener?) {
         try {
-            val listBean = MusicListBean()
+            val listBean = MusicBillBean()
             listBean.listId = Constant.MY_LOVE_MUSIC_LIST_ID
             listBean.listName = "我喜欢的音乐"
             listBean.createTime = System.currentTimeMillis()
@@ -188,106 +188,98 @@ object MusicDataHelper {
             realm.insertOrUpdate(listBean)
             realm.commitTransaction()
             realm.close()
-            listener?.createdResult(0, Constant.MY_LOVE_MUSIC_LIST_ID,"Create Success")
+            listener?.createdResult(0, Constant.MY_LOVE_MUSIC_LIST_ID, "Create Success")
         } catch (e: Exception) {
             e.printStackTrace()
-            listener?.createdResult(-1,-1, e.message!!)
+            listener?.createdResult(-1, -1, e.message!!)
         }
     }
 
-    fun addMusic2List(musicBean: MusicBean,listId:Long,listener: OnAddMusic2ListListener?){
+    fun addMusic2List(musicBean: MusicBean, listId: Long, listener: OnAddMusic2ListListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            val results = realm.where(MusicListBean::class.java)
+            val results = realm.where(MusicBillBean::class.java)
                     .equalTo("listId", listId).findFirst()
             val findFirst = results.musicList.where().equalTo("musicId",
                     musicBean.musicId).findFirst()
-            if (findFirst != null){
-                listener?.addResult(-1,"歌单中已包含该歌曲~")
+            if (findFirst != null) {
+                listener?.addResult(-1, "歌单中已包含该歌曲~")
                 return
             }
             realm.beginTransaction()
             results.musicList.add(musicBean)
             realm.commitTransaction()
-            listener?.addResult(0,"收藏成功~~")
+            listener?.addResult(0, "收藏成功~~")
             EventBus.getDefault().post(MusicListChangeEvent(listId))
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
-            listener?.addResult(-1,"添加发生错误,请重试")
+            listener?.addResult(-1, "添加发生错误,请重试")
         }
 
     }
 
-    fun loadLocalMusic(context: Context, sync2DB: Boolean, listener: OnMusicLoadListener?) {
-        Observable.create(ObservableOnSubscribe<ArrayList<MusicBean>> { em ->
-            val songList = ArrayList<MusicBean>()
-            try {
-                val filterSize = 500 * 1024 // 500 k
-                val filterTime = 60 * 1000 // 1 min
-                val cursor = context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        arrayOf(MediaStore.Audio.AudioColumns._ID,
-                                MediaStore.Audio.AudioColumns.IS_MUSIC,
-                                MediaStore.Audio.AudioColumns.TITLE,
-                                MediaStore.Audio.AudioColumns.ARTIST,
-                                MediaStore.Audio.AudioColumns.ALBUM,
-                                MediaStore.Audio.AudioColumns.ALBUM_ID,
-                                MediaStore.Audio.AudioColumns.DATA,
-                                MediaStore.Audio.AudioColumns.DISPLAY_NAME,
-                                MediaStore.Audio.AudioColumns.SIZE,
-                                MediaStore.Audio.AudioColumns.DURATION
-                        ), MediaStore.Audio.AudioColumns.SIZE + " >= ? and "
-                        + MediaStore.Audio.AudioColumns.DURATION + " >= ?",
-                        arrayOf(filterSize.toString(), filterTime.toString()), null)
-                var music: MusicBean?
-                while (cursor.moveToNext()) {
-                    val isMusic = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio
-                            .AudioColumns.IS_MUSIC))
-                    if (!FDeviceUtils.isFlyme() && isMusic == 0) continue
-                    val displayName = cursor.getString(cursor.getColumnIndex(MediaStore
-                            .Audio.AudioColumns.DISPLAY_NAME))
-                    if (!displayName.endsWith(".mp3")) continue
-                    val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns._ID))
-                    val title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE))
-                    val artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST))
-                    val album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM))
-                    val albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID))
-                    val path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA))
-                    val size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE))
-                    val duration = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DURATION))
-                    val albumUri = getAlbumCoverUri(albumID)
-                    music = MusicBean()
-                    music.musicId = id
-                    music.musicTitle = title
-                    music.artist = artist
-                    music.album = album
-                    music.albumId = albumID
-                    music.albumUri = albumUri
-                    music.lrcPath = ""
-                    music.duration = duration.toInt()
-                    music.size = size
-                    music.dataPath = path
-                    music.status = Constant.PLAY_STATUS_NORMAL
-                    songList.add(music)
-                }
-                cursor.close()
-                em.onNext(songList)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                listener?.loadFailed(e.message!!)
+    fun syncLocalMusic(context: Context, listener: OnSyncLocalMusicListener?) {
+        val songList = ArrayList<MusicBean>()
+        try {
+            val filterSize = 500 * 1024 // 500 k
+            val filterTime = 60 * 1000 // 1 min
+            val cursor = context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    arrayOf(MediaStore.Audio.AudioColumns._ID,
+                            MediaStore.Audio.AudioColumns.IS_MUSIC,
+                            MediaStore.Audio.AudioColumns.TITLE,
+                            MediaStore.Audio.AudioColumns.ARTIST,
+                            MediaStore.Audio.AudioColumns.ALBUM,
+                            MediaStore.Audio.AudioColumns.ALBUM_ID,
+                            MediaStore.Audio.AudioColumns.DATA,
+                            MediaStore.Audio.AudioColumns.DISPLAY_NAME,
+                            MediaStore.Audio.AudioColumns.SIZE,
+                            MediaStore.Audio.AudioColumns.DURATION
+                    ), MediaStore.Audio.AudioColumns.SIZE + " >= ? and "
+                    + MediaStore.Audio.AudioColumns.DURATION + " >= ?",
+                    arrayOf(filterSize.toString(), filterTime.toString()), null)
+            while (cursor.moveToNext()) {
+                val isMusic = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio
+                        .AudioColumns.IS_MUSIC))
+                if (!FDeviceUtils.isFlyme() && isMusic == 0) continue
+                val displayName = cursor.getString(cursor.getColumnIndex(MediaStore
+                        .Audio.AudioColumns.DISPLAY_NAME))
+                if (!displayName.endsWith(".mp3")) continue
+                val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns._ID))
+                val title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE))
+                val artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST))
+                val album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM))
+                val albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID))
+                val path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA))
+                val size = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE))
+                val duration = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DURATION))
+                val albumUri = getAlbumCoverUri(albumID)
+                val music = MusicBean()
+                music.musicId = id
+                music.musicTitle = title
+                music.artistName = artist
+                music.albumName = album
+                music.albumId = albumID
+                music.albumUri = albumUri
+                music.lrcPath = ""
+                music.duration = duration
+                music.fileSize = size
+                music.filePath = path
+                music.playStatus = Constant.PLAY_STATUS_NORMAL
+                songList.add(music)
             }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { result ->
-                            listener?.loadSuccess(result)
-                            if (sync2DB) syncLocalMusic2DB(result)
-                        },
-                        { error ->
-                            listener?.loadFailed(error.message!!)
-                        }
-                )
+            cursor.close()
+            val realm = Realm.getDefaultInstance()
+            realm.beginTransaction()
+            realm.insertOrUpdate(songList)
+            realm.commitTransaction()
+            realm.close()
+            listener?.onResult(0, "success")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            listener?.onResult(-1, e.message!!)
+        }
     }
+
 
     fun getLocalMusicCount(context: Context): Int {
         var count = 0
@@ -315,13 +307,6 @@ object MusicDataHelper {
         return count
     }
 
-    private fun syncLocalMusic2DB(musicList: ArrayList<MusicBean>) {
-        val realm = Realm.getDefaultInstance()
-        realm.beginTransaction()
-        realm.insertOrUpdate(musicList)
-        realm.commitTransaction()
-        realm.close()
-    }
 
     fun loadAllArtistList(context: Context, listener: OnArtistLoadListener) {
         Observable.create(ObservableOnSubscribe<ArrayList<String>> { em ->
@@ -387,7 +372,7 @@ object MusicDataHelper {
                 )
     }
 
-    private fun getAlbumCoverUri(albumId: Long): String {
+    private fun getAlbumCoverUri(albumId: Long):String{
         return "content://media/external/audio/albumart/" + albumId
     }
 
@@ -407,17 +392,19 @@ object MusicDataHelper {
     }
 
     interface OnListCreateListener {
-        fun createdResult(code: Int,listId:Long, message: String)
+        fun createdResult(code: Int, listId: Long, message: String)
     }
 
     interface OnListLoadListener {
-        fun loadSuccess(list: List<MusicListBean>)
+        fun loadSuccess(bill: List<MusicBillBean>)
         fun loadFailed(message: String)
     }
 
-    interface OnAddMusic2ListListener{
-        fun addResult(code:Int,message: String)
+    interface OnAddMusic2ListListener {
+        fun addResult(code: Int, message: String)
+    }
+
+    interface OnSyncLocalMusicListener {
+        fun onResult(code: Int, message: String)
     }
 }
-
-

@@ -28,7 +28,7 @@ import java.util.*
 class MusicListFragment : Fragment() {
 
     private val mMusicList = ArrayList<MusicBean>()
-    private var mAdapter: MusicAdapter ?= null
+    private var mAdapter: MusicAdapter? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,39 +50,42 @@ class MusicListFragment : Fragment() {
     }
 
     private fun loadSongList() {
-        MusicDataHelper.loadLocalMusic(context!!, false,
-                object : MusicDataHelper.OnMusicLoadListener {
-                    override fun loadSuccess(musicList: List<MusicBean>) {
-                        mMusicList.addAll(musicList)
-                        mAdapter = MusicAdapter(context!!,Constant.LOCAL_MUSIC_LIST_ID, mMusicList)
-                        mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
-                            override fun onItemClick(holder: RViewHolder, position: Int) {
-                                mAdapter?.checkPlaySong(position-1,position)
-                            }
-                        })
-                        mRecyclerView.adapter = mAdapter
-                    }
+        MusicDataHelper.loadMusicFromDB(object : MusicDataHelper.OnMusicLoadListener {
+            override fun loadSuccess(musicList: List<MusicBean>) {
+                musicLoaded(musicList)
+            }
 
-                    override fun loadFailed(message: String) {
-                        FToastUtils.init().show("歌曲加载失败:" + message)
-                    }
-                })
+            override fun loadFailed(message: String) {
+                FToastUtils.init().show("加载失败:" + message)
+            }
+        })
+    }
+
+    private fun musicLoaded(musicList: List<MusicBean>){
+        mMusicList.addAll(musicList)
+        mAdapter = MusicAdapter(context!!, Constant.LOCAL_MUSIC_LIST_ID, mMusicList)
+        mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
+            override fun onItemClick(holder: RViewHolder, position: Int) {
+                mAdapter?.checkPlaySong(position - 1, position)
+            }
+        })
+        mRecyclerView.adapter = mAdapter
     }
 
     @Subscribe
-    fun onPlayMusicChange(event: PlayMusicChangeEvent){
+    fun onPlayMusicChange(event: PlayMusicChangeEvent) {
         // 恢复前一首播放状态
-        val prePlay = mMusicList.firstOrNull { it.status == Constant.PLAY_STATUS_PLAYING }
-        if (prePlay != null){
+        val prePlay = mMusicList.firstOrNull { it.playStatus == Constant.PLAY_STATUS_PLAYING }
+        if (prePlay != null) {
             val preIndex = mMusicList.indexOf(prePlay)
-            prePlay.status = Constant.PLAY_STATUS_NORMAL
+            prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
             mAdapter?.notifyItemChanged(preIndex + 1)
         }
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
-        if (currentPlay != null && currentPlay.playFromList == Constant.LOCAL_MUSIC_LIST_ID){
+        if (currentPlay != null && currentPlay.playFromListId == Constant.LOCAL_MUSIC_LIST_ID) {
             val currentIndex = mMusicList.indexOf(currentPlay)
-            mMusicList[currentIndex].status = Constant.PLAY_STATUS_PLAYING
+            mMusicList[currentIndex].playStatus = Constant.PLAY_STATUS_PLAYING
             mAdapter?.notifyItemChanged(currentIndex + 1)
         }
     }

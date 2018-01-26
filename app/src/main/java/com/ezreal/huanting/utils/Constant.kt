@@ -35,6 +35,7 @@ object Constant {
     val PRE_USER_ID = "USER_ID"
     val PRE_APP_OPTION_TABLE = "APP_OPTION_TABLE"
     val PRE_APP_OPTION_LOVE_CREATED = "APP_OPTION_LOVE_CREATED"
+    val PRE_APP_OPTION_INIT_SYNC = "APP_OPTION_INIT_SYNC"
 
     // 歌曲搜索
     val url1 = "http://s.music.163.com/search/get/?type=1&s=%22%E8%83%8C%E5%8F%9B%22&limit=5&offset=0"

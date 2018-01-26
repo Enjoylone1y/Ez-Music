@@ -14,11 +14,11 @@ import android.widget.TextView
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.R
 import com.ezreal.huanting.activity.NowPlayingActivity
-import com.ezreal.huanting.adapter.MusicListAdapter
+import com.ezreal.huanting.adapter.MusicBillAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.bean.MusicListBean
+import com.ezreal.huanting.bean.MusicBillBean
 import com.ezreal.huanting.event.MusicPlayAction
 import com.ezreal.huanting.event.PlayActionEvent
 import com.ezreal.huanting.helper.GlobalMusicData
@@ -87,14 +87,14 @@ class MusicMenuPopup : PopupWindow {
         mMusic = musicBean
         mListId = listId
         mTvMusicTitle?.text = musicBean.musicTitle
-        mTvArtist?.text = musicBean.artist
-        mTvAlbum?.text = musicBean.album
+        mTvArtist?.text = musicBean.artistName
+        mTvAlbum?.text = musicBean.albumName
     }
 
     private fun add2MusicList(context: Context) {
         MusicDataHelper.loadMusicListAll(object : MusicDataHelper.OnListLoadListener {
-            override fun loadSuccess(list: List<MusicListBean>) {
-                showSelectList(context,list)
+            override fun loadSuccess(bill: List<MusicBillBean>) {
+                showSelectList(context, bill)
             }
 
             override fun loadFailed(message: String) {
@@ -103,7 +103,7 @@ class MusicMenuPopup : PopupWindow {
         })
     }
 
-    private fun showSelectList(context: Context, list: List<MusicListBean>) {
+    private fun showSelectList(context: Context, bill: List<MusicBillBean>) {
         // 构造 dialog
         val rootView = LayoutInflater.from(context).inflate(R.layout.dialog_add_2_list,
                 null, false)
@@ -121,10 +121,10 @@ class MusicMenuPopup : PopupWindow {
         // 绑定数据
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.mRcvMusicList)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val adapter = MusicListAdapter(context, list)
+        val adapter = MusicBillAdapter(context, bill)
         adapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                MusicDataHelper.addMusic2List(mMusic!!, list[position].listId,
+                MusicDataHelper.addMusic2List(mMusic!!, bill[position].listId,
                         object : MusicDataHelper.OnAddMusic2ListListener {
                             override fun addResult(code: Int, message: String) {
                                 FToastUtils.init().show(message)

@@ -8,7 +8,7 @@ import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.ezreal.huanting.R
-import com.ezreal.huanting.bean.MusicListBean
+import com.ezreal.huanting.bean.MusicBillBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.helper.MusicDataHelper
 import org.greenrobot.eventbus.EventBus
@@ -19,12 +19,12 @@ import org.greenrobot.eventbus.EventBus
  * Created by wudeng on 2018/1/22.
  */
 
-class ListMenuPopup : PopupWindow {
+class BillMenuPopup : PopupWindow {
 
     private var mTvListTitle: TextView? = null
     private var mLayoutEdInfo: RelativeLayout? = null
     private var mLayoutDelete: RelativeLayout? = null
-    private var mMusicList: MusicListBean? = null
+    private var mMusicBill: MusicBillBean? = null
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -53,20 +53,20 @@ class ListMenuPopup : PopupWindow {
     }
 
     private fun showDialog(context: Context) {
-        val title = "确定删除 " + mMusicList?.listName + " 吗？"
+        val title = "确定删除 " + mMusicBill?.listName + " 吗？"
         AlertDialog.Builder(context, R.style.MyAlertDialog)
                 .setTitle(title)
                 .setNegativeButton("取消", { _, _ -> dismiss() })
                 .setPositiveButton("确定", { _, _ ->
-                    MusicDataHelper.deleteMusicList( mMusicList?.listId!!)
+                    MusicDataHelper.deleteMusicList( mMusicBill?.listId!!)
                     EventBus.getDefault().post(MusicListChangeEvent(-1L))
                     dismiss()
                 })
                 .show()
     }
 
-    fun setMusicList(musicBean: MusicListBean) {
-        mMusicList = musicBean
+    fun setMusicList(musicBean: MusicBillBean) {
+        mMusicBill = musicBean
         mTvListTitle?.text = musicBean.listName
     }
 }

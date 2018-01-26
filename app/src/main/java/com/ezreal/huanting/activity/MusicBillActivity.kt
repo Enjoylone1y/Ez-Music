@@ -8,8 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.ezreal.huanting.R
 import com.ezreal.huanting.adapter.MusicAdapter
-import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.bean.MusicListBean
+import com.ezreal.huanting.bean.MusicBillBean
 import com.ezreal.huanting.helper.MusicDataHelper
 import kotlinx.android.synthetic.main.activity_music_list.*
 import android.provider.MediaStore
@@ -25,6 +24,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
+import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.utils.Constant
@@ -37,13 +37,11 @@ import org.greenrobot.eventbus.Subscribe
  * Created by wudeng on 2018/1/8.
  */
 
-class MusicListActivity : AppCompatActivity() {
-
-    private val TAG = MusicListActivity::class.java.name
+class MusicBillActivity : AppCompatActivity() {
 
     private val mMusicList = ArrayList<MusicBean>()
     private var mAdapter: MusicAdapter? = null
-    private var mList: MusicListBean? = null
+    private var mBill: MusicBillBean? = null
     private var mBackColor = Color.parseColor("#bfbfbf")
     private var mHeadViewHeight = 0
 
@@ -59,13 +57,13 @@ class MusicListActivity : AppCompatActivity() {
     private fun getMusicList() {
         val listId = intent.getLongExtra("ListId", -1)
         MusicDataHelper.getMusicListById(listId, object : MusicDataHelper.OnListLoadListener {
-            override fun loadSuccess(list: List<MusicListBean>) {
-                if (list.isEmpty()) {
+            override fun loadSuccess(bill: List<MusicBillBean>) {
+                if (bill.isEmpty()) {
                     FToastUtils.init().show("读取歌单信息失败！")
                     finish()
                 } else {
-                    mList = list[0]
-                    val musicList = mList?.musicList
+                    mBill = bill[0]
+                    val musicList = mBill?.musicList
                     if (musicList != null) {
                         mMusicList.addAll(musicList)
                     }
@@ -89,19 +87,25 @@ class MusicListActivity : AppCompatActivity() {
     private fun initHeadView() {
 
         FStatusBarUtils.translucent(this)
-        val list = mList?.musicList
+        val list = mBill?.musicList
         if (list == null || list.isEmpty()) {
             return
         }
         val albumUri = list[0].albumUri
-        if (albumUri.isNullOrEmpty()) {
-            return
+
+        val bitmap = try {
+            MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(albumUri))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            BitmapFactory.decodeResource(resources, R.drawable.splash)
         }
-        var bitmap = MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(albumUri))
-        if (bitmap == null) {
-            bitmap = BitmapFactory.decodeResource(resources, R.drawable.splash)
-        }
-        mBackColor = Palette.from(bitmap).generate().darkVibrantSwatch?.rgb ?: ContextCompat.getColor(this, R.color.color_gray)
+
+        mBackColor = if (bitmap != null)
+            Palette.from(bitmap).generate().darkVibrantSwatch?.rgb
+                    ?: ContextCompat.getColor(this, R.color.color_gray)
+        else
+            ContextCompat.getColor(this, R.color.color_gray)
+
 
         setHeadViewDrawable()
 
@@ -124,7 +128,7 @@ class MusicListActivity : AppCompatActivity() {
         mRcvMusic.isNestedScrollingEnabled = false
         mRcvMusic.setHasFixedSize(false)
         mRcvMusic.addHeaderView(createHeadView())
-        mAdapter = MusicAdapter(this, mList?.listId!!, mMusicList)
+        mAdapter = MusicAdapter(this, mBill?.listId!!, mMusicList)
         mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
                 mAdapter?.checkPlaySong(position - 2, position)
@@ -145,7 +149,7 @@ class MusicListActivity : AppCompatActivity() {
             }
 
             if (scroll > mHeadViewHeight / 2) {
-                mTvTitle.text = mList?.listName
+                mTvTitle.text = mBill?.listName
             } else {
                 mTvTitle.text = "歌单"
             }
@@ -172,13 +176,13 @@ class MusicListActivity : AppCompatActivity() {
         val userName = head.findViewById<TextView>(R.id.mTvCreator)
 
         userName.text = resources.getString(R.string.app_name)
-        listName.text = mList?.listName
+        listName.text = mBill?.listName
 
-        if (mList?.musicList?.isEmpty()!!) {
+        if (mBill?.musicList?.isEmpty()!!) {
             listCover.setImageResource(R.drawable.splash)
         } else {
             Glide.with(this)
-                    .load(mList?.musicList?.get(0)?.albumUri)
+                    .load(mBill?.musicList?.get(0)?.albumUri)
                     .asBitmap()
                     .error(R.drawable.splash)
                     .into(listCover)
@@ -187,19 +191,19 @@ class MusicListActivity : AppCompatActivity() {
     }
 
     @Subscribe
-    fun onPlayMusicChange(event:PlayMusicChangeEvent){
+    fun onPlayMusicChange(event: PlayMusicChangeEvent) {
         // 恢复前一首播放状态
-        val prePlay = mMusicList.firstOrNull { it.status == Constant.PLAY_STATUS_PLAYING }
-        if (prePlay != null){
+        val prePlay = mMusicList.firstOrNull { it.playStatus == Constant.PLAY_STATUS_PLAYING }
+        if (prePlay != null) {
             val preIndex = mMusicList.indexOf(prePlay)
-            prePlay.status = Constant.PLAY_STATUS_NORMAL
+            prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
             mAdapter?.notifyItemChanged(preIndex + 2)
         }
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
-        if (currentPlay != null && currentPlay.playFromList == mList?.listId){
+        if (currentPlay != null && currentPlay.playFromListId == mBill?.listId) {
             val currentIndex = mMusicList.indexOf(currentPlay)
-            mMusicList[currentIndex].status = Constant.PLAY_STATUS_PLAYING
+            mMusicList[currentIndex].playStatus = Constant.PLAY_STATUS_PLAYING
             mAdapter?.notifyItemChanged(currentIndex + 2)
         }
     }

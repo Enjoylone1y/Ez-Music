@@ -14,7 +14,6 @@ import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.MusicDataHelper
 import com.ezreal.huanting.utils.Constant
-import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import kotlinx.android.synthetic.main.activity_recnet_play.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -87,17 +86,17 @@ class RecentPlayActivity : AppCompatActivity() {
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent){
         // 恢复前一首播放状态
-        val prePlay = mMusicList.firstOrNull { it.status == Constant.PLAY_STATUS_PLAYING }
+        val prePlay = mMusicList.firstOrNull { it.playStatus == Constant.PLAY_STATUS_PLAYING }
         if (prePlay != null){
             val preIndex = mMusicList.indexOf(prePlay)
-            prePlay.status = Constant.PLAY_STATUS_NORMAL
+            prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
             mAdapter?.notifyItemChanged(preIndex + 1)
         }
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
-        if (currentPlay != null && currentPlay.playFromList == Constant.RECENT_MUSIC_LIST_ID){
+        if (currentPlay != null && currentPlay.playFromListId == Constant.RECENT_MUSIC_LIST_ID){
             val currentIndex = mMusicList.indexOf(currentPlay)
-            mMusicList[currentIndex].status = Constant.PLAY_STATUS_PLAYING
+            mMusicList[currentIndex].playStatus = Constant.PLAY_STATUS_PLAYING
             mAdapter?.notifyItemChanged(currentIndex + 1)
         }
     }

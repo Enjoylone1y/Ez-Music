@@ -85,8 +85,8 @@ class PlayListPopup : PopupWindow {
                 if (position == GlobalMusicData.getCurrentIndex()) {
                     holder.setVisible(R.id.iv_playing, true)
                 }
-                holder.setText(R.id.mTvSongTitle, item.musicTitle!!)
-                holder.setText(R.id.mTvArtist, item.artist!!)
+                holder.setText(R.id.mTvSongTitle, item.musicTitle)
+                holder.setText(R.id.mTvArtist, item.artistName)
                 val delete = holder.convertView.findViewById<ImageView>(R.id.iv_delete)
                 delete.setOnClickListener {
                     deleteItem(position, item)
@@ -100,10 +100,10 @@ class PlayListPopup : PopupWindow {
                     context.startActivity(Intent(context, NowPlayingActivity::class.java))
                 } else {
                     val index = GlobalMusicData.getCurrentIndex()
-                    mSongList[index].status = Constant.PLAY_STATUS_NORMAL
+                    mSongList[index].playStatus = Constant.PLAY_STATUS_NORMAL
                     mAdapter?.notifyItemChanged((index))
                     GlobalMusicData.updateCurrentPlay(position)
-                    mSongList[position].status = Constant.PLAY_STATUS_PLAYING
+                    mSongList[position].playStatus = Constant.PLAY_STATUS_PLAYING
                     EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY, -1))
                     mAdapter?.notifyItemChanged((position))
                 }
@@ -155,9 +155,9 @@ class PlayListPopup : PopupWindow {
 
         // 更新页面
         mSongList.remove(item)
-        mSongList.firstOrNull { it.status == Constant.PLAY_STATUS_PLAYING }
-                ?.status = Constant.PLAY_STATUS_NORMAL
-        mSongList[GlobalMusicData.getCurrentIndex()].status = Constant.PLAY_STATUS_PLAYING
+        mSongList.firstOrNull { it.playStatus == Constant.PLAY_STATUS_PLAYING }
+                ?.playStatus = Constant.PLAY_STATUS_NORMAL
+        mSongList[GlobalMusicData.getCurrentIndex()].playStatus = Constant.PLAY_STATUS_PLAYING
         mAdapter?.notifyDataSetChanged()
     }
 

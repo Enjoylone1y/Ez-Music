@@ -1,7 +1,7 @@
 package com.ezreal.huanting.helper
 
 import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.bean.MusicRecentPlay
+import com.ezreal.huanting.bean.RecentPlayBean
 import com.ezreal.huanting.event.*
 import com.ezreal.huanting.utils.Constant
 import org.greenrobot.eventbus.EventBus
@@ -37,7 +37,7 @@ object GlobalMusicData {
      */
     @Subscribe
     fun updatePlayStatus(event: PlayStatusChangeEvent) {
-        mCurrentPlay?.status = event.status
+        mCurrentPlay?.playStatus = event.status
     }
 
     /**
@@ -55,7 +55,7 @@ object GlobalMusicData {
         mCurrentListId = listId
         mCurrentPlayList.clear()
         mCurrentPlayList.addAll(list)
-        list.forEach { it.playFromList = listId }
+        list.forEach { it.playFromListId = listId }
         // 推送列表更新事件
         EventBus.getDefault().post(PlayListChangeEvent(mCurrentListId))
     }
@@ -64,10 +64,10 @@ object GlobalMusicData {
      * 将歌曲添加到播放列表的下一首播放位置
      */
     fun addMusic2NextPlay(music: MusicBean, listId: Long) {
-        music.playFromList = listId
+        music.playFromListId = listId
         when (mCurrentListId) {
             -1L -> {
-                music.status = Constant.PLAY_STATUS_PLAYING
+                music.playStatus = Constant.PLAY_STATUS_PLAYING
                 mCurrentListId = Constant.TEMP_MUSIL_LIST_ID
                 mCurrentPlayList.add(music)
                 updateCurrentPlay(0)
@@ -75,7 +75,7 @@ object GlobalMusicData {
 
             listId -> {
                 val itemIndex = mCurrentPlayList.indexOf(music)
-                if (music.status == Constant.PLAY_STATUS_PLAYING) {
+                if (music.playStatus == Constant.PLAY_STATUS_PLAYING) {
                     return
                 }
                 if (itemIndex == mCurrentPlayIndex + 1) {
@@ -108,7 +108,7 @@ object GlobalMusicData {
         mCurrentPlay = mCurrentPlayList[mCurrentPlayIndex]
         mCurrentProcess = 0
 
-        val musicRecentPlay = MusicRecentPlay()
+        val musicRecentPlay = RecentPlayBean()
         musicRecentPlay.musicId = mCurrentPlay?.musicId
         musicRecentPlay.lastPlayTime = System.currentTimeMillis()
 

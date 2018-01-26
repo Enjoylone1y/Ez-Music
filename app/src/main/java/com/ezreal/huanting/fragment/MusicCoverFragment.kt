@@ -1,5 +1,6 @@
 package com.ezreal.huanting.fragment
 
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -38,6 +39,9 @@ class MusicCoverFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
         mCoverView.initNeedle(false)
+        if (mCurrentPlay == null) {
+            return
+        }
         bindView()
     }
 
@@ -47,6 +51,9 @@ class MusicCoverFragment : Fragment() {
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
+        if (mCurrentPlay == null) {
+            return
+        }
         bindView()
     }
 
@@ -55,7 +62,7 @@ class MusicCoverFragment : Fragment() {
      */
     @Subscribe
     fun onPlayStatusChange(event: PlayStatusChangeEvent) {
-        mCurrentPlay?.status = event.status
+        mCurrentPlay?.playStatus = event.status
         if (event.status == Constant.PLAY_STATUS_PLAYING) {
             mCoverView.start()
         } else {
@@ -64,18 +71,16 @@ class MusicCoverFragment : Fragment() {
     }
 
     private fun bindView() {
-        if (mCurrentPlay == null) {
-            return
-        }
         try {
             val bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver,
                     Uri.parse(mCurrentPlay?.albumUri))
             mCoverView.setCoverBitmap(bitmap)
         } catch (e: Exception) {
-            mCoverView.setCoverBitmap(null)
+            mCoverView.setCoverBitmap(BitmapFactory.decodeResource(context?.resources,
+                    R.drawable.default_play_bg))
         }
 
-        if (mCurrentPlay?.status == Constant.PLAY_STATUS_PLAYING) {
+        if (mCurrentPlay?.playStatus == Constant.PLAY_STATUS_PLAYING) {
             mCoverView.initNeedle(true)
             mCoverView.start()
         } else {

@@ -7,10 +7,8 @@ import android.support.v4.app.Fragment
 import android.view.KeyEvent
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.R
-import com.ezreal.huanting.http.MusicRearchResult
 import com.ezreal.huanting.fragment.PersonalFragment
 import com.ezreal.huanting.fragment.OnlineFragment
-import com.ezreal.huanting.http.HttpRequest
 import com.ezreal.huanting.widget.MainMenuLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_main_title.*
@@ -48,7 +46,7 @@ class MainActivity : AppCompatActivity(){
             // TODO 打开个人信息页面
         }
         mIvSearch.setOnClickListener{
-            // TODO 搜索本地音乐
+            // TODO 打开搜索音乐页面
         }
 
         // 先显示本地音乐列表

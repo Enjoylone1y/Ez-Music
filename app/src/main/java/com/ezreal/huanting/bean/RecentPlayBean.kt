@@ -7,7 +7,7 @@ import io.realm.annotations.PrimaryKey
  * Created by wudeng on 2018/1/2.
  */
 
-open class MusicRecentPlay :RealmObject(){
+open class RecentPlayBean :RealmObject(){
     @PrimaryKey
     var musicId:Long ?= null
 
