@@ -1,11 +1,18 @@
 package com.ezreal.huanting.http
 
 import android.text.TextUtils
+import android.util.Log
+import com.ezreal.huanting.bean.MusicBean
+import com.ezreal.huanting.bean.RankBillBean
 import com.google.gson.Gson
 import com.google.gson.stream.JsonReader
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.AbsCallback
 import com.lzy.okgo.model.Response
+import io.reactivex.Observable
+import io.reactivex.ObservableOnSubscribe
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.lang.reflect.ParameterizedType
 
 /**
@@ -17,7 +24,6 @@ object HttpRequest {
 
     private val BASE_URL = "http://tingapi.ting.baidu.com/v1/restserver/ting"
     private val METHOD_GET_MUSIC_LIST = "baidu.ting.billboard.billList"
-    private val METHOD_DOWNLOAD_MUSIC = "baidu.ting.song.play"
     private val METHOD_ARTIST_INFO = "baidu.ting.artist.getInfo"
     private val METHOD_SEARCH_MUSIC = "baidu.ting.search.catalogSug"
     private val METHOD_LRC = "baidu.ting.song.lry"
@@ -54,10 +60,11 @@ object HttpRequest {
     //baidu.ting.song.playAAC  {songid: id}
 
     // baidu.ting.billboard.billList  {type:1,size:10, offset:0}
-    // type: //1、新歌榜，2、热歌榜，6.KTV热歌榜,7.叱咤歌曲榜,8.Billboard, 11、摇滚榜，12、爵士，16、流行 ,
-    // 18.Hito中文榜20.华语金曲榜,21、欧美金曲榜，22、经典老歌榜，23、情歌对唱榜，24、影视金曲榜，25、网络歌曲榜
+    // type: //1、新歌榜，2、热歌榜
 
-
+    /**
+     * 根据关键字（音乐名 歌手名）搜索百度音乐库， 可以获取得到歌曲 ID
+     */
     fun searchMusicByKey(keyWord: String, listener: OnKeywordSearchListener) {
         OkGo.get<KeywordSearchResult>(BASE_URL)
                 .params(PARAM_METHOD, METHOD_SEARCH_MUSIC)
@@ -65,7 +72,7 @@ object HttpRequest {
                 .execute(object : JsonCallBack<KeywordSearchResult>() {
                     override fun onSuccess(response: Response<KeywordSearchResult>?) {
                         if (response?.body() != null && response.body()?.song != null) {
-                            listener.onResult(0, response.body().song?.get(0), "onSuccess")
+
                         } else {
                             listener.onResult(-1, null, "未找到歌曲")
                         }
@@ -78,6 +85,9 @@ object HttpRequest {
                 })
     }
 
+    /**
+     * 根据音乐id，搜索歌曲歌词
+     */
     fun searchLrcById(songId: String, listener: OnLrcSearchListener) {
         OkGo.get<LrcSearchResult>(BASE_URL)
                 .params(PARAM_METHOD, METHOD_LRC)
@@ -99,7 +109,48 @@ object HttpRequest {
                 })
     }
 
-    fun searchRecomMusic(musicId:String,num:Int,listener: OnRecomSearchListener){
+    /**
+     * 根据 关键词搜索歌词
+     */
+    fun searchLrcByKeyword(keyWord: String,listener: OnLrcSearchListener){
+        Observable.create(ObservableOnSubscribe<String?> {emitter ->
+            OkGo.get<KeywordSearchResult>(BASE_URL)
+                    .params(PARAM_METHOD, METHOD_SEARCH_MUSIC)
+                    .params(PARAM_QUERY, keyWord)
+                    .execute(object : JsonCallBack<KeywordSearchResult>() {
+                        override fun onSuccess(response: Response<KeywordSearchResult>?) {
+                            if (response?.body() != null && response.body().song != null){
+                                emitter.onNext(response.body().song?.get(0)?.songid!!)
+                            }else{
+                                emitter.onError(Throwable("empty result or failed"))
+                            }
+                        }
+                    })
+        }).map{ songId ->
+            val lrc = LrcSearchResult()
+            OkGo.get<LrcSearchResult>(BASE_URL)
+                    .params(PARAM_METHOD, METHOD_LRC)
+                    .params(PARAM_SONG_ID, songId)
+                    .execute(object : JsonCallBack<LrcSearchResult>() {
+                        override fun onSuccess(response: Response<LrcSearchResult>?) {
+                            if (response?.body() != null){
+                                lrc.title = response.body()?.title!!
+                                lrc.lrcContent = response.body()?.lrcContent!!
+                            }
+                        }
+                    })
+            lrc
+        }.subscribe({
+                    listener.onResult(0,it.lrcContent,"success")
+                },{
+                    listener.onResult(-1,null,"failed")
+                })
+    }
+
+    /**
+     * 根据参考的音乐 ID ,获取推荐音乐列表
+     */
+    fun searchRecomMusic(musicId: String, num: Int, listener: OnRecomSearchListener) {
         OkGo.get<RecomSearchResult>(BASE_URL)
                 .params(PARAM_METHOD, METHOD_RECOM)
                 .params(PARAM_RECOM_SONG_ID,musicId)
@@ -109,7 +160,7 @@ object HttpRequest {
                         if (response?.body() != null
                                 && response.body()?.result != null
                                 && response.body().result?.list != null){
-                            listener.onResult(0,response.body().result?.list,"onSuccess")
+                            listener.onResult(0, response.body().result?.list, "success")
                         }else{
                             listener.onResult(-1, null, "搜索推荐歌曲失败")
                         }
@@ -123,8 +174,110 @@ object HttpRequest {
     }
 
 
+    /**
+     * 根据音乐 ID 获取音乐完整信息，并且得到播放在线连接
+     */
+    fun searchMusicInfoById(musicId: String, listener: OnKeywordSearchListener) {
+        OkGo.get<MusicSearchResult>(BASE_URL)
+                .params(PARAM_METHOD, METHOD_PLAY)
+                .params(PARAM_SONG_ID, musicId)
+                .execute(object : JsonCallBack<MusicSearchResult>() {
+                    override fun onSuccess(response: Response<MusicSearchResult>?) {
+
+                    }
+                })
+    }
+
+    /**
+     * 根据歌手 id 搜索歌手信息
+     */
+    fun searchArtistInfoById(artistId: String, listener: OnArtistSearchListener) {
+        OkGo.get<ArtistSearchResult>(BASE_URL)
+                .params(PARAM_METHOD, METHOD_ARTIST_INFO)
+                .params(PARAM_TING_UID, artistId)
+                .execute(object : JsonCallBack<ArtistSearchResult>() {
+                    override fun onSuccess(response: Response<ArtistSearchResult>?) {
+
+                    }
+                })
+    }
+
+    /** 1.新歌榜
+     * 2.热歌榜
+     * #分类榜单
+     * 20.华语金曲榜
+     * 21.欧美金曲榜
+     * 24.影视金曲榜
+     * 23.情歌对唱榜
+     * 25.网络歌曲榜
+     * 22.经典老歌榜
+     * 11.摇滚榜
+     * #媒体榜单
+     * 6.KTV热歌榜
+     * 8.Billboard
+     * 18.Hito中文榜
+     * 7.叱咤歌曲榜*/
+
+    fun searchRankBill(type: Int, size: Int, offset: Int, listener: OnBillSearchListener) {
+        OkGo.get<RankBillSearchResult>(BASE_URL)
+                .params(PARAM_METHOD, METHOD_GET_MUSIC_LIST)
+                .params(PARAM_TYPE, type)
+                .params(PARAM_SIZE, size)
+                .params(PARAM_OFFSET, offset)
+                .execute(object : JsonCallBack<RankBillSearchResult>() {
+                    override fun onSuccess(response: Response<RankBillSearchResult>?) {
+                        if (response?.body() != null){
+                            listener.onResult(0,response.body(),"success")
+                        }
+                    }
+                })
+    }
+
+    fun searchBillList(types: List<Int>, size: Int, offset: Int, listener: OnBillListSearchListener) {
+        val billList = ArrayList<RankBillBean>()
+        Observable.create(ObservableOnSubscribe<RankBillSearchResult> {
+            for (type in types) {
+                OkGo.get<RankBillSearchResult>(BASE_URL)
+                        .params(PARAM_METHOD, METHOD_GET_MUSIC_LIST)
+                        .params(PARAM_TYPE, type)
+                        .params(PARAM_SIZE, size)
+                        .params(PARAM_OFFSET, offset)
+                        .execute(object : JsonCallBack<RankBillSearchResult>() {
+                            override fun onSuccess(response: Response<RankBillSearchResult>?) {
+                                if (response?.body() != null) {
+                                    it.onNext(response.body())
+                                }
+                            }
+                        })
+            }
+        })
+                .map {
+                    val bean = RankBillBean()
+                    bean.billId = it.billboard.billboard_no.toInt()
+                    bean.billType = it.billboard.billboard_type.toInt()
+                    bean.billCoverUrl = it.billboard.pic_s640
+                    bean.update = it.billboard.update_date
+                    bean.musicNun = it.billboard.billboard_songnum.toInt()
+                    bean.musicFirst = it.song_list?.get(0)
+                    bean.musicSecond = it.song_list?.get(1)
+                    bean.musicThird = it.song_list?.get(2)
+                    bean
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    billList.add(it)
+                    if (billList.size == types.size){
+                        listener.onResult(0, billList, "success")
+                    }
+                }, {
+                    Log.e("searchBillList","throwable = " + it.message)
+                })
+    }
+
+
     interface OnKeywordSearchListener {
-        fun onResult(code: Int, result: KeywordSearchResult.SongBean?, message: String?)
+        fun onResult(code: Int, result: MusicBean?, message: String?)
     }
 
     interface OnLrcSearchListener {
@@ -132,8 +285,21 @@ object HttpRequest {
     }
 
     interface OnRecomSearchListener{
-        fun onResult(code: Int,result: List<RecomSongBean>?,message:String?)
+        fun onResult(code: Int, result: List<RecomSearchResult.RecomSongBean>?, message: String?)
     }
+
+    interface OnArtistSearchListener {
+        fun onResult(code: Int, result: ArtistSearchResult?, message: String?)
+    }
+
+    interface OnBillSearchListener {
+        fun onResult(code: Int, result: RankBillSearchResult?, message: String?)
+    }
+
+    interface OnBillListSearchListener {
+        fun onResult(code: Int, result: List<RankBillBean>?, message: String?)
+    }
+
 
     abstract class JsonCallBack<T> : AbsCallback<T>() {
         @Throws(Throwable::class)

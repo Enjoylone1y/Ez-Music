@@ -39,8 +39,8 @@ class MusicLrcFragment :Fragment() {
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
         if (mCurrentPlay != null){
             LrcLoadHelper.loadLrcFile(mCurrentPlay!!,object :LrcLoadHelper.OnLoadLrcListener{
-                override fun onSuccess(lrcFile: File) {
-                    mLrcView.loadLrc(lrcFile)
+                override fun onSuccess(lrcPath: String) {
+                    mLrcView.loadLrc(File(lrcPath))
                 }
 
                 override fun onLoadOnline() {
@@ -65,8 +65,8 @@ class MusicLrcFragment :Fragment() {
         if (mCurrentPlay != null){
             mLrcView.clearLrc()
             LrcLoadHelper.loadLrcFile(mCurrentPlay!!,object :LrcLoadHelper.OnLoadLrcListener{
-                override fun onSuccess(lrcFile: File) {
-                    mLrcView.loadLrc(lrcFile)
+                override fun onSuccess(lrcPath: String) {
+                    mLrcView.loadLrc(File(lrcPath))
                 }
 
                 override fun onLoadOnline() {

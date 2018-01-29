@@ -33,4 +33,7 @@
         将会实现本地和在线音乐播放、歌单创建和管理、歌词和音乐下载等，各功能在会逐步完成。项目已开源至GitHub
         (见于本人主页 https://github.com/Enjoylone1y 欢迎 Fork Or Star）</string>
     <string name="tv_ed_info">修改信息</string>
+    <string name="tv_recom_music">推荐音乐</string>
+    <string name="tv_new_music">最新音乐</string>
+    <string name="tv_music_bill">音乐榜单</string>
 </resources>

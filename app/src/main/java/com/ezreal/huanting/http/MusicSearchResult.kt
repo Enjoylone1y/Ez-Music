@@ -5,7 +5,7 @@ package com.ezreal.huanting.http
  * Created by wudeng on 2018/1/26.
  */
 
-class InfoSearchResult {
+class MusicSearchResult {
 
     var error_code: Int = 0
     var songinfo: SonginfoBean? = null

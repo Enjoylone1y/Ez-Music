@@ -1,9 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
+        <RelativeLayout
+            android:id="@+id/mLayoutRecomMusic"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp">
 
-</RelativeLayout>
+            <View
+                android:id="@+id/view_left_1"
+                android:layout_width="2dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:background="@color/color_black"/>
+
+            <TextView
+                android:id="@+id/tv_center_1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/view_left_1"
+                android:gravity="center"
+                android:text="@string/tv_recom_music"
+                android:textColor="@color/color_black"
+                android:textSize="16sp"/>
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tv_center_1"
+                android:src="@mipmap/arrow_right"/>
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mRcvRecomMusic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"/>
+
+        <RelativeLayout
+            android:id="@+id/mLayoutHotMusic"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp">
+
+            <View
+                android:id="@+id/view_left_3"
+                android:layout_width="2dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:background="@color/color_black"/>
+
+            <TextView
+                android:id="@+id/tv_center_3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/view_left_3"
+                android:gravity="center"
+                android:text="最热音乐"
+                android:textColor="@color/color_black"
+                android:textSize="16sp"/>
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tv_center_3"
+                android:src="@mipmap/arrow_right"/>
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mRcvHotMusic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"/>
+
+        <RelativeLayout
+            android:id="@+id/mLayoutNewMusic"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp">
+
+            <View
+                android:id="@+id/view_left_2"
+                android:layout_width="2dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:background="@color/color_black"/>
+
+            <TextView
+                android:id="@+id/tv_center_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/view_left_2"
+                android:gravity="center"
+                android:text="@string/tv_new_music"
+                android:textColor="@color/color_black"
+                android:textSize="16sp"/>
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tv_center_2"
+                android:src="@mipmap/arrow_right"/>
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mRcvNewMusic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"/>
+
+        <RelativeLayout
+            android:id="@+id/mLayoutMusicRank"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp">
+
+            <View
+                android:id="@+id/view_left_4"
+                android:layout_width="2dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:background="@color/color_black"/>
+
+            <TextView
+                android:id="@+id/tv_center_4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/view_left_4"
+                android:gravity="center"
+                android:text="@string/tv_music_bill"
+                android:textColor="@color/color_black"
+                android:textSize="16sp"/>
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tv_center_4"
+                android:src="@mipmap/arrow_right"/>
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mRcvMusicRank"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"/>
+    </LinearLayout>
+
+</ScrollView>

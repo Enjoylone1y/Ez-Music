@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_bill_cover"
+        android:layout_width="100dp"
+        android:layout_height="120dp"
+        android:scaleType="fitXY"
+        android:padding="5dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/iv_bill_cover"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_first"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1."
+                android:textColor="@color/color_gray"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/tv_first_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_first"
+                android:maxWidth="100dp"
+                android:textColor="@color/color_light_black"
+                android:textSize="14sp"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"/>
+
+            <TextView
+                android:id="@+id/tv_one_center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_first_title"
+                android:text="—"
+                android:textColor="@color/color_gray"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/tv_first_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_one_center"
+                android:maxWidth="100dp"
+                android:textColor="@color/color_light_black"
+                android:textSize="14sp"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2."
+                android:textColor="@color/color_gray"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tv_second_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_second"
+                android:maxWidth="100dp"
+                android:textColor="@color/color_light_black"
+                android:textSize="14sp"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"/>
+
+            <TextView
+                android:id="@+id/tv_second_center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_second_title"
+                android:text="—"
+                android:textColor="@color/color_gray"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tv_second_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_second_center"
+                android:maxWidth="100dp"
+                android:textColor="@color/color_light_black"
+                android:textSize="14sp"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_third"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3."
+                android:textColor="@color/color_gray"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tv_third_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_third"
+                android:maxWidth="100dp"
+                android:textColor="@color/color_light_black"
+                android:textSize="14sp"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"/>
+
+            <TextView
+                android:id="@+id/tv_third_center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_third_title"
+                android:text="—"
+                android:textColor="@color/color_gray"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/tv_third_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_third_center"
+                android:textColor="@color/color_light_black"
+                android:textSize="14sp"
+                android:maxWidth="100dp"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"/>
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/color_light_gray"/>
+    </LinearLayout>
+
+</RelativeLayout>
