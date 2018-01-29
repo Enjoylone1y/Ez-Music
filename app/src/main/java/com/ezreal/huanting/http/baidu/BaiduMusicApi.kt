@@ -1,4 +1,4 @@
-package com.ezreal.huanting.http
+package com.ezreal.huanting.http.baidu
 
 import android.text.TextUtils
 import android.util.Log
@@ -16,11 +16,11 @@ import io.reactivex.schedulers.Schedulers
 import java.lang.reflect.ParameterizedType
 
 /**
- * 网络歌曲 网络请求类
+ * 网络歌曲 网络请求类  百度 api
  * Created by wudeng on 2018/1/23.
  */
 
-object HttpRequest {
+object BaiduMusicApi {
 
     private val BASE_URL = "http://tingapi.ting.baidu.com/v1/restserver/ting"
     private val METHOD_GET_MUSIC_LIST = "baidu.ting.billboard.billList"
@@ -39,29 +39,6 @@ object HttpRequest {
     private val PARAM_TING_UID = "tinguid"
     private val PARAM_QUERY = "query"
 
-    //推荐列表
-    //baidu.ting.song.getRecommandSongList  {song_id: id, num: 5 }
-
-    //下载
-    //baidu.ting.song.downWeb  {songid: id, bit:"24, 64, 128, 192, 256, 320, flac", _t: (new Date())}
-    //songid: //歌曲id
-    //bit: //码率
-    //_t: //时间戳
-
-    //获取歌手信息
-    //baidu.ting.artist.getInfo  { tinguid: id }
-    //tinguid: //歌手ting id
-
-    //获取歌手歌曲列表
-    //baidu.ting.artist.getSongList  { tinguid: id, limits:6, use_cluster:1, order:2}
-
-    //播放
-    //baidu.ting.song.play  {songid: id}
-    //baidu.ting.song.playAAC  {songid: id}
-
-    // baidu.ting.billboard.billList  {type:1,size:10, offset:0}
-    // type: //1、新歌榜，2、热歌榜
-
     /**
      * 根据关键字（音乐名 歌手名）搜索百度音乐库， 可以获取得到歌曲 ID
      */
@@ -72,7 +49,7 @@ object HttpRequest {
                 .execute(object : JsonCallBack<KeywordSearchResult>() {
                     override fun onSuccess(response: Response<KeywordSearchResult>?) {
                         if (response?.body() != null && response.body()?.song != null) {
-
+                            listener.onResult(0,response.body()?.song?.get(0),"success")
                         } else {
                             listener.onResult(-1, null, "未找到歌曲")
                         }
@@ -109,43 +86,6 @@ object HttpRequest {
                 })
     }
 
-    /**
-     * 根据 关键词搜索歌词
-     */
-    fun searchLrcByKeyword(keyWord: String,listener: OnLrcSearchListener){
-        Observable.create(ObservableOnSubscribe<String?> {emitter ->
-            OkGo.get<KeywordSearchResult>(BASE_URL)
-                    .params(PARAM_METHOD, METHOD_SEARCH_MUSIC)
-                    .params(PARAM_QUERY, keyWord)
-                    .execute(object : JsonCallBack<KeywordSearchResult>() {
-                        override fun onSuccess(response: Response<KeywordSearchResult>?) {
-                            if (response?.body() != null && response.body().song != null){
-                                emitter.onNext(response.body().song?.get(0)?.songid!!)
-                            }else{
-                                emitter.onError(Throwable("empty result or failed"))
-                            }
-                        }
-                    })
-        }).map{ songId ->
-            val lrc = LrcSearchResult()
-            OkGo.get<LrcSearchResult>(BASE_URL)
-                    .params(PARAM_METHOD, METHOD_LRC)
-                    .params(PARAM_SONG_ID, songId)
-                    .execute(object : JsonCallBack<LrcSearchResult>() {
-                        override fun onSuccess(response: Response<LrcSearchResult>?) {
-                            if (response?.body() != null){
-                                lrc.title = response.body()?.title!!
-                                lrc.lrcContent = response.body()?.lrcContent!!
-                            }
-                        }
-                    })
-            lrc
-        }.subscribe({
-                    listener.onResult(0,it.lrcContent,"success")
-                },{
-                    listener.onResult(-1,null,"failed")
-                })
-    }
 
     /**
      * 根据参考的音乐 ID ,获取推荐音乐列表
@@ -155,7 +95,7 @@ object HttpRequest {
                 .params(PARAM_METHOD, METHOD_RECOM)
                 .params(PARAM_RECOM_SONG_ID,musicId)
                 .params(PARAM_NUM,num)
-                .execute(object :JsonCallBack<RecomSearchResult>(){
+                .execute(object : JsonCallBack<RecomSearchResult>(){
                     override fun onSuccess(response: Response<RecomSearchResult>?) {
                         if (response?.body() != null
                                 && response.body()?.result != null
@@ -201,22 +141,6 @@ object HttpRequest {
                     }
                 })
     }
-
-    /** 1.新歌榜
-     * 2.热歌榜
-     * #分类榜单
-     * 20.华语金曲榜
-     * 21.欧美金曲榜
-     * 24.影视金曲榜
-     * 23.情歌对唱榜
-     * 25.网络歌曲榜
-     * 22.经典老歌榜
-     * 11.摇滚榜
-     * #媒体榜单
-     * 6.KTV热歌榜
-     * 8.Billboard
-     * 18.Hito中文榜
-     * 7.叱咤歌曲榜*/
 
     fun searchRankBill(type: Int, size: Int, offset: Int, listener: OnBillSearchListener) {
         OkGo.get<RankBillSearchResult>(BASE_URL)
@@ -277,7 +201,7 @@ object HttpRequest {
 
 
     interface OnKeywordSearchListener {
-        fun onResult(code: Int, result: MusicBean?, message: String?)
+        fun onResult(code: Int, result: KeywordSearchResult.SongBean?, message: String?)
     }
 
     interface OnLrcSearchListener {

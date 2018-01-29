@@ -1,4 +1,4 @@
-package com.ezreal.huanting.http
+package com.ezreal.huanting.http.baidu
 
 /**
  * 在线歌曲信息搜索结果 bean

@@ -1,5 +1,6 @@
 package com.ezreal.huanting.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -12,11 +13,14 @@ import android.view.ViewGroup
 import com.ezreal.huanting.R
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
+import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.bean.RankBillBean
-import com.ezreal.huanting.http.HttpRequest
-import com.ezreal.huanting.http.RankBillSearchResult
-import com.ezreal.huanting.http.RecomSearchResult
+import com.ezreal.huanting.http.baidu.BaiduMusicApi
+import com.ezreal.huanting.http.baidu.KeywordSearchResult
+import com.ezreal.huanting.http.baidu.RankBillSearchResult
+import com.ezreal.huanting.http.baidu.RecomSearchResult
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
+import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_online_music.*
 
 
@@ -26,6 +30,9 @@ import kotlinx.android.synthetic.main.fragment_online_music.*
  */
 class OnlineFragment : Fragment() {
 
+    private val MSG_LOAD_RECOM_DATA = 0x100
+
+    private lateinit var mBaseId: String
     // 推荐歌曲
     private val mRecomMusicList = ArrayList<RecomSearchResult.RecomSongBean>()
     // 最热歌曲
@@ -42,10 +49,16 @@ class OnlineFragment : Fragment() {
     private lateinit var mBillAdapter: RecycleViewAdapter<RankBillBean>
 
     private val mHandler = MyHandler()
-    private class MyHandler: Handler() {
-        override fun handleMessage(msg: Message?) {
-            super.handleMessage(msg)
 
+    @SuppressLint("HandlerLeak")
+    inner class MyHandler : Handler() {
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            when (msg.what) {
+                MSG_LOAD_RECOM_DATA -> {
+                    loadRecomMusic()
+                }
+            }
         }
     }
 
@@ -166,22 +179,11 @@ class OnlineFragment : Fragment() {
 
     }
 
-
     private fun loadData() {
-        // 获取推荐音乐 以数据库中歌曲播放次数为基准
-
-        HttpRequest.searchRecomMusic("44805341",
-                6, object :HttpRequest.OnRecomSearchListener{
-            override fun onResult(code: Int, result: List<RecomSearchResult.RecomSongBean>?, message: String?) {
-                if (code == 0 && result != null){
-                    mRecomMusicList.addAll(result)
-                    mRecomAdapter.notifyDataSetChanged()
-                }
-            }
-        })
+        getRecomBaseId()
 
         // 获取最热音乐
-        HttpRequest.searchRankBill(2, 6, 0, object : HttpRequest.OnBillSearchListener {
+        BaiduMusicApi.searchRankBill(2, 6, 0, object : BaiduMusicApi.OnBillSearchListener {
             override fun onResult(code: Int, result: RankBillSearchResult?, message: String?) {
                 if (code == 0 && result?.song_list != null) {
                     mHotMusicList.addAll(result.song_list)
@@ -191,7 +193,7 @@ class OnlineFragment : Fragment() {
         })
 
         // 获取最新音乐
-        HttpRequest.searchRankBill(1, 6, 0, object : HttpRequest.OnBillSearchListener {
+        BaiduMusicApi.searchRankBill(1, 6, 0, object : BaiduMusicApi.OnBillSearchListener {
             override fun onResult(code: Int, result: RankBillSearchResult?, message: String?) {
                 if (code == 0 && result?.song_list != null) {
                     mNewMusicList.addAll(result.song_list)
@@ -202,7 +204,7 @@ class OnlineFragment : Fragment() {
 
         // 获取歌曲榜单
         val types = listOf(20, 21, 22)
-        HttpRequest.searchBillList(types, 3, 0, object : HttpRequest.OnBillListSearchListener {
+        BaiduMusicApi.searchBillList(types, 3, 0, object : BaiduMusicApi.OnBillListSearchListener {
             override fun onResult(code: Int, result: List<RankBillBean>?, message: String?) {
                 if (code == 0 && result != null) {
                     mRankBillList.addAll(result)
@@ -211,6 +213,55 @@ class OnlineFragment : Fragment() {
                 }
             }
 
+        })
+    }
+
+    private fun loadRecomMusic() {
+        BaiduMusicApi.searchRecomMusic(mBaseId,
+                6, object : BaiduMusicApi.OnRecomSearchListener {
+            override fun onResult(code: Int, result: List<RecomSearchResult.RecomSongBean>?, message: String?) {
+                if (code == 0 && result != null) {
+                    mRecomMusicList.addAll(result)
+                    mRecomAdapter.notifyDataSetChanged()
+                }
+            }
+        })
+    }
+
+    private fun getRecomBaseId() {
+        // 获取推荐音乐 以数据库中歌曲播放次数为基准
+        val realm = Realm.getDefaultInstance()
+        val lastOnline = realm.where(MusicBean::class.java)
+                .equalTo("isOnline", true)
+                .findAllSorted("playCount")
+                .lastOrNull()
+        if (lastOnline != null) {
+            mBaseId = lastOnline.musicId.toString()
+            mHandler.sendEmptyMessage(MSG_LOAD_RECOM_DATA)
+            return
+        }
+        val max = realm.where(MusicBean::class.java)
+                .equalTo("isOnline", false)
+                .max("playCount")
+        val lastLocal = realm.where(MusicBean::class.java)
+                .equalTo("playCount", max.toLong())
+                .findFirst()
+        if (lastLocal == null || lastLocal.playCount == 0L) {
+            // TODO
+            mBaseId = "74172066"
+            mHandler.sendEmptyMessage(MSG_LOAD_RECOM_DATA)
+            return
+        }
+        val key = lastLocal.musicTitle + " " + lastLocal.artistName
+        BaiduMusicApi.searchMusicByKey(key, object : BaiduMusicApi.OnKeywordSearchListener {
+            override fun onResult(code: Int, result: KeywordSearchResult.SongBean?, message: String?) {
+                mBaseId = if (code == 0 && result != null) {
+                    result.songid
+                } else {
+                    "74172066"
+                }
+                mHandler.sendEmptyMessage(MSG_LOAD_RECOM_DATA)
+            }
         })
     }
 

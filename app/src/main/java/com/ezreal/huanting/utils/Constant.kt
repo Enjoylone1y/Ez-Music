@@ -36,11 +36,4 @@ object Constant {
     val PRE_APP_OPTION_TABLE = "APP_OPTION_TABLE"
     val PRE_APP_OPTION_LOVE_CREATED = "APP_OPTION_LOVE_CREATED"
     val PRE_APP_OPTION_INIT_SYNC = "APP_OPTION_INIT_SYNC"
-
-    // 歌曲搜索
-    val url1 = "http://s.music.163.com/search/get/?type=1&s=%22%E8%83%8C%E5%8F%9B%22&limit=5&offset=0"
-    // 歌词
-    val url2 = "http://music.163.com/api/song/lyric?os=%22pc%22&id=34775141&lv=-1&kv=-1&tv=-1"
-    // 歌曲信息
-    val url3 = "http://music.163.com/api/song/detail/?id=471542265&ids=[471542265]"
 }

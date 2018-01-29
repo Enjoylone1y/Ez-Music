@@ -38,21 +38,7 @@ class MusicLrcFragment :Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
         if (mCurrentPlay != null){
-            LrcLoadHelper.loadLrcFile(mCurrentPlay!!,object :LrcLoadHelper.OnLoadLrcListener{
-                override fun onSuccess(lrcPath: String) {
-                    mLrcView.loadLrc(File(lrcPath))
-                }
-
-                override fun onLoadOnline() {
-                    mLrcView.setLabel("在线查找ing……")
-                }
-
-                override fun onFailed() {
-                    mLrcView.setLabel("暂无歌词")
-                }
-
-            })
-
+            searchFromBaidu()
         }
     }
 
@@ -61,26 +47,46 @@ class MusicLrcFragment :Fragment() {
      */
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
+        mLrcView.clearLrc()
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
         if (mCurrentPlay != null){
-            mLrcView.clearLrc()
-            LrcLoadHelper.loadLrcFile(mCurrentPlay!!,object :LrcLoadHelper.OnLoadLrcListener{
-                override fun onSuccess(lrcPath: String) {
-                    mLrcView.loadLrc(File(lrcPath))
-                }
-
-                override fun onLoadOnline() {
-                    mLrcView.setLabel("在线查找ing……")
-                }
-
-                override fun onFailed() {
-                    mLrcView.setLabel("暂无歌词")
-                }
-
-            })
+            searchFromBaidu()
         }
     }
 
+    private fun searchFromBaidu() {
+        LrcLoadHelper.loadLrcFileBaidu(mCurrentPlay!!, object : LrcLoadHelper.OnLoadLrcListener {
+            override fun onSuccess(lrcPath: String) {
+                mLrcView.loadLrc(File(lrcPath))
+            }
+
+            override fun onLoadOnline() {
+                mLrcView.setLabel("从百度获取ing……")
+            }
+
+            override fun onFailed() {
+                mLrcView.setLabel("暂无歌词")
+            }
+
+        })
+    }
+
+    private fun searchFromNetease() {
+        LrcLoadHelper.loadLrcFromNetease(mCurrentPlay!!, object : LrcLoadHelper.OnLoadLrcListener {
+            override fun onSuccess(lrcPath: String) {
+                mLrcView.loadLrc(File(lrcPath))
+            }
+
+            override fun onLoadOnline() {
+                mLrcView.setLabel("从网易云获取ing……")
+            }
+
+            override fun onFailed() {
+                mLrcView.setLabel("暂无歌词")
+            }
+
+        })
+    }
 
     /**
      * 监听播放进度更新,此方法将会由子线程发起

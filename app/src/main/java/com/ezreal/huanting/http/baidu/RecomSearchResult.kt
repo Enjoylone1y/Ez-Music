@@ -1,4 +1,4 @@
-package com.ezreal.huanting.http
+package com.ezreal.huanting.http.baidu
 
 /**
  * 推荐歌曲返回结果
