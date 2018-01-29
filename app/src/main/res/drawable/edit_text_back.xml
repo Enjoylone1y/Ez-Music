@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-bill xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
             <solid android:color="@color/color_gray"/>
@@ -12,4 +12,4 @@
             <solid android:color="@color/colorAccent"/>
         </shape>
     </item>
-</layer-bill>
+</layer-list>

@@ -16,7 +16,6 @@ import com.ezreal.huanting.bean.RankBillBean
 import com.ezreal.huanting.http.HttpRequest
 import com.ezreal.huanting.http.RankBillSearchResult
 import com.ezreal.huanting.http.RecomSearchResult
-import com.ezreal.huanting.utils.ConvertUtils
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import kotlinx.android.synthetic.main.fragment_online_music.*
 
@@ -202,11 +201,12 @@ class OnlineFragment : Fragment() {
         })
 
         // 获取歌曲榜单
-        val types = listOf(20, 21, 22, 23, 24, 25)
+        val types = listOf(20, 21, 22)
         HttpRequest.searchBillList(types, 3, 0, object : HttpRequest.OnBillListSearchListener {
             override fun onResult(code: Int, result: List<RankBillBean>?, message: String?) {
                 if (code == 0 && result != null) {
                     mRankBillList.addAll(result)
+                    mRankBillList.sortBy { it.billType }
                     mBillAdapter.notifyDataSetChanged()
                 }
             }
