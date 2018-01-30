@@ -34,8 +34,21 @@
 
         <activity android:name=".activity.NowPlayingActivity"
                   android:screenOrientation="portrait"/>
-        <activity android:name=".activity.RecentPlayActivity"/>
-        <activity android:name=".activity.MusicBillActivity"/>
+        <activity
+            android:name=".activity.RecentPlayActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.LocalBillActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.RankBillListActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.RecomListActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.RankBillActivity"
+            android:screenOrientation="portrait"/>
 
         <service android:name=".service.MusicPlayService"/>
     </application>

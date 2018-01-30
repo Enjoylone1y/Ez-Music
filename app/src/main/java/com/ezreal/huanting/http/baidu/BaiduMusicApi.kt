@@ -172,19 +172,30 @@ object BaiduMusicApi {
                                     it.onNext(response.body())
                                 }
                             }
+
+                            override fun onError(response: Response<RankBillSearchResult>?) {
+                                super.onError(response)
+                                Log.e("searchBillList","onError type = " + type)
+                            }
                         })
             }
         })
                 .map {
                     val bean = RankBillBean()
-                    bean.billId = it.billboard.billboard_no.toInt()
+                    bean.billId = it.billboard.billboard_type.toInt()
                     bean.billType = it.billboard.billboard_type.toInt()
                     bean.billCoverUrl = it.billboard.pic_s640
                     bean.update = it.billboard.update_date
-                    bean.musicNun = it.billboard.billboard_songnum.toInt()
-                    bean.musicFirst = it.song_list?.get(0)
-                    bean.musicSecond = it.song_list?.get(1)
-                    bean.musicThird = it.song_list?.get(2)
+                    if (it.song_list?.size!! >= 1){
+                        bean.musicFirst = it.song_list?.get(0)
+                        if (it.song_list?.size!! >= 2){
+                            bean.musicSecond = it.song_list?.get(1)
+                            if (it.song_list?.size!! >= 3){
+                                bean.musicThird = it.song_list?.get(2)
+                            }
+                        }
+                    }
+
                     bean
                 }
                 .subscribeOn(Schedulers.io())

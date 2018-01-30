@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.R
-import com.ezreal.huanting.adapter.MusicAdapter
+import com.ezreal.huanting.adapter.LocalMusicAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
@@ -28,7 +28,7 @@ import java.util.*
 class MusicListFragment : Fragment() {
 
     private val mMusicList = ArrayList<MusicBean>()
-    private var mAdapter: MusicAdapter? = null
+    private var mAdapter: LocalMusicAdapter? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +63,7 @@ class MusicListFragment : Fragment() {
 
     private fun musicLoaded(musicList: List<MusicBean>){
         mMusicList.addAll(musicList)
-        mAdapter = MusicAdapter(context!!, Constant.LOCAL_MUSIC_LIST_ID, mMusicList)
+        mAdapter = LocalMusicAdapter(context!!, Constant.LOCAL_MUSIC_LIST_ID, mMusicList)
         mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
                 mAdapter?.checkPlaySong(position - 1, position)

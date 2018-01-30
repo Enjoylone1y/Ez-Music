@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.ezreal.huanting.R
-import com.ezreal.huanting.adapter.MusicAdapter
+import com.ezreal.huanting.adapter.LocalMusicAdapter
 import com.ezreal.huanting.bean.MusicBillBean
 import com.ezreal.huanting.helper.MusicDataHelper
 import kotlinx.android.synthetic.main.activity_music_list.*
@@ -33,14 +33,14 @@ import org.greenrobot.eventbus.Subscribe
 
 
 /**
- * 歌单详情页
+ * 本地歌单详情页
  * Created by wudeng on 2018/1/8.
  */
 
-class MusicBillActivity : AppCompatActivity() {
+class LocalBillActivity : AppCompatActivity() {
 
     private val mMusicList = ArrayList<MusicBean>()
-    private var mAdapter: MusicAdapter? = null
+    private var mAdapter: LocalMusicAdapter? = null
     private var mBill: MusicBillBean? = null
     private var mBackColor = Color.parseColor("#bfbfbf")
     private var mHeadViewHeight = 0
@@ -128,7 +128,7 @@ class MusicBillActivity : AppCompatActivity() {
         mRcvMusic.isNestedScrollingEnabled = false
         mRcvMusic.setHasFixedSize(false)
         mRcvMusic.addHeaderView(createHeadView())
-        mAdapter = MusicAdapter(this, mBill?.listId!!, mMusicList)
+        mAdapter = LocalMusicAdapter(this, mBill?.listId!!, mMusicList)
         mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
                 mAdapter?.checkPlaySong(position - 2, position)

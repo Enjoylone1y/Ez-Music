@@ -26,7 +26,7 @@ class MusicBillAdapter(private val mContext: Context, private val mBill: List<Mu
 
     override fun bindView(holder: RViewHolder, position: Int) {
         val bean = mBill[position]
-        holder.setText(R.id.mTvListTitle, bean.listName!!)
+        holder.setText(R.id.mTvListTitle, bean.listName)
         val size = bean.musicList.size
         holder.setText(R.id.mTvMusicNum, size.toString())
         val cover = holder.getImageView(R.id.mIvListCover)

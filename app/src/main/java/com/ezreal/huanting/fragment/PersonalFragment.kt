@@ -22,7 +22,7 @@ import java.io.File
 import android.view.Gravity
 import android.widget.EditText
 import cn.hotapk.fastandrutils.utils.FToastUtils
-import com.ezreal.huanting.activity.MusicBillActivity
+import com.ezreal.huanting.activity.LocalBillActivity
 import com.ezreal.huanting.adapter.MusicBillAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
@@ -64,7 +64,7 @@ class PersonalFragment : Fragment() {
         mBillAdapter = MusicBillAdapter(context!!, mMusicList)
         mBillAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                val intent = Intent(context, MusicBillActivity::class.java)
+                val intent = Intent(context, LocalBillActivity::class.java)
                 intent.putExtra("ListId", mMusicList[position].listId)
                 context?.startActivity(intent)
             }

@@ -19,12 +19,12 @@ import org.greenrobot.eventbus.EventBus
 
 
 /**
- * 音乐列表适配器
+ * 榜单 音乐列表适配器
  * Created by wudeng on 2017/11/27.
  */
 
-class MusicAdapter(private val mContext: Context, private val listId: Long,
-                   private val mList: List<MusicBean>)
+class RankMusicAdapter(private val mContext: Context, private val listId: Long,
+                       private val mList: List<MusicBean>)
     : RecycleViewAdapter<MusicBean>(mContext, mList) {
 
     private var mMenuPopupWindow: MusicMenuPopup? = null

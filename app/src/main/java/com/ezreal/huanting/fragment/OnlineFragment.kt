@@ -1,6 +1,7 @@
 package com.ezreal.huanting.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -11,7 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ezreal.huanting.R
+import com.ezreal.huanting.activity.RankBillListActivity
 import com.ezreal.huanting.adapter.RViewHolder
+import com.ezreal.huanting.adapter.RankBillAdapter
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.bean.RankBillBean
@@ -146,36 +149,57 @@ class OnlineFragment : Fragment() {
         mRcvMusicRank.setHasFixedSize(false)
         mRcvMusicRank.addItemDecoration(
                 RecyclerViewDivider.with(context!!).color(android.R.color.white).size(5).build())
-        mBillAdapter = object : RecycleViewAdapter<RankBillBean>(context!!, mRankBillList) {
-            override fun setItemLayoutId(position: Int): Int {
-                return R.layout.item_rank_bill
-            }
-
-            override fun bindView(holder: RViewHolder, position: Int) {
-                val billBean = mRankBillList[position]
-                holder.setImageByUrl(context!!,R.id.iv_bill_cover,billBean.billCoverUrl!!,
-                        R.drawable.splash)
-                if (billBean.musicFirst != null){
-                    holder.setText(R.id.tv_first_title,billBean.musicFirst?.title!!)
-                    holder.setText(R.id.tv_first_artist,billBean.musicFirst?.artist_name!!)
-                }
-
-                if (billBean.musicSecond != null){
-                    holder.setText(R.id.tv_second_title,billBean.musicSecond?.title!!)
-                    holder.setText(R.id.tv_second_artist,billBean.musicSecond?.artist_name!!)
-                }
-
-                if (billBean.musicThird != null){
-                    holder.setText(R.id.tv_third_title,billBean.musicThird?.title!!)
-                    holder.setText(R.id.tv_third_artist,billBean.musicThird?.artist_name!!)
-                }
-
-            }
-        }
+        mBillAdapter = RankBillAdapter(context!!,mRankBillList)
         mRcvMusicRank.adapter = mBillAdapter
     }
 
     private fun initEvent() {
+        // 打开最热歌曲列表
+        mLayoutRecomMusic.setOnClickListener {
+
+        }
+        // 打开最热歌曲列表
+        mLayoutHotMusic.setOnClickListener {
+
+        }
+        // 打开最新歌曲列表
+        mLayoutNewMusic.setOnClickListener {
+
+        }
+        // 打开榜单列表
+        mLayoutMusicBill.setOnClickListener {
+            startActivity(Intent(context,RankBillListActivity::class.java))
+        }
+
+        // 打开推荐歌曲列表
+        mRecomAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
+            override fun onItemClick(holder: RViewHolder, position: Int) {
+
+            }
+
+        })
+        // 打开最热歌曲列表
+        mHotAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
+            override fun onItemClick(holder: RViewHolder, position: Int) {
+
+            }
+
+        })
+        // 打开最新歌曲列表
+         mNewAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
+            override fun onItemClick(holder: RViewHolder, position: Int) {
+
+            }
+
+        })
+
+        // 打开对应的榜单
+        mBillAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
+            override fun onItemClick(holder: RViewHolder, position: Int) {
+
+            }
+
+        })
 
     }
 

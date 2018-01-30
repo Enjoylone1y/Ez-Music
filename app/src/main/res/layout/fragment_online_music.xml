@@ -134,7 +134,7 @@
             android:layout_marginTop="5dp"/>
 
         <RelativeLayout
-            android:id="@+id/mLayoutMusicRank"
+            android:id="@+id/mLayoutMusicBill"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginTop="5dp">
