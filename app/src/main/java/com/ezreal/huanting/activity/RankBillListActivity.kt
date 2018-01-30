@@ -1,6 +1,7 @@
 package com.ezreal.huanting.activity
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import com.ezreal.huanting.R
@@ -39,7 +40,9 @@ class RankBillListActivity : Activity() {
         // 打开对应的榜单
         mBillAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-
+                val intent = Intent(this@RankBillListActivity, RankBillActivity::class.java)
+                intent.putExtra("BillID", mRankBillList[position].billType.toLong())
+                startActivity(intent)
             }
 
         })

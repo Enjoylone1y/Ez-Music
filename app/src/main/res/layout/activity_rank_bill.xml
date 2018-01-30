@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_toRightOf="@+id/mIvBack"
-            android:text="@string/tv_local_music"
+            android:text="@string/tv_music_bill"
             android:textColor="@android:color/white"
             android:textSize="18sp"/>
 

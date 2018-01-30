@@ -28,7 +28,7 @@ import java.util.*
 class MusicListFragment : Fragment() {
 
     private val mMusicList = ArrayList<MusicBean>()
-    private var mAdapter: MusicAdapter? = null
+    private lateinit var mAdapter: MusicAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,9 +64,9 @@ class MusicListFragment : Fragment() {
     private fun musicLoaded(musicList: List<MusicBean>){
         mMusicList.addAll(musicList)
         mAdapter = MusicAdapter(context!!, Constant.LOCAL_MUSIC_LIST_ID, mMusicList)
-        mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
+        mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter?.checkPlaySong(position - 1, position)
+                mAdapter.playLocalMusic(position - 1)
             }
         })
         mRecyclerView.adapter = mAdapter
@@ -79,14 +79,14 @@ class MusicListFragment : Fragment() {
         if (prePlay != null) {
             val preIndex = mMusicList.indexOf(prePlay)
             prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
-            mAdapter?.notifyItemChanged(preIndex + 1)
+            mAdapter.notifyItemChanged(preIndex + 1)
         }
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
         if (currentPlay != null && currentPlay.playFromListId == Constant.LOCAL_MUSIC_LIST_ID) {
             val currentIndex = mMusicList.indexOf(currentPlay)
             mMusicList[currentIndex].playStatus = Constant.PLAY_STATUS_PLAYING
-            mAdapter?.notifyItemChanged(currentIndex + 1)
+            mAdapter.notifyItemChanged(currentIndex + 1)
         }
     }
 

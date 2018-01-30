@@ -117,13 +117,17 @@ object BaiduMusicApi {
     /**
      * 根据音乐 ID 获取音乐完整信息，并且得到播放在线连接
      */
-    fun searchMusicInfoById(musicId: String, listener: OnKeywordSearchListener) {
+    fun searchMusicInfoById(musicId: String, listener: OnMusicInfoSearchListener) {
         OkGo.get<MusicSearchResult>(BASE_URL)
                 .params(PARAM_METHOD, METHOD_PLAY)
                 .params(PARAM_SONG_ID, musicId)
                 .execute(object : JsonCallBack<MusicSearchResult>() {
                     override fun onSuccess(response: Response<MusicSearchResult>?) {
-
+                        if (response?.body() != null){
+                            listener.onResult(0,response.body(),"success")
+                        }else{
+                            listener.onResult(-1,null,"failed")
+                        }
                     }
                 })
     }
@@ -235,6 +239,9 @@ object BaiduMusicApi {
         fun onResult(code: Int, result: List<RankBillBean>?, message: String?)
     }
 
+    interface OnMusicInfoSearchListener{
+        fun onResult(code: Int,result:MusicSearchResult?,message: String?)
+    }
 
     abstract class JsonCallBack<T> : AbsCallback<T>() {
         @Throws(Throwable::class)

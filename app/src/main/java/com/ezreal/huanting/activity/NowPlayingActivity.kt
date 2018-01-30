@@ -243,25 +243,31 @@ class NowPlayingActivity : AppCompatActivity() {
             mIvPlay.setImageResource(R.mipmap.song_play)
         }
 
-        val uri = mCurrentPlay?.albumUri
-        var scale = 8
-        val srcBitmap = if (uri == null) {
-            BitmapFactory.decodeResource(resources, R.drawable.default_play_bg)
-        } else {
-            try {
-                MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(uri))
-            } catch (e: Exception) {
-                e.printStackTrace()
-                scale = 1
+        if (mCurrentPlay?.isOnline!!){
+            val uri = mCurrentPlay?.bigPic
+            
+
+        }else{
+            val uri = mCurrentPlay?.albumUri
+            var scale = 8
+            val srcBitmap = if (uri == null) {
                 BitmapFactory.decodeResource(resources, R.drawable.default_play_bg)
+            } else {
+                try {
+                    MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(uri))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    scale = 1
+                    BitmapFactory.decodeResource(resources, R.drawable.default_play_bg)
+                }
             }
+            val blurBitmap = EasyBlur.with(this)
+                    .bitmap(srcBitmap) //要模糊的图片
+                    .radius(10)//模糊半径
+                    .scale(scale)//指定模糊前缩小的倍数
+                    .blur()
+            mIvBackGround.setImageBitmap(blurBitmap)
         }
-        val blurBitmap = EasyBlur.with(this)
-                .bitmap(srcBitmap) //要模糊的图片
-                .radius(10)//模糊半径
-                .scale(scale)//指定模糊前缩小的倍数
-                .blur()
-        mIvBackGround.setImageBitmap(blurBitmap)
 
     }
 

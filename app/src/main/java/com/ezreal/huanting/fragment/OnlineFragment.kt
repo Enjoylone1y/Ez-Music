@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ezreal.huanting.R
+import com.ezreal.huanting.activity.RankBillActivity
 import com.ezreal.huanting.activity.RankBillListActivity
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RankBillAdapter
@@ -22,6 +23,7 @@ import com.ezreal.huanting.http.baidu.BaiduMusicApi
 import com.ezreal.huanting.http.baidu.KeywordSearchResult
 import com.ezreal.huanting.http.baidu.RankBillSearchResult
 import com.ezreal.huanting.http.baidu.RecomSearchResult
+import com.ezreal.huanting.utils.Constant
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_online_music.*
@@ -154,17 +156,22 @@ class OnlineFragment : Fragment() {
     }
 
     private fun initEvent() {
-        // 打开最热歌曲列表
+        // 打开推荐音乐列表
         mLayoutRecomMusic.setOnClickListener {
 
         }
+
         // 打开最热歌曲列表
         mLayoutHotMusic.setOnClickListener {
-
+            val intent = Intent(context, RankBillActivity::class.java)
+            intent.putExtra("BillID",Constant.HOT_MUSIC_LIST_ID)
+            startActivity(intent)
         }
         // 打开最新歌曲列表
         mLayoutNewMusic.setOnClickListener {
-
+            val intent = Intent(context, RankBillActivity::class.java)
+            intent.putExtra("BillID",Constant.NEW_MUSIC_LIST_ID)
+            startActivity(intent)
         }
         // 打开榜单列表
         mLayoutMusicBill.setOnClickListener {
@@ -181,14 +188,18 @@ class OnlineFragment : Fragment() {
         // 打开最热歌曲列表
         mHotAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
             override fun onItemClick(holder: RViewHolder, position: Int) {
-
+                val intent = Intent(context, RankBillActivity::class.java)
+                intent.putExtra("BillID",Constant.HOT_MUSIC_LIST_ID)
+                startActivity(intent)
             }
 
         })
         // 打开最新歌曲列表
          mNewAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
             override fun onItemClick(holder: RViewHolder, position: Int) {
-
+                val intent = Intent(context, RankBillActivity::class.java)
+                intent.putExtra("BillID",Constant.NEW_MUSIC_LIST_ID)
+                startActivity(intent)
             }
 
         })
@@ -196,15 +207,17 @@ class OnlineFragment : Fragment() {
         // 打开对应的榜单
         mBillAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
             override fun onItemClick(holder: RViewHolder, position: Int) {
-
+                val intent = Intent(context, RankBillActivity::class.java)
+                intent.putExtra("BillID", mRankBillList[position].billType.toLong())
+                startActivity(intent)
             }
-
         })
 
     }
 
     private fun loadData() {
-        getRecomBaseId()
+        // getRecomBaseId()
+        loadRecomMusic()
 
         // 获取最热音乐
         BaiduMusicApi.searchRankBill(2, 6, 0, object : BaiduMusicApi.OnBillSearchListener {
@@ -241,7 +254,7 @@ class OnlineFragment : Fragment() {
     }
 
     private fun loadRecomMusic() {
-        BaiduMusicApi.searchRecomMusic(mBaseId,
+        BaiduMusicApi.searchRecomMusic("74172066",
                 6, object : BaiduMusicApi.OnRecomSearchListener {
             override fun onResult(code: Int, result: List<RecomSearchResult.RecomSongBean>?, message: String?) {
                 if (code == 0 && result != null) {
@@ -271,7 +284,6 @@ class OnlineFragment : Fragment() {
                 .equalTo("playCount", max.toLong())
                 .findFirst()
         if (lastLocal == null || lastLocal.playCount == 0L) {
-            // TODO
             mBaseId = "74172066"
             mHandler.sendEmptyMessage(MSG_LOAD_RECOM_DATA)
             return

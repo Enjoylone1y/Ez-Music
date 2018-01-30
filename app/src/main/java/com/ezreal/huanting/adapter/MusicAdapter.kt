@@ -32,7 +32,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
     init {
         val currentPlay = GlobalMusicData.getCurrentPlay()
         if (currentPlay != null && currentPlay.playFromListId == listId) {
-            mList.first { it.musicId == currentPlay.musicId }.playStatus = Constant.PLAY_STATUS_PLAYING
+            mList.firstOrNull { it.musicId == currentPlay.musicId }?.playStatus = Constant.PLAY_STATUS_PLAYING
         }
     }
 
@@ -76,42 +76,35 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         PopupShowUtils.lightOff(mContext as Activity)
     }
 
-    fun checkPlaySong(musicPosition: Int, viewPosition: Int) {
-
-        if (GlobalMusicData.getListId() != listId) {
-            // 恢复旧播放列表歌曲状态
-            if (!GlobalMusicData.getNowPlayingList().isEmpty()
-                    && GlobalMusicData.getCurrentIndex() != -1) {
-                GlobalMusicData.getNowPlayingList()[GlobalMusicData.getCurrentIndex()].playStatus =
-                        Constant.PLAY_STATUS_NORMAL
+    fun playLocalMusic(position: Int) {
+        if(GlobalMusicData.getListId() == listId){
+            if (GlobalMusicData.getCurrentIndex() == position) {
+                mContext.startActivity(Intent(mContext, NowPlayingActivity::class.java))
+                return
             }
-            // 切换播放歌曲
-            playNewMusic(musicPosition, viewPosition)
-            return
+        }else{
+            GlobalMusicData.updatePlayList(listId, mList)
         }
 
-        if (GlobalMusicData.getCurrentIndex() == musicPosition) {
-            mContext.startActivity(Intent(mContext, NowPlayingActivity::class.java))
-            return
-        }
-
-        // 将原来播放的 item 状态重置
-        if (GlobalMusicData.getCurrentIndex() != -1) {
-            val oldPosition = GlobalMusicData.getCurrentIndex()
-            mList[oldPosition].playStatus = Constant.PLAY_STATUS_NORMAL
-            notifyItemChanged(oldPosition + (viewPosition - musicPosition))
-        }
-
-        // 更新播放歌曲状态
-        playNewMusic(musicPosition, viewPosition)
-    }
-
-    private fun playNewMusic(musicPosition: Int, viewPosition: Int) {
-        GlobalMusicData.updatePlayList(listId, mList)
-        GlobalMusicData.updateCurrentPlay(musicPosition)
-        mList[musicPosition].playStatus = Constant.PLAY_STATUS_PLAYING
-        notifyItemChanged(viewPosition)
+        GlobalMusicData.updateCurrentPlay(position)
+        mList[position].playStatus = Constant.PLAY_STATUS_PLAYING
         EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY, -1))
     }
 
+    fun playOnlineMusic(position: Int){
+        if(GlobalMusicData.getListId() == listId){
+            if (GlobalMusicData.getCurrentIndex() == position) {
+                mContext.startActivity(Intent(mContext, NowPlayingActivity::class.java))
+                return
+            }else{
+                GlobalMusicData.getNowPlayingList()[position] = mList[position]
+            }
+        }else{
+            GlobalMusicData.updatePlayList(listId, mList)
+        }
+
+        GlobalMusicData.updateCurrentPlay(position)
+        mList[position].playStatus = Constant.PLAY_STATUS_PLAYING
+        EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY, -1))
+    }
 }

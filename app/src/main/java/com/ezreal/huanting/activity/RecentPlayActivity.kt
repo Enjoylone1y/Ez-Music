@@ -26,7 +26,7 @@ import java.util.*
 class RecentPlayActivity : AppCompatActivity() {
 
     private val mMusicList = ArrayList<MusicBean>()
-    private var mAdapter: MusicAdapter?= null
+    private lateinit var mAdapter: MusicAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +55,7 @@ class RecentPlayActivity : AppCompatActivity() {
                     .setNegativeButton("取消", { dialog, _ -> dialog.dismiss() })
                     .setPositiveButton("清空", { dialog, _ ->
                         mMusicList.clear()
-                        mAdapter?.notifyDataSetChanged()
+                        mAdapter.notifyDataSetChanged()
                         MusicDataHelper.clearRecentPlay()
                         dialog.dismiss()
                     })
@@ -70,9 +70,9 @@ class RecentPlayActivity : AppCompatActivity() {
                 mMusicList.sortBy { it.lastPlayTime }
                 mAdapter = MusicAdapter(this@RecentPlayActivity,
                         Constant.RECENT_MUSIC_LIST_ID ,mMusicList)
-                mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
+                mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
                     override fun onItemClick(holder: RViewHolder, position: Int) {
-                        mAdapter?.checkPlaySong(position-1,position)
+                        mAdapter.playLocalMusic(position-1)
                     }
                 })
                 mRvRecentPlay.adapter = mAdapter
@@ -91,14 +91,14 @@ class RecentPlayActivity : AppCompatActivity() {
         if (prePlay != null){
             val preIndex = mMusicList.indexOf(prePlay)
             prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
-            mAdapter?.notifyItemChanged(preIndex + 1)
+            mAdapter.notifyItemChanged(preIndex + 1)
         }
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
         if (currentPlay != null && currentPlay.playFromListId == Constant.RECENT_MUSIC_LIST_ID){
             val currentIndex = mMusicList.indexOf(currentPlay)
             mMusicList[currentIndex].playStatus = Constant.PLAY_STATUS_PLAYING
-            mAdapter?.notifyItemChanged(currentIndex + 1)
+            mAdapter.notifyItemChanged(currentIndex + 1)
         }
     }
 

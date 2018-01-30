@@ -129,7 +129,7 @@ class LocalBillActivity : AppCompatActivity() {
         mAdapter = MusicAdapter(this, mBill.listId, mMusicList)
         mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter.checkPlaySong(position - 2, position)
+                mAdapter.playLocalMusic(position - 2)
             }
         })
         mRcvMusic.adapter = mAdapter
