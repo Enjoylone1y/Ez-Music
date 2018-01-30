@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.R
-import com.ezreal.huanting.adapter.LocalMusicAdapter
+import com.ezreal.huanting.adapter.MusicAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
@@ -26,7 +26,7 @@ import java.util.*
 class RecentPlayActivity : AppCompatActivity() {
 
     private val mMusicList = ArrayList<MusicBean>()
-    private var mAdapter: LocalMusicAdapter?= null
+    private var mAdapter: MusicAdapter?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +68,7 @@ class RecentPlayActivity : AppCompatActivity() {
             override fun loadSuccess(musicList: List<MusicBean>) {
                 mMusicList.addAll(musicList)
                 mMusicList.sortBy { it.lastPlayTime }
-                mAdapter = LocalMusicAdapter(this@RecentPlayActivity,
+                mAdapter = MusicAdapter(this@RecentPlayActivity,
                         Constant.RECENT_MUSIC_LIST_ID ,mMusicList)
                 mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
                     override fun onItemClick(holder: RViewHolder, position: Int) {

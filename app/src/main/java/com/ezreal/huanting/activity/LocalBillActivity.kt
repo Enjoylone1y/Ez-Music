@@ -7,10 +7,10 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.ezreal.huanting.R
-import com.ezreal.huanting.adapter.LocalMusicAdapter
+import com.ezreal.huanting.adapter.MusicAdapter
 import com.ezreal.huanting.bean.MusicBillBean
 import com.ezreal.huanting.helper.MusicDataHelper
-import kotlinx.android.synthetic.main.activity_music_list.*
+import kotlinx.android.synthetic.main.activity_local_bill.*
 import android.provider.MediaStore
 import cn.hotapk.fastandrutils.utils.*
 import android.graphics.Bitmap
@@ -40,14 +40,14 @@ import org.greenrobot.eventbus.Subscribe
 class LocalBillActivity : AppCompatActivity() {
 
     private val mMusicList = ArrayList<MusicBean>()
-    private var mAdapter: LocalMusicAdapter? = null
-    private var mBill: MusicBillBean? = null
+    private lateinit var mAdapter: MusicAdapter
+    private lateinit var mBill: MusicBillBean
     private var mBackColor = Color.parseColor("#bfbfbf")
     private var mHeadViewHeight = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_music_list)
+        setContentView(R.layout.activity_local_bill)
         initActionBar()
         getMusicList()
 
@@ -63,10 +63,8 @@ class LocalBillActivity : AppCompatActivity() {
                     finish()
                 } else {
                     mBill = bill[0]
-                    val musicList = mBill?.musicList
-                    if (musicList != null) {
-                        mMusicList.addAll(musicList)
-                    }
+                    val musicList = mBill.musicList
+                    mMusicList.addAll(musicList)
                     initHeadView()
                     initMusicList()
                 }
@@ -87,8 +85,8 @@ class LocalBillActivity : AppCompatActivity() {
     private fun initHeadView() {
 
         FStatusBarUtils.translucent(this)
-        val list = mBill?.musicList
-        if (list == null || list.isEmpty()) {
+        val list = mBill.musicList
+        if (list.isEmpty()) {
             return
         }
         val albumUri = list[0].albumUri
@@ -128,10 +126,10 @@ class LocalBillActivity : AppCompatActivity() {
         mRcvMusic.isNestedScrollingEnabled = false
         mRcvMusic.setHasFixedSize(false)
         mRcvMusic.addHeaderView(createHeadView())
-        mAdapter = LocalMusicAdapter(this, mBill?.listId!!, mMusicList)
-        mAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
+        mAdapter = MusicAdapter(this, mBill.listId, mMusicList)
+        mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter?.checkPlaySong(position - 2, position)
+                mAdapter.checkPlaySong(position - 2, position)
             }
         })
         mRcvMusic.adapter = mAdapter
@@ -149,7 +147,7 @@ class LocalBillActivity : AppCompatActivity() {
             }
 
             if (scroll > mHeadViewHeight / 2) {
-                mTvTitle.text = mBill?.listName
+                mTvTitle.text = mBill.listName
             } else {
                 mTvTitle.text = "歌单"
             }
@@ -163,7 +161,7 @@ class LocalBillActivity : AppCompatActivity() {
 
     private fun createHeadView(): View {
         val head = LayoutInflater.from(this)
-                .inflate(R.layout.layout_music_list_head, null, false)
+                .inflate(R.layout.layout_local_bill_head, null, false)
 
         val headBarBitmap = Bitmap.createBitmap(resources.displayMetrics.widthPixels,
                 FConvertUtils.dip2px(271f), Bitmap.Config.ARGB_8888)
@@ -176,13 +174,13 @@ class LocalBillActivity : AppCompatActivity() {
         val userName = head.findViewById<TextView>(R.id.mTvCreator)
 
         userName.text = resources.getString(R.string.app_name)
-        listName.text = mBill?.listName
+        listName.text = mBill.listName
 
-        if (mBill?.musicList?.isEmpty()!!) {
+        if (mBill.musicList.isEmpty()) {
             listCover.setImageResource(R.drawable.splash)
         } else {
             Glide.with(this)
-                    .load(mBill?.musicList?.get(0)?.albumUri)
+                    .load(mBill.musicList[0]?.albumUri)
                     .asBitmap()
                     .error(R.drawable.splash)
                     .into(listCover)
@@ -197,14 +195,14 @@ class LocalBillActivity : AppCompatActivity() {
         if (prePlay != null) {
             val preIndex = mMusicList.indexOf(prePlay)
             prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
-            mAdapter?.notifyItemChanged(preIndex + 2)
+            mAdapter.notifyItemChanged(preIndex + 2)
         }
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
-        if (currentPlay != null && currentPlay.playFromListId == mBill?.listId) {
+        if (currentPlay != null && currentPlay.playFromListId == mBill.listId) {
             val currentIndex = mMusicList.indexOf(currentPlay)
             mMusicList[currentIndex].playStatus = Constant.PLAY_STATUS_PLAYING
-            mAdapter?.notifyItemChanged(currentIndex + 2)
+            mAdapter.notifyItemChanged(currentIndex + 2)
         }
     }
 

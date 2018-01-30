@@ -71,7 +71,7 @@ object GlobalMusicData {
         when (mCurrentListId) {
             -1L -> {
                 music.playStatus = Constant.PLAY_STATUS_PLAYING
-                mCurrentListId = Constant.TEMP_MUSIL_LIST_ID
+                mCurrentListId = Constant.TEMP_MUSIC_LIST_ID
                 mCurrentPlayList.add(music)
                 updateCurrentPlay(0)
             }

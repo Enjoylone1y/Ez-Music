@@ -5,7 +5,8 @@
     android:layout_height="271dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:paddingTop="71dp">
+    android:paddingTop="71dp"
+    android:background="@color/color_light_black">
 
     <ImageView
         android:id="@+id/mIvListCover"
@@ -13,8 +14,7 @@
         android:layout_height="120dp"
         android:background="@color/color_light_gray"
         android:padding="1dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/splash"/>
+        android:scaleType="fitXY"/>
 
     <TextView
         android:id="@+id/mTvListName"

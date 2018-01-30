@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="271dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="71dp"
+    android:background="@color/color_light_black">
+
+    <ImageView
+        android:id="@+id/mIvBillCover"
+        android:layout_width="100dp"
+        android:layout_height="120dp"
+        android:background="@color/color_light_gray"
+        android:padding="1dp"
+        android:scaleType="fitXY"/>
+
+    <TextView
+        android:id="@+id/mTvBillName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@+id/mIvBillCover"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/mTvUpdate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mTvBillName"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@+id/mIvBillCover"
+        android:textColor="@color/color_light_gray"
+        android:textSize="16sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/mIvBillCover"
+        android:layout_marginTop="25dp"
+        android:gravity="center_vertical">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/mIv1"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_list_col"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mIv1"
+                android:text="收藏"
+                android:textColor="@color/colorAccent"
+                android:gravity="center_horizontal"
+                android:textSize="14sp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/iv2"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_list_common"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/iv2"
+                android:text="评论"
+                android:textColor="@color/colorAccent"
+                android:gravity="center_horizontal"
+                android:textSize="14sp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/mIv3"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_list_share"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mIv3"
+                android:text="分享"
+                android:textColor="@color/colorAccent"
+                android:gravity="center_horizontal"
+                android:textSize="14sp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/mIv4"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_list_download"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mIv4"
+                android:text="下载"
+                android:gravity="center_horizontal"
+                android:textColor="@color/colorAccent"
+                android:textSize="14sp"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

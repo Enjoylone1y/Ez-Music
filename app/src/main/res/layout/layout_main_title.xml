@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary"
     android:paddingLeft="10dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
     android:paddingRight="10dp">
 
     <ImageView
@@ -13,52 +14,55 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/menu"
-        android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        android:scaleType="centerCrop"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 
     <ImageView
         android:id="@+id/mIvPersonalMusic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/local_music_selector"
         android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/mIvMenu"
-        app:layout_constraintRight_toLeftOf="@id/mIvOnlineMusic"/>
+        android:src="@drawable/local_music_white"/>
+
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 
     <ImageView
         android:id="@+id/mIvOnlineMusic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/online_music_selector"
         android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/mIvPersonalMusic"
-        app:layout_constraintRight_toLeftOf="@id/mIvUser"/>
+        android:src="@drawable/online_music_white"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 
     <ImageView
         android:id="@+id/mIvUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
-        android:src="@drawable/main_people_selector"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/mIvOnlineMusic"
-        app:layout_constraintRight_toLeftOf="@id/mIvSearch"/>
+        android:src="@drawable/main_people_white"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 
     <ImageView
         android:id="@+id/mIvSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/search"
-        android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        android:scaleType="centerCrop"/>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
