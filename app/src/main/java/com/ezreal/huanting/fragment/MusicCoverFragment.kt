@@ -51,8 +51,8 @@ class MusicCoverFragment : Fragment() {
     }
 
     private fun initEvent(){
-        mIvCollect.setOnClickListener {
-            Log.e("CoverFragment","mIvCollect click")
+        mIvLove.setOnClickListener {
+            Log.e("CoverFragment","mIvLove click")
         }
 
         mIvCommon.setOnClickListener {

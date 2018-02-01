@@ -19,12 +19,12 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/mIvCollect"
+            android:id="@+id/mIvLove"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="20dp"
             android:scaleType="centerInside"
-            android:src="@mipmap/ic_list_col"/>
+            android:src="@mipmap/ic_not_love"/>
 
         <ImageView
             android:id="@+id/mIvCommon"

@@ -120,7 +120,6 @@
             android:layout_toRightOf="@+id/tv3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tv_singer_name"
             android:textColor="@color/color_black"
             android:textSize="14sp"/>
     </RelativeLayout>
@@ -161,9 +160,73 @@
             android:layout_toRightOf="@+id/tv4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tv_album_name"
             android:textColor="@color/color_black"
             android:textSize="14sp"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@color/color_light_gray"/>
+
+    <RelativeLayout
+        android:id="@+id/mLayoutShare"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/iv5"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_share"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:layout_toRightOf="@+id/iv5"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:text="@string/tv_share"
+            android:textSize="14sp"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@color/color_light_gray"/>
+
+
+    <RelativeLayout
+        android:id="@+id/mLayoutDownload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/iv6"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_download_min"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:layout_toRightOf="@+id/iv6"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:text="@string/tv_download"
+            android:textSize="14sp"
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
 
     <View
@@ -181,7 +244,7 @@
         android:padding="5dp">
 
         <ImageView
-            android:id="@+id/iv5"
+            android:id="@+id/iv7"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:scaleType="centerInside"
@@ -189,7 +252,7 @@
             android:layout_centerVertical="true"/>
 
         <TextView
-            android:layout_toRightOf="@+id/iv5"
+            android:layout_toRightOf="@+id/iv7"
             android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -5,6 +5,7 @@ import com.ezreal.huanting.R
 import com.ezreal.huanting.http.baidu.RankBillSearchResult.BillSongBean
 
 /**
+ * 在线音乐页面 item 适配器
  * Created by wudeng on 2018/2/1.
  */
 
