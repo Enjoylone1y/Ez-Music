@@ -23,8 +23,8 @@ import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
+import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.http.baidu.BaiduMusicApi
-import com.ezreal.huanting.http.baidu.MusicSearchResult
 import com.ezreal.huanting.http.baidu.RankBillSearchResult
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.ConvertUtils
@@ -56,6 +56,7 @@ class RankBillActivity :Activity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rank_bill)
+        initMusicList()
         loadRankBill()
         EventBus.getDefault().register(this)
     }
@@ -69,15 +70,13 @@ class RankBillActivity :Activity(){
                 if (code == 0 && result?.billboard != null) {
                     mRankBill = result.billboard
                     initHeadView()
-                    initMusicList()
+                    if (result.song_list != null) {
+                        covert2Music(result.song_list)
+                    }
                 } else {
                     FToastUtils.init().show("榜单加载失败，请重试~~")
                     finish()
                     return
-                }
-
-                if (result.song_list != null) {
-                    covert2Music(result.song_list)
                 }
             }
         })
@@ -88,20 +87,18 @@ class RankBillActivity :Activity(){
         if (mRankBill == null) {
             return
         }
-        Thread(Runnable {
-            val coverUrl = mRankBill?.pic_s640
-            OkGo.get<Bitmap>(coverUrl).execute(object : BitmapCallback() {
-                override fun onSuccess(response: Response<Bitmap>?) {
-                    if (response?.body() != null) {
-                        mBackColor = Palette.from(response.body()).generate().darkVibrantSwatch?.rgb
-                                ?: ContextCompat.getColor(this@RankBillActivity, R.color.color_gray)
-                        runOnUiThread {
-                            setHeadViewBackByCover()
-                        }
-                    }
+
+        val coverUrl = mRankBill?.pic_s640
+        OkGo.get<Bitmap>(coverUrl).execute(object : BitmapCallback() {
+            override fun onSuccess(response: Response<Bitmap>?) {
+                if (response?.body() != null) {
+                    mBackColor = Palette.from(response.body()).generate().darkVibrantSwatch?.rgb
+                            ?: ContextCompat.getColor(this@RankBillActivity, R.color.color_gray)
+                    setHeadViewBackByCover()
                 }
-            })
-        }).start()
+            }
+        })
+
         createHeadView()
         mHeadViewHeight = FConvertUtils.dip2px(200f)
     }
@@ -113,14 +110,14 @@ class RankBillActivity :Activity(){
         mRcvMusic.setLoadingMoreEnabled(false)
         mRcvMusic.isNestedScrollingEnabled = false
         mRcvMusic.setHasFixedSize(false)
-        mRcvMusic.addHeaderView(mHeadView)
         mAdapter = MusicAdapter(this, mBillId, mMusicList)
         mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                playOnlineMusic(position - 2, position)
+                mAdapter.playMusic(position - 2)
             }
         })
         mRcvMusic.adapter = mAdapter
+
         mScrollView.setOnMyScrollChangeListener { _, scrollY, _, _ ->
             var scroll = scrollY
             if (scrollY < 0) {
@@ -167,6 +164,7 @@ class RankBillActivity :Activity(){
                     .error(R.drawable.splash)
                     .into(cover)
         }
+        mRcvMusic.addHeaderView(mHeadView)
     }
 
     private fun setHeadViewBackByCover() {
@@ -184,68 +182,49 @@ class RankBillActivity :Activity(){
         mActionBar.background = actionBarDrawable
     }
 
-
     private fun covert2Music(list: List<RankBillSearchResult.BillSongBean>) {
+
+        var afterSize = mMusicList.size + list.size
+        val index = ArrayList<String>()
+
+        val mainRealm = Realm.getDefaultInstance()
+        // 从数据库中读取已保存过的数据
         for (bean in list) {
-            val music = MusicBean()
-            music.isOnline = true
-            music.musicId = bean.song_id.toLong()
-            music.musicTitle = bean.title
-            music.artistName = bean.artist_name
-            music.albumName = bean.album_title
-            mMusicList.add(music)
+            val music = mainRealm.where(MusicBean::class.java)
+                    .equalTo("musicId", bean.song_id.toLong()).findFirst()
+            if (music != null) {
+                mMusicList.add(music)
+            } else {
+                index.add(bean.song_id)
+            }
         }
-        mAdapter.notifyDataSetChanged()
-    }
-
-    private fun playOnlineMusic(musicPosition: Int, viewPosition: Int) {
-        val musicBean = mMusicList[musicPosition]
-        // 查看数据库中是否存在
-        val realm = Realm.getDefaultInstance()
-        val findFirst = realm.where(MusicBean::class.java)
-                .equalTo("musicId", musicBean.musicId)
-                .findFirst()
-        // 若存在则从数据库读取数据并播放
-        if (findFirst != null) {
-            musicBean.lastPlayTime = findFirst.lastPlayTime
-            musicBean.playCount = findFirst.playCount
-            musicBean.playStatus = findFirst.playStatus
-            musicBean.filePath = findFirst.filePath
-            musicBean.fileSize = findFirst.fileSize
-            musicBean.fileLink = findFirst.fileLink
-            musicBean.duration = findFirst.duration
-
-            mAdapter.playOnlineMusic(musicPosition-2)
+        if (index.size == 0){
+            mAdapter.notifyDataSetChanged()
             return
         }
-        // 若不存在则从百度音乐库获取并保存到数据库中
-        BaiduMusicApi.searchMusicInfoById(musicBean.musicId.toString(), object :
-                BaiduMusicApi.OnMusicInfoSearchListener {
-            override fun onResult(code: Int, result: MusicSearchResult?, message: String?) {
-                if (code == 0 && result != null){
-                    // 歌曲信息
-                    musicBean.bigPic = result.songinfo?.pic_big!!
-                    musicBean.lrcLink = result.songinfo?.lrclink!!
-                    musicBean.tingUid = result.songinfo?.ting_uid!!
 
-                    // 播放信息
-                    musicBean.fileLink = result.bitrate?.file_link!!
-                    musicBean.fileSize = result.bitrate?.file_size!!
-                    musicBean.duration = result.bitrate?.file_duration!!
-
-                    mAdapter.playOnlineMusic(musicPosition-2)
-
-                    saveOnlineMusic(musicBean)
+        // 对于未保存的数据，从网络获取，并存到数据库
+        mainRealm.beginTransaction()
+        for (id in index) {
+            OnlineMusicHelper.loadAndSaveInfo(id, object :
+                    OnlineMusicHelper.OnInfoLoadedListener {
+                override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
+                    if (code == 0 && musicBean != null) {
+                        mMusicList.add(musicBean)
+                        mainRealm.insert(musicBean)
+                        // 在添加完成后更新数据库，刷新页面
+                        if (mMusicList.size == afterSize){
+                            mainRealm.commitTransaction()
+                            mAdapter.notifyDataSetChanged()
+                        }
+                    }else{
+                        afterSize -= 1
+                    }
                 }
-            }
-        })
-    }
-
-    private fun saveOnlineMusic(music: MusicBean){
-        Realm.getDefaultInstance().executeTransactionAsync {
-            it.insertOrUpdate(music)
+            })
         }
     }
+
 
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {

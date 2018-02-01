@@ -74,25 +74,26 @@ object MusicDataHelper {
 
     fun addRecentPlay2DB(recentPlayBean: RecentPlayBean) {
         try {
-            val realm = Realm.getDefaultInstance()
-            realm.beginTransaction()
-            val findFirst = realm.where(RecentPlayBean::class.java)
-                    .equalTo("musicId", recentPlayBean.musicId)
-                    .findFirst()
-            if (findFirst != null) {
-                findFirst.lastPlayTime = System.currentTimeMillis()
-                realm.where(MusicBean::class.java)
-                        .equalTo("musicId", findFirst.musicId)
-                        .findFirst().lastPlayTime = findFirst.lastPlayTime
-            } else {
-                recentPlayBean.lastPlayTime = System.currentTimeMillis()
-                realm.insert(recentPlayBean)
-            }
-            val count = realm.where(RecentPlayBean::class.java).count()
-            if (count > 100) {
-                realm.where(RecentPlayBean::class.java).findFirst().deleteFromRealm()
-            }
-            realm.commitTransaction()
+            // TODO 修复网络歌曲播放次数统计有误问题
+//            val realm = Realm.getDefaultInstance()
+//            realm.beginTransaction()
+//            val findFirst = realm.where(RecentPlayBean::class.java)
+//                    .equalTo("musicId", recentPlayBean.musicId)
+//                    .findFirst()
+//            if (findFirst != null) {
+//                findFirst.lastPlayTime = System.currentTimeMillis()
+//                realm.where(MusicBean::class.java)
+//                        .equalTo("musicId", findFirst.musicId)
+//                        .findFirst().lastPlayTime = findFirst.lastPlayTime
+//            } else {
+//                recentPlayBean.lastPlayTime = System.currentTimeMillis()
+//                realm.insert(recentPlayBean)
+//            }
+//            val count = realm.where(RecentPlayBean::class.java).count()
+//            if (count > 100) {
+//                realm.where(RecentPlayBean::class.java).findFirst().deleteFromRealm()
+//            }
+//            realm.commitTransaction()
         } catch (e: Exception) {
             e.printStackTrace()
         }

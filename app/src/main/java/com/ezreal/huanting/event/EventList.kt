@@ -31,6 +31,11 @@ data class PlayProcessChangeEvent(val process:Int)
 data class PlayBufferUpdateEvent(val percent: Int)
 
 /**
+ * 网络歌曲数据(封面，歌词)下载完成事件
+ */
+data class OnlineDownloadEvent(val type:Int,val code:Int,val path:String?,val message:String?)
+
+/**
  * 歌单变化事件
  */
 data class MusicListChangeEvent(val listId:Long)

@@ -8,12 +8,14 @@ import android.media.MediaPlayer
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.text.TextUtils
 import android.util.Log
 import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.event.*
-import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.helper.GlobalMusicData
+import com.ezreal.huanting.helper.OnlineMusicHelper
+import com.ezreal.huanting.utils.Constant
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -27,7 +29,8 @@ import org.greenrobot.eventbus.Subscribe
  */
 
 class MusicPlayService : Service() {
-    private var havePlayStop = false
+    private var mPlayId:Long = 0
+
     private val mPlayer: MediaPlayer = MediaPlayer()
     private var mAudioManager: AudioManager? = null
     private var mTimeCountThread: TimeCountThread? = null
@@ -56,8 +59,8 @@ class MusicPlayService : Service() {
             // 开始播放
             mp.start()
             // 启动播放时间记录线程
-            havePlayStop = false
-            mTimeCountThread = TimeCountThread()
+            mPlayId = GlobalMusicData.getCurrentId()
+            mTimeCountThread = TimeCountThread(mPlayId)
             mTimeCountThread?.start()
             // 推送播放状态更新事件
             EventBus.getDefault().post(PlayStatusChangeEvent(Constant.PLAY_STATUS_PLAYING))
@@ -125,8 +128,32 @@ class MusicPlayService : Service() {
 
     private fun dealPlayAction() {
         val currentPlay = GlobalMusicData.getCurrentPlay() ?: return
-        val path = if (currentPlay.isOnline) currentPlay.fileLink else currentPlay.filePath
-        playImp(path)
+
+        // 本地音乐
+        if (!currentPlay.isOnline) {
+            playImp(currentPlay.filePath)
+            return
+        }
+
+        // 已经下载过了
+        if (!TextUtils.isEmpty(currentPlay.musicLocal)) {
+            playImp(currentPlay.musicLocal)
+            return
+        }
+        // 已经缓冲过了
+        if (!TextUtils.isEmpty(currentPlay.cachePath)) {
+            playImp(currentPlay.cachePath)
+            return
+        }
+        // 从播放连接播放
+        if (!TextUtils.isEmpty(currentPlay.fileLink)) {
+            playImp(currentPlay.fileLink)
+            return
+        }
+
+        // 播放出错，自动下一曲
+        FToastUtils.init().show("play error:play source is empty")
+        dealNextAction()
     }
 
     /**
@@ -217,7 +244,6 @@ class MusicPlayService : Service() {
         try {
             if (mPlayer.isPlaying){
                 mPlayer.stop()
-                havePlayStop = true
             }
             mPlayer.reset()
         } catch (e: Exception) {
@@ -250,15 +276,16 @@ class MusicPlayService : Service() {
     /**
      * 播放过程进程，每隔一秒钟推送一次进度更新事件
      */
-    inner class TimeCountThread : Thread() {
+    inner class TimeCountThread(id: Long) : Thread() {
+        private val musicId = id
         override fun run() {
             super.run()
-            while (!havePlayStop){
+            do {
                 Thread.sleep(1000)
                 if (mPlayer.isPlaying) {
                     mHandler.sendEmptyMessage(mUpdateProcessMsg)
                 }
-            }
+            } while (mPlayId == musicId)
         }
     }
 

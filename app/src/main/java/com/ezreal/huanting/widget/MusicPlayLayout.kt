@@ -132,15 +132,12 @@ class MusicPlayLayout : RelativeLayout {
 
 
     private fun bindView() {
+        // 恢复状态
+        mIvMusicCover.setImageResource(R.drawable.local_music_white)
+
         if (mCurrentPlay == null){
             rootView.findViewById<View>(R.id.layout_music_play).visibility = View.GONE
         }else{
-            Glide.with(context)
-                    .load(Uri.parse(mCurrentPlay?.albumUri))
-                    .asBitmap()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .error(R.drawable.local_music_white)
-                    .into(mIvMusicCover)
             mTvMusicTitle.text = mCurrentPlay?.musicTitle
             mTvArtist.text = mCurrentPlay?.artistName
             rootView.findViewById<View>(R.id.layout_music_play).visibility = View.VISIBLE
@@ -158,6 +155,23 @@ class MusicPlayLayout : RelativeLayout {
                     mIvPlay.setImageResource(R.mipmap.ic_play)
                 }
             }
+
+            if (mCurrentPlay?.isOnline!!) {
+                Glide.with(context)
+                        .load(mCurrentPlay?.bigPic)
+                        .asBitmap()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .error(R.drawable.local_music_white)
+                        .into(mIvMusicCover)
+            } else {
+                Glide.with(context)
+                        .load(Uri.parse(mCurrentPlay?.albumUri))
+                        .asBitmap()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .error(R.drawable.local_music_white)
+                        .into(mIvMusicCover)
+            }
+
         }
     }
 

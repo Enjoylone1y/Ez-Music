@@ -13,7 +13,7 @@ import java.io.FileWriter
 import java.io.IOException
 
 /**
- * 歌词装载工具类
+ * 本地歌曲歌词搜索工具类
  * Created by wudeng on 2018/1/24.
  */
 object LrcLoadHelper {

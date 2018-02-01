@@ -36,4 +36,5 @@
     <string name="tv_recom_music">推荐音乐</string>
     <string name="tv_new_music">最新音乐</string>
     <string name="tv_music_bill">音乐榜单</string>
+    <string name="time_zero">00:00</string>
 </resources>

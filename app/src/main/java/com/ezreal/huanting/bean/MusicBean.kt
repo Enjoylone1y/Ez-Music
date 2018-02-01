@@ -11,12 +11,16 @@ import io.realm.annotations.PrimaryKey
  */
 open class MusicBean :RealmObject() {
 
+    /**
+     * 必要属性
+     */
+
     @PrimaryKey
     var musicId:Long = 0
 
-    lateinit var musicTitle:String
-    lateinit var artistName:String
-    lateinit var albumName:String
+    var musicTitle:String = ""
+    var artistName:String = ""
+    var albumName:String = ""
 
     /**
      * 是否为在线音乐
@@ -34,17 +38,29 @@ open class MusicBean :RealmObject() {
     /**
      * 本地音乐独有
      */
-    lateinit var filePath:String
-    lateinit var lrcPath:String
-    lateinit var albumUri:String
+    var filePath:String = ""
+    var lrcPath:String = ""
+    var albumUri:String = ""
 
-    /**
-     * 在线音乐独有
-     */
-    lateinit var bigPic:String
-    lateinit var tingUid:String
-    lateinit var lrcLink:String
-    lateinit var fileLink:String
+
+    // 在线播放歌曲封面
+    var bigPic:String = ""
+    // 百度音乐歌手 ID
+    var tingUid:String = ""
+    // 在线播放歌词链接
+    var lrcLink:String = ""
+    // 在线播放音乐链接
+    var fileLink:String = ""
+
+    // 歌词下载保存路径
+    var lrcLocal:String = ""
+    // 封面下载保存路径
+    var picLocal:String = ""
+    // 歌曲下载路径
+    var musicLocal:String = ""
+    // 缓冲路径
+    var cachePath:String = ""
+
 
     /**
      * 播放辅助变量，不会存入数据库

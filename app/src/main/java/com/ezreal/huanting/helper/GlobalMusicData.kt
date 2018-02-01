@@ -153,6 +153,11 @@ object GlobalMusicData {
     fun getListId(): Long = mCurrentListId
 
     /**
+     * 获取当前播放音乐 ID
+     */
+    fun getCurrentId():Long = if (mCurrentPlay == null) -1L else mCurrentPlay?.musicId!!
+
+    /**
      * 获取当前播放列表
      */
     fun getNowPlayingList(): ArrayList<MusicBean> = mCurrentPlayList

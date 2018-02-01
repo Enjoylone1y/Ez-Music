@@ -2,15 +2,20 @@ package com.ezreal.huanting.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ezreal.huanting.R
 import com.ezreal.huanting.bean.MusicBean
+import com.ezreal.huanting.event.OnlineDownloadEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.event.PlayProcessChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.LrcLoadHelper
+import com.ezreal.huanting.helper.OnlineMusicHelper
+import com.ezreal.huanting.utils.Constant
 import kotlinx.android.synthetic.main.fragment_music_lrc.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -20,6 +25,7 @@ import java.io.File
  * 播放页 -- 歌词
  * Created by wudeng on 2017/12/29.
  */
+
 class MusicLrcFragment :Fragment() {
 
     private var mCurrentPlay: MusicBean?= null
@@ -37,9 +43,10 @@ class MusicLrcFragment :Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
-        if (mCurrentPlay != null){
-            searchFromBaidu()
+        if (mCurrentPlay == null){
+            return
         }
+        bindView()
     }
 
     /**
@@ -49,7 +56,31 @@ class MusicLrcFragment :Fragment() {
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
         mLrcView.clearLrc()
         mCurrentPlay = GlobalMusicData.getCurrentPlay()
-        if (mCurrentPlay != null){
+        if (mCurrentPlay == null){
+           return
+        }
+        bindView()
+    }
+
+    @Subscribe
+    fun onOnlineDownloadEvent(event: OnlineDownloadEvent){
+        if (event.type == Constant.DOWNLOAD_TYPE_LRC){
+            if (event.code == 0){
+                mLrcView.loadLrc(File(event.path))
+            }else{
+                Log.e("LrcFragment",event.message)
+            }
+        }
+    }
+
+    private fun bindView(){
+        if (mCurrentPlay?.isOnline!!){
+            if (TextUtils.isEmpty(mCurrentPlay?.lrcLocal)){
+                OnlineMusicHelper.loadAndSaveLrc(mCurrentPlay?.musicId!!,mCurrentPlay?.lrcLink!!)
+            }else{
+                mLrcView.loadLrc(File(mCurrentPlay?.lrcLocal))
+            }
+        }else{
             searchFromBaidu()
         }
     }

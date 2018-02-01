@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.text.TextUtils
+import android.util.Log
 import android.view.Gravity
 import android.widget.SeekBar
 import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
@@ -15,6 +17,7 @@ import com.ezreal.huanting.event.*
 import com.ezreal.huanting.fragment.MusicCoverFragment
 import com.ezreal.huanting.fragment.MusicLrcFragment
 import com.ezreal.huanting.helper.GlobalMusicData
+import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.ConvertUtils
 import com.ezreal.huanting.utils.PopupShowUtils
@@ -228,15 +231,48 @@ class NowPlayingActivity : AppCompatActivity() {
     }
 
     /**
+     * 监听网络歌曲缓冲事件
+     */
+    @Subscribe
+    fun bufferUpdateEvent(event: PlayBufferUpdateEvent) {
+        val buffer = event.percent * 1.0 / 100.0 * mProcessBar.max
+        mProcessBar.secondaryProgress = buffer.toInt()
+    }
+
+
+    @Subscribe
+    fun onOnlineDownloadEvent(event: OnlineDownloadEvent) {
+        if (event.type == Constant.DOWLOAD_TYPE_PIC) {
+            if (event.code == 0) {
+                setBackWithBitmap(1, event.path!!)
+            } else {
+                Log.e("NowPlayActivity", event.message)
+            }
+        }
+    }
+
+    /**
      * 绑定当前播放歌曲数据，更新界面
      */
     private fun bindView() {
+        // 设置标题和歌手名（必不为空）
         mTvMusicTitle.text = mCurrentPlay?.musicTitle
         mTvArtist.text = mCurrentPlay?.artistName
+
+        // 恢复进度条,背景,播放状态
+        mProcessBar.max = 0
+        mProcessBar.progress = 0
+        mTvCurrentTime.text = getString(R.string.time_zero)
+        mTvTotalTime.text = getString(R.string.time_zero)
+        mIvBackGround.setImageResource(R.drawable.default_play_bg)
+        mIvPlay.setImageResource(R.mipmap.song_play)
+
+        // 设置数据值
         mProcessBar.max = mCurrentPlay?.duration?.toInt()!!
         mProcessBar.progress = GlobalMusicData.getProcess()
         mTvCurrentTime.text = ConvertUtils.getTimeWithProcess(GlobalMusicData.getProcess())
         mTvTotalTime.text = ConvertUtils.getTimeWithProcess(mCurrentPlay?.duration?.toInt()!!)
+
         if (mCurrentPlay?.playStatus == Constant.PLAY_STATUS_PLAYING) {
             mIvPlay.setImageResource(R.mipmap.ic_pause_main)
         } else {
@@ -244,31 +280,36 @@ class NowPlayingActivity : AppCompatActivity() {
         }
 
         if (mCurrentPlay?.isOnline!!){
-            val uri = mCurrentPlay?.bigPic
-            
-
-        }else{
-            val uri = mCurrentPlay?.albumUri
-            var scale = 8
-            val srcBitmap = if (uri == null) {
-                BitmapFactory.decodeResource(resources, R.drawable.default_play_bg)
+            val url = mCurrentPlay?.picLocal
+            if (TextUtils.isEmpty(url)) {
+                // 本地封面为空，从网络下载
+                OnlineMusicHelper.loadAndSavePic(mCurrentPlay?.musicId!!, mCurrentPlay?.bigPic!!)
             } else {
-                try {
-                    MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(uri))
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    scale = 1
-                    BitmapFactory.decodeResource(resources, R.drawable.default_play_bg)
-                }
+                setBackWithBitmap(1, url!!)
             }
+
+        } else {
+            val uri = mCurrentPlay?.albumUri
+            if (!TextUtils.isEmpty(uri)) {
+                setBackWithBitmap(2, uri!!)
+            }
+        }
+    }
+
+    private fun setBackWithBitmap(type: Int, path: String) {
+        try {
+            val srcBitmap = if (type == 1) BitmapFactory.decodeFile(path)
+            else MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(path))
             val blurBitmap = EasyBlur.with(this)
                     .bitmap(srcBitmap) //要模糊的图片
                     .radius(10)//模糊半径
-                    .scale(scale)//指定模糊前缩小的倍数
+                    .scale(8)//指定模糊前缩小的倍数
                     .blur()
             mIvBackGround.setImageBitmap(blurBitmap)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("NowPlayingActivity", "setBackWithBitmap error")
         }
-
     }
 
     /**

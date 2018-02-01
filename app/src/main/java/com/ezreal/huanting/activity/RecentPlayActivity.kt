@@ -72,7 +72,7 @@ class RecentPlayActivity : AppCompatActivity() {
                         Constant.RECENT_MUSIC_LIST_ID ,mMusicList)
                 mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
                     override fun onItemClick(holder: RViewHolder, position: Int) {
-                        mAdapter.playLocalMusic(position-1)
+                        mAdapter.playMusic(position-1)
                     }
                 })
                 mRvRecentPlay.adapter = mAdapter

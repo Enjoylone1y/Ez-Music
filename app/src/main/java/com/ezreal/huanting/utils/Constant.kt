@@ -59,6 +59,10 @@ object Constant {
 
     val MY_LOVE_MUSIC_LIST_ID = 50L      //我喜欢的音乐
 
+    val DOWNLOAD_TYPE_LRC = 0x10        // 歌词下载
+    val DOWLOAD_TYPE_PIC = 0x11         // 封面下载
+    val DOWLOAD_TYPE_MUSIC = 0x12       // 歌曲下载
+
     /**
      * APP 设置
      */

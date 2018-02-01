@@ -5,15 +5,20 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v4.app.Fragment
+import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ezreal.huanting.R
 import com.ezreal.huanting.bean.MusicBean
+import com.ezreal.huanting.event.OnlineDownloadEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.event.PlayStatusChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
+import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.utils.Constant
+import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_music_cover.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -70,22 +75,55 @@ class MusicCoverFragment : Fragment() {
         }
     }
 
+    @Subscribe
+    fun onOnlineDownloadEvent(event:OnlineDownloadEvent){
+        if (event.type == Constant.DOWLOAD_TYPE_PIC){
+            if (event.code == 0){
+                setMusicCover(1, event.path!!)
+            }else{
+                Log.e("CoverFragment",event.message)
+            }
+        }
+    }
+
     private fun bindView() {
-        try {
-            val bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver,
-                    Uri.parse(mCurrentPlay?.albumUri))
-            mCoverView.setCoverBitmap(bitmap)
-        } catch (e: Exception) {
-            mCoverView.setCoverBitmap(BitmapFactory.decodeResource(context?.resources,
-                    R.drawable.default_play_bg))
+        // 恢复默认
+        mCoverView.setCoverBitmap(BitmapFactory.decodeResource(context?.resources,
+                R.drawable.default_play_cover))
+        // 设置封面
+        if (mCurrentPlay?.isOnline!!) {
+            val url = mCurrentPlay?.picLocal
+            if (TextUtils.isEmpty(url)) {
+                // 本地封面为空，从网络下载
+                OnlineMusicHelper.loadAndSavePic(mCurrentPlay?.musicId!!, mCurrentPlay?.bigPic!!)
+            } else {
+                setMusicCover(1, url!!)
+            }
+        } else {
+            val path = mCurrentPlay?.albumUri
+            if (!TextUtils.isEmpty(path)) {
+                setMusicCover(2, path!!)
+            }
         }
 
+        // 设置状态
         if (mCurrentPlay?.playStatus == Constant.PLAY_STATUS_PLAYING) {
             mCoverView.initNeedle(true)
             mCoverView.start()
         } else {
             mCoverView.initNeedle(false)
             mCoverView.pause()
+        }
+    }
+
+    private fun setMusicCover(type: Int, path: String) {
+        try {
+            val bitmap = if (type == 1) BitmapFactory.decodeFile(path)
+            else MediaStore.Images.Media.getBitmap(context?.contentResolver, Uri.parse(path))
+            mCoverView.setCoverBitmap(bitmap)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("CoverFragment", "setMusicCover error")
         }
     }
 

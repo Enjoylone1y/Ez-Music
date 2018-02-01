@@ -76,7 +76,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         PopupShowUtils.lightOff(mContext as Activity)
     }
 
-    fun playLocalMusic(position: Int) {
+    fun playMusic(position: Int) {
         if(GlobalMusicData.getListId() == listId){
             if (GlobalMusicData.getCurrentIndex() == position) {
                 mContext.startActivity(Intent(mContext, NowPlayingActivity::class.java))
@@ -91,20 +91,4 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY, -1))
     }
 
-    fun playOnlineMusic(position: Int){
-        if(GlobalMusicData.getListId() == listId){
-            if (GlobalMusicData.getCurrentIndex() == position) {
-                mContext.startActivity(Intent(mContext, NowPlayingActivity::class.java))
-                return
-            }else{
-                GlobalMusicData.getNowPlayingList()[position] = mList[position]
-            }
-        }else{
-            GlobalMusicData.updatePlayList(listId, mList)
-        }
-
-        GlobalMusicData.updateCurrentPlay(position)
-        mList[position].playStatus = Constant.PLAY_STATUS_PLAYING
-        EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY, -1))
-    }
 }
