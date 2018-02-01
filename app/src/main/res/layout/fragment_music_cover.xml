@@ -12,43 +12,62 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/mIvLove"
+        <View
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:layout_height="match_parent"/>
+
+        <ImageView
+            android:id="@+id/mIvLove"
+            android:layout_width="20dp"
             android:layout_height="20dp"
-            android:scaleType="centerInside"
-            android:src="@mipmap/ic_not_love"/>
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_love_off"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
 
         <ImageView
             android:id="@+id/mIvCommon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_list_common"/>
+
+        <View
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="20dp"
-            android:scaleType="centerInside"
-            android:src="@mipmap/ic_list_common"/>
+            android:layout_height="match_parent"/>
 
         <ImageView
             android:id="@+id/mIvShare"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_list_share"/>
+
+        <View
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="20dp"
-            android:scaleType="centerInside"
-            android:src="@mipmap/ic_list_share"/>
+            android:layout_height="match_parent"/>
 
         <ImageView
             android:id="@+id/mIvDownload"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_list_download"/>
+
+        <View
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="20dp"
-            android:scaleType="centerInside"
-            android:src="@mipmap/ic_list_download"/>
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 

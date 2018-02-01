@@ -101,7 +101,8 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
     private fun checkAndSetStatus(){
         val currentPlay = GlobalMusicData.getCurrentPlay()
         if (currentPlay != null && currentPlay.playFromListId == listId) {
-            mList.firstOrNull { it.musicId == currentPlay.musicId }?.playStatus = Constant.PLAY_STATUS_PLAYING
+            mList.firstOrNull {
+                it.musicId == currentPlay.musicId }?.playStatus= Constant.PLAY_STATUS_PLAYING
         }
     }
 }

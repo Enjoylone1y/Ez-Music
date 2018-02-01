@@ -16,7 +16,7 @@
         android:id="@+id/mEtListTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="40dp"
         android:hint="请输入歌单标题"
         android:textSize="14sp"
         android:padding="5dp"
@@ -24,7 +24,7 @@
 
     <TextView
         android:id="@+id/mTvCancel"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:layout_below="@+id/mEtListTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         android:layout_marginRight="30dp"/>
 
     <TextView
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:id="@+id/mTvConform"
         android:layout_below="@+id/mEtListTitle"
         android:layout_width="wrap_content"

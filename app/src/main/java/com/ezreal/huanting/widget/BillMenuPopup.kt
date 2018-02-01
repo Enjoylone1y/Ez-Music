@@ -47,6 +47,7 @@ class BillMenuPopup : PopupWindow {
         mLayoutDelete = contentView.findViewById(R.id.mLayoutDelete)
 
         mLayoutEdInfo?.setOnClickListener {
+            // TODO 编辑歌单
             dismiss()
         }
 
@@ -57,7 +58,7 @@ class BillMenuPopup : PopupWindow {
     }
 
     private fun showDialog(context: Context) {
-        val title = "确定删除 " + mMusicBill?.listName + " 吗？"
+        val title = "确定删除歌单" + mMusicBill?.listName + " 吗？"
         AlertDialog.Builder(context, R.style.MyAlertDialog)
                 .setTitle(title)
                 .setNegativeButton("取消", { _, _ -> dismiss() })
@@ -72,6 +73,7 @@ class BillMenuPopup : PopupWindow {
     fun setMusicList(musicBean: MusicBillBean) {
         mMusicBill = musicBean
         mTvListTitle?.text = musicBean.listName
+
     }
 
 }

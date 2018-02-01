@@ -27,11 +27,16 @@ class MusicBillAdapter(private val mContext: Context, private val mBill: List<Mu
     override fun bindView(holder: RViewHolder, position: Int) {
         val bean = mBill[position]
         holder.setText(R.id.mTvListTitle, bean.listName)
+        val imageView = holder.getImageView(R.id.mIvListMenu)
+        imageView?.visibility = View.VISIBLE
         val size = bean.musicList.size
         holder.setText(R.id.mTvMusicNum, size.toString())
         val cover = holder.getImageView(R.id.mIvListCover)
         when {
-            position == 0 -> cover?.setImageResource(R.mipmap.love)
+            position == 0 -> {
+                cover?.setImageResource(R.mipmap.love)
+                imageView?.visibility = View.GONE
+            }
             size > 0 -> {
                 val albumUri = bean.musicList[0].albumUri
                 Glide.with(mContext)
@@ -43,7 +48,7 @@ class MusicBillAdapter(private val mContext: Context, private val mBill: List<Mu
             else -> cover?.setImageResource(R.mipmap.ic_logo)
         }
 
-        holder.getImageView(R.id.mIvListMenu)?.setOnClickListener {
+        imageView?.setOnClickListener {
             showPopupWindow(bean, it)
         }
 

@@ -3,10 +3,12 @@ package com.ezreal.huanting.widget
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
@@ -33,12 +35,15 @@ import org.greenrobot.eventbus.EventBus
 
 class MusicMenuPopup : PopupWindow {
 
-    private var mTvMusicTitle: TextView? = null
-    private var mTvArtist: TextView? = null
-    private var mTvAlbum: TextView? = null
-    private var mLayoutPlayNext: RelativeLayout? = null
-    private var mLayoutAdd2List: RelativeLayout? = null
-    private var mLayoutDelete: RelativeLayout? = null
+    private lateinit var mTvMusicTitle: TextView
+    private lateinit var mTvArtist: TextView
+    private lateinit var mTvAlbum: TextView
+    private lateinit var mTvDownload: TextView
+    private lateinit var mLayoutPlayNext: RelativeLayout
+    private lateinit var mLayoutAdd2List: RelativeLayout
+    private lateinit var mLayoutShare: RelativeLayout
+    private lateinit var mLayoutDownload: RelativeLayout
+    private lateinit var mLayoutDelete: RelativeLayout
 
     private var mListId: Long = -1L
     private var mMusic: MusicBean? = null
@@ -51,7 +56,6 @@ class MusicMenuPopup : PopupWindow {
                 null, false)
         this.contentView = rootView
         this.width = context.resources.displayMetrics.widthPixels
-
         isTouchable = true
         isFocusable = true
 
@@ -64,9 +68,13 @@ class MusicMenuPopup : PopupWindow {
         mTvAlbum = contentView.findViewById(R.id.mTvAlbum)
         mLayoutPlayNext = contentView.findViewById(R.id.mLayoutPlayNext)
         mLayoutAdd2List = contentView.findViewById(R.id.mLayoutAdd2List)
+        mLayoutDownload = contentView.findViewById(R.id.mLayoutDownload)
+        mLayoutShare = contentView.findViewById(R.id.mLayoutShare)
         mLayoutDelete = contentView.findViewById(R.id.mLayoutDelete)
 
-        mLayoutPlayNext?.setOnClickListener {
+        mTvDownload = contentView.findViewById(R.id.mTvDownload)
+
+        mLayoutPlayNext.setOnClickListener {
             val listId = GlobalMusicData.getListId()
             GlobalMusicData.addMusic2NextPlay(mMusic!!, mListId)
             if (listId == -1L){
@@ -76,23 +84,41 @@ class MusicMenuPopup : PopupWindow {
             dismiss()
         }
 
-        mLayoutAdd2List?.setOnClickListener {
+        mLayoutAdd2List.setOnClickListener {
             add2MusicList(context)
             dismiss()
         }
 
-        mLayoutDelete?.setOnClickListener {
+        mLayoutDelete.setOnClickListener {
             // TODO  提示是否删除
             dismiss()
         }
+
+        mLayoutShare.setOnClickListener {
+            // TODO 分享
+        }
+
+        mLayoutDownload.setOnClickListener {
+            // TODO 下载
+        }
+
     }
 
     fun setMusic(musicBean: MusicBean, listId: Long) {
         mMusic = musicBean
         mListId = listId
-        mTvMusicTitle?.text = musicBean.musicTitle
-        mTvArtist?.text = musicBean.artistName
-        mTvAlbum?.text = musicBean.albumName
+        mTvMusicTitle.text = musicBean.musicTitle
+        mTvArtist.text = musicBean.artistName
+        mTvAlbum.text = musicBean.albumName
+        if (musicBean.isOnline){
+            mLayoutDownload.isClickable = true
+            val color = ContextCompat.getColor(contentView.context, R.color.color_black)
+            mTvDownload.setTextColor(color)
+        }else{
+            val color = ContextCompat.getColor(contentView.context, R.color.color_light_gray)
+            mTvDownload.setTextColor(color)
+            mLayoutDownload.isClickable = false
+        }
     }
 
     private fun add2MusicList(context: Context) {
@@ -117,11 +143,7 @@ class MusicMenuPopup : PopupWindow {
                 ViewGroup.LayoutParams.WRAP_CONTENT)
         dialog.addContentView(rootView, layoutParams)
         dialog.show()
-        // 设置大小
-        val attributes = dialog.window?.attributes
-        attributes?.width = context.resources.displayMetrics.widthPixels
-        attributes?.height = context.resources.displayMetrics.heightPixels / 2
-        dialog.window?.attributes = attributes
+
         // 绑定数据
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.mRcvMusicList)
         recyclerView.layoutManager = LinearLayoutManager(context)
