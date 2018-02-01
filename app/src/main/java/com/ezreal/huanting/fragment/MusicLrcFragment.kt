@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.TextUtils
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.ezreal.huanting.R
+import com.ezreal.huanting.activity.NowPlayingActivity
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.OnlineDownloadEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
@@ -29,6 +28,7 @@ import java.io.File
 class MusicLrcFragment :Fragment() {
 
     private var mCurrentPlay: MusicBean?= null
+    private lateinit var mDetector: GestureDetector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +48,7 @@ class MusicLrcFragment :Fragment() {
         }
         bindView()
     }
+
 
     /**
      * 监听歌曲切换

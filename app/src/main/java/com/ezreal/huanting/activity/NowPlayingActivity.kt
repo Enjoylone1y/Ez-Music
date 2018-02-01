@@ -8,7 +8,9 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
+import android.view.GestureDetector
 import android.view.Gravity
+import android.view.MotionEvent
 import android.widget.SeekBar
 import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import com.ezreal.huanting.R
@@ -148,16 +150,6 @@ class NowPlayingActivity : AppCompatActivity() {
             finish()
         }
 
-        // 封面/歌词页面切换
-        mCoverLrcView.setOnClickListener {
-            if (showCover) {
-                showCover = false
-                switchFragment(mLrcFragment)
-            } else {
-                showCover = true
-                switchFragment(mCoverFragment)
-            }
-        }
 
         mIvPlayMode.setOnClickListener {
             mCurrentModeIndex = (mCurrentModeIndex + 1) % mPlayMode.size
@@ -169,7 +161,17 @@ class NowPlayingActivity : AppCompatActivity() {
             if (mListPopup == null) return@setOnClickListener
             mListPopup?.updatePlayModeByEvent(mPlayMode[mCurrentModeIndex])
         }
+
+
+        mCoverLrcView.setOnTouchListener { _, event ->
+            if(event.action == MotionEvent.ACTION_DOWN){
+                changeView()
+            }
+            false
+        }
     }
+
+
 
     /**
      * 监听歌曲切换事件
@@ -309,6 +311,20 @@ class NowPlayingActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e("NowPlayingActivity", "setBackWithBitmap error")
+        }
+    }
+
+    /**
+     * 封面/歌词页面切换,由mLrcFragment，mCoverFragment 根据手势调用
+     */
+
+    fun changeView(){
+        if (showCover) {
+            showCover = false
+            switchFragment(mLrcFragment)
+        } else {
+            showCover = true
+            switchFragment(mCoverFragment)
         }
     }
 

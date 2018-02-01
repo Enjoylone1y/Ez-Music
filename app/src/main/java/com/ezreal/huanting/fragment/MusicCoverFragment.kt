@@ -7,10 +7,9 @@ import android.provider.MediaStore
 import android.support.v4.app.Fragment
 import android.text.TextUtils
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.ezreal.huanting.R
+import com.ezreal.huanting.activity.NowPlayingActivity
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.OnlineDownloadEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
@@ -48,6 +47,25 @@ class MusicCoverFragment : Fragment() {
             return
         }
         bindView()
+        initEvent()
+    }
+
+    private fun initEvent(){
+        mIvCollect.setOnClickListener {
+            Log.e("CoverFragment","mIvCollect click")
+        }
+
+        mIvCommon.setOnClickListener {
+            Log.e("CoverFragment","mIvCommon click")
+        }
+
+        mIvShare.setOnClickListener {
+            Log.e("CoverFragment","mIvShare click")
+        }
+
+        mIvDownload.setOnClickListener {
+            Log.e("CoverFragment","mIvDownload click")
+        }
     }
 
     /**

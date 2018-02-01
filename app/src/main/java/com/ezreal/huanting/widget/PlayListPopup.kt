@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -55,7 +56,17 @@ class PlayListPopup : PopupWindow {
         contentView = root
         this.height = context?.resources?.displayMetrics?.heightPixels!! / 2
         this.width = context.resources?.displayMetrics?.widthPixels!!
+        initView(root)
+        initList(context)
 
+        initEvent()
+        loadPlayList()
+
+        isTouchable = true
+        isFocusable = true
+    }
+
+    private fun initView(root:View){
         mLayoutMode = root.findViewById(R.id.layout_play_mode) as LinearLayout?
         mIvPlayMode = root.findViewById(R.id.iv_play_mode) as ImageView?
         mTvPlayMode = root.findViewById(R.id.tv_play_mode) as TextView?
@@ -67,11 +78,8 @@ class PlayListPopup : PopupWindow {
         mCurrentModeIndex = mPlayMode.indexOf(mode)
         mIvPlayMode?.setImageResource(mPlayModeIcon[mCurrentModeIndex])
         setPlayModeText()
-
-        initList(context)
-        initEvent()
-        loadPlayList()
     }
+
 
     private fun initList(context: Context) {
         // 播放列表初始化

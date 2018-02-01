@@ -51,6 +51,10 @@ class MusicMenuPopup : PopupWindow {
                 null, false)
         this.contentView = rootView
         this.width = context.resources.displayMetrics.widthPixels
+
+        isTouchable = true
+        isFocusable = true
+
         initView(context)
     }
 

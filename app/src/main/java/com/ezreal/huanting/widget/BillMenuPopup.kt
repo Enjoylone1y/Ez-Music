@@ -34,6 +34,10 @@ class BillMenuPopup : PopupWindow {
                 null, false)
         this.contentView = rootView
         this.width = context.resources.displayMetrics.widthPixels
+
+        isTouchable = true
+        isFocusable = true
+
         initView(context)
     }
 
@@ -69,4 +73,5 @@ class BillMenuPopup : PopupWindow {
         mMusicBill = musicBean
         mTvListTitle?.text = musicBean.listName
     }
+
 }

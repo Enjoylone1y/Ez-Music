@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/mIv1"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_list_col"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mIv1"
+            android:gravity="center_horizontal"
+            android:text="收藏"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv2"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_list_common"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv2"
+            android:gravity="center_horizontal"
+            android:text="评论"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/mIv3"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_list_share"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mIv3"
+            android:gravity="center_horizontal"
+            android:text="分享"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/mIv4"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_list_download"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mIv4"
+            android:gravity="center_horizontal"
+            android:text="下载"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"/>
+
+    </RelativeLayout>
+
+</LinearLayout>
