@@ -144,10 +144,16 @@ class MusicMenuPopup : PopupWindow {
         dialog.addContentView(rootView, layoutParams)
         dialog.show()
 
+        // 设置宽高
+        val attributes = dialog.window.attributes
+        attributes.height = context.resources.displayMetrics.heightPixels / 2
+        attributes.width = context.resources.displayMetrics.widthPixels * 7 / 8
+        dialog.window.attributes = attributes
+
         // 绑定数据
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.mRcvMusicList)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val adapter = MusicBillAdapter(context, bill)
+        val adapter = MusicBillAdapter(context, bill,false)
         adapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
                 MusicDataHelper.addMusic2List(mMusic!!, bill[position].listId,

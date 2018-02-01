@@ -15,7 +15,8 @@ import com.ezreal.huanting.widget.BillMenuPopup
  * 歌单列表适配器
  * Created by wudeng on 2018/1/8.
  */
-class MusicBillAdapter(private val mContext: Context, private val mBill: List<MusicBillBean>)
+class MusicBillAdapter(private val mContext: Context,
+                       private val mBill: List<MusicBillBean>,private val showMenu:Boolean)
     : RecycleViewAdapter<MusicBillBean>(mContext, mBill) {
 
     private var mBillMenuPopup: BillMenuPopup? = null
@@ -28,7 +29,11 @@ class MusicBillAdapter(private val mContext: Context, private val mBill: List<Mu
         val bean = mBill[position]
         holder.setText(R.id.mTvListTitle, bean.listName)
         val imageView = holder.getImageView(R.id.mIvListMenu)
-        imageView?.visibility = View.VISIBLE
+        if (showMenu){
+            imageView?.visibility = View.VISIBLE
+        }else{
+            imageView?.visibility = View.GONE
+        }
         val size = bean.musicList.size
         holder.setText(R.id.mTvMusicNum, size.toString())
         val cover = holder.getImageView(R.id.mIvListCover)

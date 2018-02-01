@@ -13,21 +13,17 @@ EZ Music 是以 网易云音乐 为模板，使用 Kotlin 语言打造的一款 
 
 APP 部分界面截图：
 
-侧滑菜单                                   主页面
 
-![image](images/img_1.jpg)                ![image](images/img_3.jpg)
-
-
-本地音乐                                    歌单
-
-![image](images/img_2.jpg)                ![image](images/img_4.jpg)
+![image](images/img_main.png)                ![image](images/img_second.png)
 
 
-歌曲播放-封面页                              歌曲播放-歌词页
-
-![image](images/img_5.jpg)                ![image](images/img_6.jpg)
+![image](images/img_local_music.png)          ![image](images/img_bill_list.png)
 
 
-歌曲菜单
+![image](images/img_online_bill.png)          ![image](images/img_music_menu.png)
 
-![image](images/img_7.jpg)  
+
+![image](images/img_play.png)                 ![image](images/img_lrc.png)
+
+
+![image](images/img_save_to_list.png) 

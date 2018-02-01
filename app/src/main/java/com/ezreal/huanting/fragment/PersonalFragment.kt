@@ -61,7 +61,7 @@ class PersonalFragment : Fragment() {
 
     private fun initView() {
         mRvMyMusicList.layoutManager = LinearLayoutManager(context!!)
-        mBillAdapter = MusicBillAdapter(context!!, mMusicList)
+        mBillAdapter = MusicBillAdapter(context!!, mMusicList,true)
         mBillAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
                 val intent = Intent(context, LocalBillActivity::class.java)
