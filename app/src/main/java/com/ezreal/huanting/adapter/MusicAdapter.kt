@@ -96,7 +96,6 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
     fun notifyChangeWidthStatus(){
         checkAndSetStatus()
         notifyDataSetChanged()
-        Log.e("MusicAdapter","size = " + mList.size)
     }
 
     private fun checkAndSetStatus(){

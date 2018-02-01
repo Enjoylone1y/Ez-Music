@@ -26,7 +26,9 @@ object MusicDataHelper {
     fun loadMusicFromDB(listener: OnMusicLoadListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            realm.where(MusicBean::class.java).findAllSortedAsync("musicTitle")
+            realm.where(MusicBean::class.java)
+                    .equalTo("isOnline",false)
+                    .findAllSortedAsync("musicTitle")
                     .addChangeListener { element ->
                         listener?.loadSuccess(element)
                     }

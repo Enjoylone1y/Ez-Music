@@ -59,17 +59,79 @@ class RankBillActivity :Activity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rank_bill)
-        mIvBack.setOnClickListener { finish() }
+
+        mBillId = intent.getLongExtra("BillID", Constant.NEW_MUSIC_LIST_ID)
 
         initHeadView()
         initMusicList()
         loadRankBill()
         loadBillMusic(0)
+
         EventBus.getDefault().register(this)
     }
 
+    private fun initHeadView() {
+        // 状态栏透明
+        FStatusBarUtils.translucent(this)
+        // 构建 headView
+        mHeadView = LayoutInflater.from(this)
+                .inflate(R.layout.layout_rank_bill_head, null, false)
+        mHeadViewHeight = FConvertUtils.dip2px(200f)
+        mHeadCover = mHeadView.findViewById(R.id.mIvBillCover)
+        mHeadName = mHeadView.findViewById(R.id.mTvBillName)
+        mHeadUpdate = mHeadView.findViewById(R.id.mTvUpdate)
+        // 添加默认 headView
+        mRcvMusic.addHeaderView(mHeadView)
+    }
+
+    private fun initMusicList() {
+        mRcvMusic.layoutManager = LinearLayoutManager(this)
+        mRcvMusic.setPullRefreshEnabled(false)
+        mRcvMusic.setLoadingMoreEnabled(false)
+        mRcvMusic.isNestedScrollingEnabled = false
+        mRcvMusic.setHasFixedSize(false)
+        mAdapter = MusicAdapter(this, mBillId, mMusicList)
+        mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
+            override fun onItemClick(holder: RViewHolder, position: Int) {
+                mAdapter.playMusic(position - 2)
+            }
+        })
+        mRcvMusic.adapter = mAdapter
+    }
+
+
+    private fun initEvent() {
+
+        mIvBack.setOnClickListener { finish() }
+
+        mScrollView.setOnMyScrollChangeListener { _, scrollY, _, _ ->
+            var scroll = scrollY
+            if (scrollY < 0) {
+                scroll = 0
+            }
+            var alpha = 0F
+            if (scroll in 1..mHeadViewHeight) {
+                alpha = scroll * 1.0F / mHeadViewHeight
+
+            } else if (scroll > mHeadViewHeight) {
+                alpha = 1F
+            }
+
+            if (scroll > mHeadViewHeight / 2) {
+                mTvTitle.text = mBillName
+            } else {
+                mTvTitle.text = "音乐榜单"
+            }
+
+            val drawable = mActionBar.background
+                    ?: ContextCompat.getDrawable(this, R.drawable.action_bar_bg_black)
+            drawable?.mutate()?.alpha = (alpha * 255).toInt()
+            mActionBar.background = drawable
+        }
+    }
+
+
     private fun loadRankBill() {
-        mBillId = intent.getLongExtra("BillID", Constant.NEW_MUSIC_LIST_ID)
         mBillName = ConvertUtils.getTypeName(mBillId.toInt())
         BaiduMusicApi.searchRankBill(mBillId.toInt(), 1, 0, object :
                 BaiduMusicApi.OnBillSearchListener {
@@ -84,21 +146,6 @@ class RankBillActivity :Activity(){
                 }
             }
         })
-    }
-
-
-    private fun initHeadView() {
-        // 状态栏透明
-        FStatusBarUtils.translucent(this)
-        // 构建 headView
-        mHeadView = LayoutInflater.from(this)
-                .inflate(R.layout.layout_rank_bill_head, null, false)
-        mHeadViewHeight = FConvertUtils.dip2px(200f)
-        mHeadCover = mHeadView.findViewById(R.id.mIvBillCover)
-        mHeadName = mHeadView.findViewById(R.id.mTvBillName)
-        mHeadUpdate = mHeadView.findViewById(R.id.mTvUpdate)
-        // 添加默认 headView
-        mRcvMusic.addHeaderView(mHeadView)
     }
 
     private fun setHeadViewData(){
@@ -140,45 +187,6 @@ class RankBillActivity :Activity(){
         mActionBar.background = actionBarDrawable
     }
 
-    private fun initMusicList() {
-        mRcvMusic.layoutManager = LinearLayoutManager(this)
-        mRcvMusic.setPullRefreshEnabled(false)
-        mRcvMusic.setLoadingMoreEnabled(false)
-        mRcvMusic.isNestedScrollingEnabled = false
-        mRcvMusic.setHasFixedSize(false)
-        mAdapter = MusicAdapter(this, mBillId, mMusicList)
-        mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter.playMusic(position - 2)
-            }
-        })
-        mRcvMusic.adapter = mAdapter
-
-        mScrollView.setOnMyScrollChangeListener { _, scrollY, _, _ ->
-            var scroll = scrollY
-            if (scrollY < 0) {
-                scroll = 0
-            }
-            var alpha = 0F
-            if (scroll in 1..mHeadViewHeight) {
-                alpha = scroll * 1.0F / mHeadViewHeight
-
-            } else if (scroll > mHeadViewHeight) {
-                alpha = 1F
-            }
-
-            if (scroll > mHeadViewHeight / 2) {
-                mTvTitle.text = mBillName
-            } else {
-                mTvTitle.text = "音乐榜单"
-            }
-
-            val drawable = mActionBar.background
-                    ?: ContextCompat.getDrawable(this, R.drawable.action_bar_bg_black)
-            drawable?.mutate()?.alpha = (alpha * 255).toInt()
-            mActionBar.background = drawable
-        }
-    }
 
     private fun loadBillMusic(offset:Int){
         BaiduMusicApi.searchRankBill(mBillId.toInt(), 10, offset, object :
