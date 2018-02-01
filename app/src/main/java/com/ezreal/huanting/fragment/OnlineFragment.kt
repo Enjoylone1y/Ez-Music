@@ -14,20 +14,21 @@ import android.view.ViewGroup
 import com.ezreal.huanting.R
 import com.ezreal.huanting.activity.RankBillActivity
 import com.ezreal.huanting.activity.RankBillListActivity
+import com.ezreal.huanting.adapter.OnlineItemAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RankBillAdapter
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.bean.RankBillBean
 import com.ezreal.huanting.http.baidu.BaiduMusicApi
-import com.ezreal.huanting.http.baidu.KeywordSearchResult
+import com.ezreal.huanting.http.baidu.KeywordSearchResult.SongBean
 import com.ezreal.huanting.http.baidu.RankBillSearchResult
-import com.ezreal.huanting.http.baidu.RecomSearchResult
+import com.ezreal.huanting.http.baidu.RankBillSearchResult.BillSongBean
+import com.ezreal.huanting.http.baidu.RecomSearchResult.RecomSongBean
 import com.ezreal.huanting.utils.Constant
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_online_music.*
-
 
 /**
  * 在线音乐
@@ -35,23 +36,22 @@ import kotlinx.android.synthetic.main.fragment_online_music.*
  */
 class OnlineFragment : Fragment() {
 
-    private val MSG_LOAD_RECOM_DATA = 0x100
+    private val mMsgBaseIdSet = 0x100
 
     private lateinit var mBaseId: String
     // 推荐歌曲
-    private val mRecomMusicList = ArrayList<RecomSearchResult.RecomSongBean>()
+    private val mRecomMusicList = ArrayList<RecomSongBean>()
     // 最热歌曲
-    private val mHotMusicList = ArrayList<RankBillSearchResult.BillSongBean>()
+    private val mHotMusicList = ArrayList<BillSongBean>()
     // 最新歌曲
-    private val mNewMusicList = ArrayList<RankBillSearchResult.BillSongBean>()
+    private val mNewMusicList = ArrayList<BillSongBean>()
     // 音乐榜单
     private val mRankBillList = ArrayList<RankBillBean>()
 
-    private lateinit var mRecomAdapter: RecycleViewAdapter<RecomSearchResult.RecomSongBean>
-    private lateinit var mHotAdapter: RecycleViewAdapter<RankBillSearchResult.BillSongBean>
-    private lateinit var mNewAdapter: RecycleViewAdapter<RankBillSearchResult.BillSongBean>
-
-    private lateinit var mBillAdapter: RecycleViewAdapter<RankBillBean>
+    private lateinit var mRecomAdapter: RecycleViewAdapter<RecomSongBean>
+    private lateinit var mHotAdapter: OnlineItemAdapter
+    private lateinit var mNewAdapter: OnlineItemAdapter
+    private lateinit var mBillAdapter: RankBillAdapter
 
     private val mHandler = MyHandler()
 
@@ -60,7 +60,7 @@ class OnlineFragment : Fragment() {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             when (msg.what) {
-                MSG_LOAD_RECOM_DATA -> {
+                mMsgBaseIdSet -> {
                     loadRecomMusic()
                 }
             }
@@ -87,7 +87,7 @@ class OnlineFragment : Fragment() {
         mRcvRecomMusic.isNestedScrollingEnabled = false
         mRcvRecomMusic.setHasFixedSize(false)
         mRecomAdapter = object :
-                RecycleViewAdapter<RecomSearchResult.RecomSongBean>(context!!, mRecomMusicList) {
+                RecycleViewAdapter<RecomSongBean>(context!!, mRecomMusicList) {
             override fun setItemLayoutId(position: Int): Int {
                 return R.layout.item_online_music
             }
@@ -103,54 +103,28 @@ class OnlineFragment : Fragment() {
 
         // 最热音乐
         mRcvHotMusic.layoutManager = GridLayoutManager(context, 3)
-        mRcvHotMusic.addItemDecoration(
-                RecyclerViewDivider.with(context!!).color(android.R.color.white).size(5).build())
+        mRcvHotMusic.addItemDecoration(RecyclerViewDivider.with(context!!)
+                .color(android.R.color.white).size(5).build())
         mRcvHotMusic.isNestedScrollingEnabled = false
         mRcvHotMusic.setHasFixedSize(false)
-        mHotAdapter = object :
-                RecycleViewAdapter<RankBillSearchResult.BillSongBean>(context!!, mNewMusicList) {
-            override fun setItemLayoutId(position: Int): Int {
-                return R.layout.item_online_music
-            }
-
-            override fun bindView(holder: RViewHolder, position: Int) {
-                val bean = mNewMusicList[position]
-                holder.setImageByUrl(context!!, R.id.iv_big_pic, bean.pic_big, R.drawable.splash)
-                holder.setText(R.id.tv_music_title, bean.title)
-                holder.setText(R.id.tv_artist, bean.artist_name)
-            }
-
-        }
+        mHotAdapter = OnlineItemAdapter(context!!, mHotMusicList)
         mRcvHotMusic.adapter = mHotAdapter
 
         // 最新音乐
         mRcvNewMusic.layoutManager = GridLayoutManager(context, 3)
-        mRcvNewMusic.addItemDecoration(
-                RecyclerViewDivider.with(context!!).color(android.R.color.white).size(5).build())
+        mRcvNewMusic.addItemDecoration(RecyclerViewDivider.with(context!!)
+                .color(android.R.color.white).size(5).build())
         mRcvNewMusic.isNestedScrollingEnabled = false
         mRcvNewMusic.setHasFixedSize(false)
-        mNewAdapter = object :
-                RecycleViewAdapter<RankBillSearchResult.BillSongBean>(context!!, mHotMusicList) {
-            override fun setItemLayoutId(position: Int): Int {
-                return R.layout.item_online_music
-            }
-
-            override fun bindView(holder: RViewHolder, position: Int) {
-                val bean = mHotMusicList[position]
-                holder.setImageByUrl(context!!, R.id.iv_big_pic, bean.pic_big, R.drawable.splash)
-                holder.setText(R.id.tv_music_title, bean.title)
-                holder.setText(R.id.tv_artist, bean.artist_name)
-            }
-
-        }
+        mNewAdapter = OnlineItemAdapter(context!!, mNewMusicList)
         mRcvNewMusic.adapter = mNewAdapter
 
         // 音乐榜单
         mRcvMusicRank.layoutManager = LinearLayoutManager(context)
         mRcvMusicRank.isNestedScrollingEnabled = false
         mRcvMusicRank.setHasFixedSize(false)
-        mRcvMusicRank.addItemDecoration(
-                RecyclerViewDivider.with(context!!).color(android.R.color.white).size(5).build())
+        mRcvMusicRank.addItemDecoration(RecyclerViewDivider.with(context!!)
+                .color(android.R.color.white).size(5).build())
         mBillAdapter = RankBillAdapter(context!!,mRankBillList)
         mRcvMusicRank.adapter = mBillAdapter
     }
@@ -216,11 +190,11 @@ class OnlineFragment : Fragment() {
     }
 
     private fun loadData() {
-        // getRecomBaseId()
-        loadRecomMusic()
+        getRecomBaseId()
 
         // 获取最热音乐
-        BaiduMusicApi.searchRankBill(2, 6, 0, object : BaiduMusicApi.OnBillSearchListener {
+        BaiduMusicApi.searchRankBill(2, 3, 0, object :
+                BaiduMusicApi.OnBillSearchListener {
             override fun onResult(code: Int, result: RankBillSearchResult?, message: String?) {
                 if (code == 0 && result?.song_list != null) {
                     mHotMusicList.addAll(result.song_list)
@@ -230,7 +204,8 @@ class OnlineFragment : Fragment() {
         })
 
         // 获取最新音乐
-        BaiduMusicApi.searchRankBill(1, 6, 0, object : BaiduMusicApi.OnBillSearchListener {
+        BaiduMusicApi.searchRankBill(1, 3, 0, object :
+                BaiduMusicApi.OnBillSearchListener {
             override fun onResult(code: Int, result: RankBillSearchResult?, message: String?) {
                 if (code == 0 && result?.song_list != null) {
                     mNewMusicList.addAll(result.song_list)
@@ -241,11 +216,11 @@ class OnlineFragment : Fragment() {
 
         // 获取歌曲榜单
         val types = listOf(20, 21, 22)
-        BaiduMusicApi.searchBillList(types, 3, 0, object : BaiduMusicApi.OnBillListSearchListener {
+        BaiduMusicApi.searchBillList(types, 3, 0, object :
+                BaiduMusicApi.OnBillListSearchListener {
             override fun onResult(code: Int, result: List<RankBillBean>?, message: String?) {
                 if (code == 0 && result != null) {
                     mRankBillList.addAll(result)
-                    mRankBillList.sortBy { it.billType }
                     mBillAdapter.notifyDataSetChanged()
                 }
             }
@@ -254,9 +229,9 @@ class OnlineFragment : Fragment() {
     }
 
     private fun loadRecomMusic() {
-        BaiduMusicApi.searchRecomMusic("569080829",
-                6, object : BaiduMusicApi.OnRecomSearchListener {
-            override fun onResult(code: Int, result: List<RecomSearchResult.RecomSongBean>?, message: String?) {
+        BaiduMusicApi.searchRecomMusic(mBaseId,
+                3, object : BaiduMusicApi.OnRecomSearchListener {
+            override fun onResult(code: Int, result: List<RecomSongBean>?, message: String?) {
                 if (code == 0 && result != null) {
                     mRecomMusicList.addAll(result)
                     mRecomAdapter.notifyDataSetChanged()
@@ -274,7 +249,7 @@ class OnlineFragment : Fragment() {
                 .lastOrNull()
         if (lastOnline != null) {
             mBaseId = lastOnline.musicId.toString()
-            mHandler.sendEmptyMessage(MSG_LOAD_RECOM_DATA)
+            mHandler.sendEmptyMessage(mMsgBaseIdSet)
             return
         }
         val max = realm.where(MusicBean::class.java)
@@ -285,18 +260,20 @@ class OnlineFragment : Fragment() {
                 .findFirst()
         if (lastLocal == null || lastLocal.playCount == 0L) {
             mBaseId = "74172066"
-            mHandler.sendEmptyMessage(MSG_LOAD_RECOM_DATA)
+            mHandler.sendEmptyMessage(mMsgBaseIdSet)
             return
         }
+
         val key = lastLocal.musicTitle + " " + lastLocal.artistName
-        BaiduMusicApi.searchMusicByKey(key, object : BaiduMusicApi.OnKeywordSearchListener {
-            override fun onResult(code: Int, result: KeywordSearchResult.SongBean?, message: String?) {
+        BaiduMusicApi.searchMusicByKey(key, object :
+                BaiduMusicApi.OnKeywordSearchListener {
+            override fun onResult(code: Int, result: SongBean?, message: String?) {
                 mBaseId = if (code == 0 && result != null) {
                     result.songid
                 } else {
                     "74172066"
                 }
-                mHandler.sendEmptyMessage(MSG_LOAD_RECOM_DATA)
+                mHandler.sendEmptyMessage(mMsgBaseIdSet)
             }
         })
     }

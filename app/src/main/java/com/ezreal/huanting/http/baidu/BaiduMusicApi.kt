@@ -207,6 +207,7 @@ object BaiduMusicApi {
                 .subscribe({
                     billList.add(it)
                     if (billList.size == types.size){
+                        billList.sortBy { it.billType }
                         listener.onResult(0, billList, "success")
                     }
                 }, {

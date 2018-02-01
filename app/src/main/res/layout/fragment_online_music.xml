@@ -49,7 +49,8 @@
             android:id="@+id/mRcvRecomMusic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="5dp"
+            android:minHeight="120dp"/>
 
         <RelativeLayout
             android:id="@+id/mLayoutHotMusic"
@@ -90,7 +91,8 @@
             android:id="@+id/mRcvHotMusic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="5dp"
+            android:minHeight="120dp"/>
 
         <RelativeLayout
             android:id="@+id/mLayoutNewMusic"
@@ -131,7 +133,8 @@
             android:id="@+id/mRcvNewMusic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="5dp"
+            android:minHeight="120dp"/>
 
         <RelativeLayout
             android:id="@+id/mLayoutMusicBill"
