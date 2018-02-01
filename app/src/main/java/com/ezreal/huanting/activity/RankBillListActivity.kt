@@ -44,7 +44,6 @@ class RankBillListActivity : Activity() {
                 intent.putExtra("BillID", mRankBillList[position].billType.toLong())
                 startActivity(intent)
             }
-
         })
 
         mIvBack.setOnClickListener {

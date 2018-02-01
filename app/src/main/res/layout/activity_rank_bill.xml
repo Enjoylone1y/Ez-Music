@@ -36,7 +36,8 @@
         android:gravity="center_vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="25dp">
+        android:paddingTop="25dp"
+        android:background="@android:color/transparent">
 
         <ImageView
             android:id="@+id/mIvBack"

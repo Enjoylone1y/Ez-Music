@@ -36,7 +36,6 @@ import kotlinx.android.synthetic.main.activity_rank_bill.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-
 /**
  * 网络榜单 页面
  * Created by wudeng on 2018/1/30.
@@ -44,6 +43,10 @@ import org.greenrobot.eventbus.Subscribe
 class RankBillActivity :Activity(){
 
     private lateinit var mHeadView: View
+    private lateinit var mHeadCover:ImageView
+    private lateinit var mHeadName:TextView
+    private lateinit var mHeadUpdate:TextView
+
     private var mBackColor = Color.parseColor("#bfbfbf")
     private var mHeadViewHeight = 0
 
@@ -56,23 +59,24 @@ class RankBillActivity :Activity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rank_bill)
+        mIvBack.setOnClickListener { finish() }
+
+        initHeadView()
         initMusicList()
         loadRankBill()
+        loadBillMusic(0)
         EventBus.getDefault().register(this)
     }
 
     private fun loadRankBill() {
         mBillId = intent.getLongExtra("BillID", Constant.NEW_MUSIC_LIST_ID)
         mBillName = ConvertUtils.getTypeName(mBillId.toInt())
-        BaiduMusicApi.searchRankBill(mBillId.toInt(), 15, 0, object :
+        BaiduMusicApi.searchRankBill(mBillId.toInt(), 1, 0, object :
                 BaiduMusicApi.OnBillSearchListener {
             override fun onResult(code: Int, result: RankBillSearchResult?, message: String?) {
                 if (code == 0 && result?.billboard != null) {
                     mRankBill = result.billboard
-                    initHeadView()
-                    if (result.song_list != null) {
-                        covert2Music(result.song_list)
-                    }
+                    setHeadViewData()
                 } else {
                     FToastUtils.init().show("榜单加载失败，请重试~~")
                     finish()
@@ -82,27 +86,59 @@ class RankBillActivity :Activity(){
         })
     }
 
-    private fun initHeadView() {
-        FStatusBarUtils.translucent(this)
-        if (mRankBill == null) {
-            return
-        }
 
+    private fun initHeadView() {
+        // 状态栏透明
+        FStatusBarUtils.translucent(this)
+        // 构建 headView
+        mHeadView = LayoutInflater.from(this)
+                .inflate(R.layout.layout_rank_bill_head, null, false)
+        mHeadViewHeight = FConvertUtils.dip2px(200f)
+        mHeadCover = mHeadView.findViewById(R.id.mIvBillCover)
+        mHeadName = mHeadView.findViewById(R.id.mTvBillName)
+        mHeadUpdate = mHeadView.findViewById(R.id.mTvUpdate)
+        // 添加默认 headView
+        mRcvMusic.addHeaderView(mHeadView)
+    }
+
+    private fun setHeadViewData(){
         val coverUrl = mRankBill?.pic_s640
         OkGo.get<Bitmap>(coverUrl).execute(object : BitmapCallback() {
             override fun onSuccess(response: Response<Bitmap>?) {
                 if (response?.body() != null) {
                     mBackColor = Palette.from(response.body()).generate().darkVibrantSwatch?.rgb
                             ?: ContextCompat.getColor(this@RankBillActivity, R.color.color_gray)
+                    mHeadName.text = mBillName
+                    mHeadUpdate.text = mRankBill?.update_date
+                    if (mRankBill?.pic_s640.isNullOrEmpty()) {
+                        mHeadCover.setImageResource(R.drawable.splash)
+                    } else {
+                        Glide.with(this@RankBillActivity)
+                                .load(mRankBill?.pic_s640)
+                                .asBitmap()
+                                .error(R.drawable.splash)
+                                .into(mHeadCover)
+                    }
                     setHeadViewBackByCover()
                 }
             }
         })
-
-        createHeadView()
-        mHeadViewHeight = FConvertUtils.dip2px(200f)
     }
 
+    private fun setHeadViewBackByCover() {
+        val headBarBitmap = Bitmap.createBitmap(resources.displayMetrics.widthPixels,
+                FConvertUtils.dip2px(271f), Bitmap.Config.ARGB_8888)
+        headBarBitmap.eraseColor(mBackColor)//填充颜色
+        val headDrawable = BitmapDrawable(resources, headBarBitmap)
+        mHeadView.background = headDrawable
+
+        val actionBarBitmap = Bitmap.createBitmap(resources.displayMetrics.widthPixels,
+                FConvertUtils.dip2px(71f), Bitmap.Config.ARGB_8888)
+        actionBarBitmap.eraseColor(mBackColor)//填充颜色
+        val actionBarDrawable = BitmapDrawable(resources, actionBarBitmap)
+        actionBarDrawable.mutate().alpha = 0
+        mActionBar.background = actionBarDrawable
+    }
 
     private fun initMusicList() {
         mRcvMusic.layoutManager = LinearLayoutManager(this)
@@ -144,42 +180,17 @@ class RankBillActivity :Activity(){
         }
     }
 
-
-    private fun createHeadView() {
-        mHeadView = LayoutInflater.from(this)
-                .inflate(R.layout.layout_rank_bill_head, null, false)
-        val cover = mHeadView.findViewById<ImageView>(R.id.mIvBillCover)
-        val name = mHeadView.findViewById<TextView>(R.id.mTvBillName)
-        val update = mHeadView.findViewById<TextView>(R.id.mTvUpdate)
-
-        name.text = mBillName
-        update.text = mRankBill?.update_date
-
-        if (mRankBill?.pic_s640.isNullOrEmpty()) {
-            cover.setImageResource(R.drawable.splash)
-        } else {
-            Glide.with(this)
-                    .load(mRankBill?.pic_s640)
-                    .asBitmap()
-                    .error(R.drawable.splash)
-                    .into(cover)
-        }
-        mRcvMusic.addHeaderView(mHeadView)
-    }
-
-    private fun setHeadViewBackByCover() {
-        val headBarBitmap = Bitmap.createBitmap(resources.displayMetrics.widthPixels,
-                FConvertUtils.dip2px(271f), Bitmap.Config.ARGB_8888)
-        headBarBitmap.eraseColor(mBackColor)//填充颜色
-        val headDrawable = BitmapDrawable(resources, headBarBitmap)
-        mHeadView.background = headDrawable
-
-        val actionBarBitmap = Bitmap.createBitmap(resources.displayMetrics.widthPixels,
-                FConvertUtils.dip2px(71f), Bitmap.Config.ARGB_8888)
-        actionBarBitmap.eraseColor(mBackColor)//填充颜色
-        val actionBarDrawable = BitmapDrawable(resources, actionBarBitmap)
-        actionBarDrawable.mutate().alpha = 0
-        mActionBar.background = actionBarDrawable
+    private fun loadBillMusic(offset:Int){
+        BaiduMusicApi.searchRankBill(mBillId.toInt(), 10, offset, object :
+                BaiduMusicApi.OnBillSearchListener {
+            override fun onResult(code: Int, result: RankBillSearchResult?, message: String?) {
+                if (code == 0 && result?.song_list != null) {
+                    covert2Music(result.song_list)
+                } else {
+                    FToastUtils.init().show("加载失败，请重试~~")
+                }
+            }
+        })
     }
 
     private fun covert2Music(list: List<RankBillSearchResult.BillSongBean>) {
@@ -199,15 +210,14 @@ class RankBillActivity :Activity(){
             }
         }
         if (index.size == 0){
-            mAdapter.notifyDataSetChanged()
+            mAdapter.notifyChangeWidthStatus()
             return
         }
 
         // 对于未保存的数据，从网络获取，并存到数据库
         mainRealm.beginTransaction()
         for (id in index) {
-            OnlineMusicHelper.loadAndSaveInfo(id, object :
-                    OnlineMusicHelper.OnInfoLoadedListener {
+            OnlineMusicHelper.loadAndSaveInfo(id, object : OnlineMusicHelper.OnInfoLoadedListener {
                 override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
                     if (code == 0 && musicBean != null) {
                         mMusicList.add(musicBean)
@@ -215,7 +225,7 @@ class RankBillActivity :Activity(){
                         // 在添加完成后更新数据库，刷新页面
                         if (mMusicList.size == afterSize){
                             mainRealm.commitTransaction()
-                            mAdapter.notifyDataSetChanged()
+                            mAdapter.notifyChangeWidthStatus()
                         }
                     }else{
                         afterSize -= 1
@@ -224,7 +234,6 @@ class RankBillActivity :Activity(){
             })
         }
     }
-
 
     @Subscribe
     fun onPlayMusicChange(event: PlayMusicChangeEvent) {
@@ -235,6 +244,11 @@ class RankBillActivity :Activity(){
             prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
             mAdapter.notifyItemChanged(preIndex + 2)
         }
+
+        if (event.newIndex == -1){
+            return
+        }
+
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
         if (currentPlay != null && currentPlay.playFromListId == mBillId) {
@@ -243,7 +257,6 @@ class RankBillActivity :Activity(){
             mAdapter.notifyItemChanged(currentIndex + 2)
         }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

@@ -32,6 +32,7 @@ object OnlineMusicHelper {
                     musicBean.musicTitle = result.songinfo?.title!!
                     musicBean.artistName = result.songinfo?.author!!
                     musicBean.albumName = result.songinfo?.album_title!!
+                    musicBean.albumId = result.songinfo?.album_id?.toLong()!!
 
                     // 歌曲信息
                     musicBean.bigPic = result.songinfo?.pic_big!!
@@ -42,6 +43,12 @@ object OnlineMusicHelper {
                     musicBean.fileLink = result.bitrate?.file_link!!
                     musicBean.fileSize = result.bitrate?.file_size!!
                     musicBean.duration = result.bitrate?.file_duration!! * 1000
+
+                    // 辅助信息
+                    musicBean.playStatus = Constant.PLAY_STATUS_NORMAL
+                    musicBean.playCount = 0
+                    musicBean.lastPlayTime = 0
+
                     listener.onResult(0,musicBean,"success")
                 }else{
                     listener.onResult(-1,null,"failed")

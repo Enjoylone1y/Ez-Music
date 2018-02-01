@@ -64,13 +64,17 @@ object Constant {
     val DOWLOAD_TYPE_MUSIC = 0x12       // 歌曲下载
 
     /**
-     * APP 设置
+     * 用户信息
      */
     val PRE_USER_TABLE = "USER_TABLE"
     val PRE_USER_NAME = "USER_NAME"
     val PRE_USER_PASS = "USER_PASS"
     val PRE_USER_ID = "USER_ID"
+
+    /**
+     * APP 设置
+     */
     val PRE_APP_OPTION_TABLE = "APP_OPTION_TABLE"
-    val PRE_APP_OPTION_LOVE_CREATED = "APP_OPTION_LOVE_CREATED"
+    val PRE_APP_DEFAULT_LIST_CREATED = "APP_DEFAULT_LIST_CREATED"
     val PRE_APP_OPTION_INIT_SYNC = "APP_OPTION_INIT_SYNC"
 }

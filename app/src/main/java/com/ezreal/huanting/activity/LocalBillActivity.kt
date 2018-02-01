@@ -50,7 +50,6 @@ class LocalBillActivity : AppCompatActivity() {
         setContentView(R.layout.activity_local_bill)
         initActionBar()
         getMusicList()
-
         EventBus.getDefault().register(this)
     }
 
@@ -197,6 +196,11 @@ class LocalBillActivity : AppCompatActivity() {
             prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
             mAdapter.notifyItemChanged(preIndex + 2)
         }
+
+        if (event.newIndex == -1){
+            return
+        }
+
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
         if (currentPlay != null && currentPlay.playFromListId == mBill.listId) {

@@ -30,7 +30,6 @@ class MusicListFragment : Fragment() {
     private val mMusicList = ArrayList<MusicBean>()
     private lateinit var mAdapter: MusicAdapter
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
@@ -43,26 +42,14 @@ class MusicListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mRecyclerView.layoutManager = LinearLayoutManager(context)
-        mRecyclerView.setLoadingMoreEnabled(false)
-        mRecyclerView.setPullRefreshEnabled(false)
+        initView()
         loadSongList()
     }
 
-    private fun loadSongList() {
-        MusicDataHelper.loadMusicFromDB(object : MusicDataHelper.OnMusicLoadListener {
-            override fun loadSuccess(musicList: List<MusicBean>) {
-                musicLoaded(musicList)
-            }
-
-            override fun loadFailed(message: String) {
-                FToastUtils.init().show("加载失败:" + message)
-            }
-        })
-    }
-
-    private fun musicLoaded(musicList: List<MusicBean>){
-        mMusicList.addAll(musicList)
+    private fun initView(){
+        mRecyclerView.layoutManager = LinearLayoutManager(context)
+        mRecyclerView.setLoadingMoreEnabled(false)
+        mRecyclerView.setPullRefreshEnabled(false)
         mAdapter = MusicAdapter(context!!, Constant.LOCAL_MUSIC_LIST_ID, mMusicList)
         mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
@@ -70,6 +57,19 @@ class MusicListFragment : Fragment() {
             }
         })
         mRecyclerView.adapter = mAdapter
+    }
+
+    private fun loadSongList() {
+        MusicDataHelper.loadMusicFromDB(object : MusicDataHelper.OnMusicLoadListener {
+            override fun loadSuccess(musicList: List<MusicBean>) {
+                mMusicList.addAll(musicList)
+                mAdapter.notifyChangeWidthStatus()
+            }
+
+            override fun loadFailed(message: String) {
+                FToastUtils.init().show("加载失败:" + message)
+            }
+        })
     }
 
     @Subscribe
@@ -81,6 +81,11 @@ class MusicListFragment : Fragment() {
             prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
             mAdapter.notifyItemChanged(preIndex + 1)
         }
+
+        if (event.newIndex == -1){
+            return
+        }
+
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
         if (currentPlay != null && currentPlay.playFromListId == Constant.LOCAL_MUSIC_LIST_ID) {

@@ -41,6 +41,16 @@ class RecentPlayActivity : AppCompatActivity() {
         mRvRecentPlay.layoutManager = LinearLayoutManager(this)
         mRvRecentPlay.setLoadingMoreEnabled(false)
         mRvRecentPlay.setPullRefreshEnabled(false)
+
+        mAdapter = MusicAdapter(this@RecentPlayActivity,
+                Constant.RECENT_MUSIC_LIST_ID ,mMusicList)
+        mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
+            override fun onItemClick(holder: RViewHolder, position: Int) {
+                mAdapter.playMusic(position-1)
+            }
+        })
+        mRvRecentPlay.adapter = mAdapter
+
     }
 
     private fun initListener() {
@@ -67,15 +77,7 @@ class RecentPlayActivity : AppCompatActivity() {
         MusicDataHelper.loadRecentPlayFromDB(object : MusicDataHelper.OnMusicLoadListener {
             override fun loadSuccess(musicList: List<MusicBean>) {
                 mMusicList.addAll(musicList)
-                mMusicList.sortBy { it.lastPlayTime }
-                mAdapter = MusicAdapter(this@RecentPlayActivity,
-                        Constant.RECENT_MUSIC_LIST_ID ,mMusicList)
-                mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
-                    override fun onItemClick(holder: RViewHolder, position: Int) {
-                        mAdapter.playMusic(position-1)
-                    }
-                })
-                mRvRecentPlay.adapter = mAdapter
+                mAdapter.notifyChangeWidthStatus()
             }
 
             override fun loadFailed(message: String) {
@@ -93,6 +95,11 @@ class RecentPlayActivity : AppCompatActivity() {
             prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
             mAdapter.notifyItemChanged(preIndex + 1)
         }
+
+        if (event.newIndex == -1){
+            return
+        }
+
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
         if (currentPlay != null && currentPlay.playFromListId == Constant.RECENT_MUSIC_LIST_ID){

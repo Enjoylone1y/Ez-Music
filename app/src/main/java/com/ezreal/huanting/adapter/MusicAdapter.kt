@@ -3,6 +3,7 @@ package com.ezreal.huanting.adapter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
@@ -59,6 +60,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         }
     }
 
+
     private fun showPopupWindow(view: View, music: MusicBean) {
         if (mMenuPopupWindow == null) {
             mMenuPopupWindow = MusicMenuPopup(mContext)
@@ -87,8 +89,20 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         }
 
         GlobalMusicData.updateCurrentPlay(position)
-        mList[position].playStatus = Constant.PLAY_STATUS_PLAYING
         EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY, -1))
     }
 
+
+    fun notifyChangeWidthStatus(){
+        checkAndSetStatus()
+        notifyDataSetChanged()
+        Log.e("MusicAdapter","size = " + mList.size)
+    }
+
+    private fun checkAndSetStatus(){
+        val currentPlay = GlobalMusicData.getCurrentPlay()
+        if (currentPlay != null && currentPlay.playFromListId == listId) {
+            mList.firstOrNull { it.musicId == currentPlay.musicId }?.playStatus = Constant.PLAY_STATUS_PLAYING
+        }
+    }
 }

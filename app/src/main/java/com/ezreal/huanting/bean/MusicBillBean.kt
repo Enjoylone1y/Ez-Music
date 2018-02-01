@@ -18,8 +18,8 @@ open class MusicBillBean :RealmObject(){
     var creatorId:Long = -1L
     lateinit var creatorName:String
     var createTime:Long = 0
-    lateinit var sortFieldName:String
-    lateinit var coverPathByEd:String
+    var sortFieldName:String ?= null
+    var coverPathByEd:String ?= null
     var musicList:RealmList<MusicBean> = RealmList()
 
 }

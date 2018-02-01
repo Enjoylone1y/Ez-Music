@@ -1,7 +1,6 @@
 package com.ezreal.huanting.helper
 
 import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.bean.RecentPlayBean
 import com.ezreal.huanting.event.PlayListChangeEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.event.PlayProcessChangeEvent
@@ -111,12 +110,8 @@ object GlobalMusicData {
         mCurrentPlay = mCurrentPlayList[mCurrentPlayIndex]
         mCurrentProcess = 0
 
-        val musicRecentPlay = RecentPlayBean()
-        musicRecentPlay.musicId = mCurrentPlay?.musicId!!
-        musicRecentPlay.lastPlayTime = System.currentTimeMillis()
-
         if (mCurrentListId != Constant.RECENT_MUSIC_LIST_ID) {
-            MusicDataHelper.addRecentPlay2DB(musicRecentPlay)
+            MusicDataHelper.addRecentPlay2DB(mCurrentPlay!!)
         }
 
         // 推送播放歌曲改变事件
@@ -143,7 +138,6 @@ object GlobalMusicData {
         mCurrentPlay = null
         mCurrentPlayIndex = -1
         mCurrentProcess = 0
-        EventBus.getDefault().post(PlayListChangeEvent(mCurrentListId))
         EventBus.getDefault().post(PlayMusicChangeEvent(-1))
     }
 

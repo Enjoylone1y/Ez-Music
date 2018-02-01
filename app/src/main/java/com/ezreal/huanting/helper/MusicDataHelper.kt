@@ -8,7 +8,6 @@ import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import com.ezreal.huanting.bean.AlbumBean
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.bean.MusicBillBean
-import com.ezreal.huanting.bean.RecentPlayBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.utils.Constant
 import io.reactivex.Observable
@@ -38,23 +37,11 @@ object MusicDataHelper {
     }
 
     fun loadRecentPlayFromDB(listener: OnMusicLoadListener?) {
+        val realm = Realm.getDefaultInstance()
         try {
-            val realm = Realm.getDefaultInstance()
-            val results = realm.where(RecentPlayBean::class.java)
-                    .findAllSorted("lastPlayTime")
-            if (results.isEmpty()) {
-                listener?.loadSuccess(arrayListOf())
-                return
-            }
-            val ids = arrayOfNulls<Long>(results.size)
-            for (i in results.indices) {
-                ids[i] = results[i].musicId
-            }
-            realm.where(MusicBean::class.java).`in`("musicId", ids)
-                    .findAllAsync().addChangeListener { element ->
-                listener?.loadSuccess(element)
-            }
-
+            val results = realm.where(MusicBillBean::class.java)
+                    .equalTo("listId",Constant.RECENT_MUSIC_LIST_ID).findFirst()
+            listener?.loadSuccess(results.musicList.sort("lastPlayTime"))
         } catch (e: Exception) {
             e.printStackTrace()
             listener?.loadFailed(e.message!!)
@@ -65,52 +52,52 @@ object MusicDataHelper {
         var count = 0
         val realm = Realm.getDefaultInstance()
         try {
-            count = realm.where(RecentPlayBean::class.java).count().toInt()
+            count = realm.where(MusicBillBean::class.java)
+                    .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
+                    .findFirst().musicList.size
         } catch (e: Exception) {
             e.printStackTrace()
         }
         return count
     }
 
-    fun addRecentPlay2DB(recentPlayBean: RecentPlayBean) {
+    fun addRecentPlay2DB(musicBean: MusicBean) {
+        val realm = Realm.getDefaultInstance()
         try {
-            // TODO 修复网络歌曲播放次数统计有误问题
-//            val realm = Realm.getDefaultInstance()
-//            realm.beginTransaction()
-//            val findFirst = realm.where(RecentPlayBean::class.java)
-//                    .equalTo("musicId", recentPlayBean.musicId)
-//                    .findFirst()
-//            if (findFirst != null) {
-//                findFirst.lastPlayTime = System.currentTimeMillis()
-//                realm.where(MusicBean::class.java)
-//                        .equalTo("musicId", findFirst.musicId)
-//                        .findFirst().lastPlayTime = findFirst.lastPlayTime
-//            } else {
-//                recentPlayBean.lastPlayTime = System.currentTimeMillis()
-//                realm.insert(recentPlayBean)
-//            }
-//            val count = realm.where(RecentPlayBean::class.java).count()
-//            if (count > 100) {
-//                realm.where(RecentPlayBean::class.java).findFirst().deleteFromRealm()
-//            }
-//            realm.commitTransaction()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    fun clearRecentPlay() {
-        try {
-            val realm = Realm.getDefaultInstance()
             realm.beginTransaction()
-            realm.delete(RecentPlayBean::class.java)
+            val recent = realm.where(MusicBillBean::class.java)
+                    .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
+                    .findFirst()
+            val first = recent.musicList.firstOrNull { it.musicId == musicBean.musicId }
+            if (first != null){
+                first.lastPlayTime = System.currentTimeMillis()
+                first.playCount += 1
+            }else{
+                musicBean.lastPlayTime = System.currentTimeMillis()
+                musicBean.playCount += 1
+                recent.musicList.add(musicBean)
+            }
             realm.commitTransaction()
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun createMusicList(title: String, listener: OnListCreateListener?) {
+    fun clearRecentPlay() {
+        val realm = Realm.getDefaultInstance()
+        try {
+            realm.beginTransaction()
+            val recent = realm.where(MusicBillBean::class.java)
+                    .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
+                    .findFirst()
+            recent.musicList.clear()
+            realm.commitTransaction()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun createMusicBill(title: String, listener: OnBillCreatedListener?) {
         try {
             val userId = FSharedPrefsUtils.getLong(Constant.PRE_USER_TABLE,
                     Constant.PRE_USER_ID, 0)
@@ -158,7 +145,8 @@ object MusicDataHelper {
     fun loadMusicListAll(listener: OnListLoadListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            val realmResults = realm.where(MusicBillBean::class.java).findAll()
+            val realmResults = realm.where(MusicBillBean::class.java)
+                    .notEqualTo("listId",Constant.RECENT_MUSIC_LIST_ID).findAll()
             listener?.loadSuccess(realmResults)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -179,29 +167,39 @@ object MusicDataHelper {
         }
     }
 
-    fun createLoveList(listener: OnListCreateListener?) {
+    /**
+     * 创建默认歌单
+     */
+    fun createDefaultBill(listener: OnBillCreatedListener?) {
         try {
-            val listBean = MusicBillBean()
-            listBean.listId = Constant.MY_LOVE_MUSIC_LIST_ID
-            listBean.listName = "我喜欢的音乐"
-            listBean.createTime = System.currentTimeMillis()
-            val userId = FSharedPrefsUtils.getLong(Constant.PRE_USER_TABLE,
-                    Constant.PRE_USER_ID, 0)
-            val userName = FSharedPrefsUtils.getString(Constant.PRE_USER_TABLE,
-                    Constant.PRE_USER_NAME, "unKnow")
-            listBean.creatorId = userId
-            listBean.creatorName = userName
+            val loveBill = MusicBillBean()
+            loveBill.listId = Constant.MY_LOVE_MUSIC_LIST_ID
+            loveBill.listName = "我喜欢的音乐"
+            loveBill.createTime = System.currentTimeMillis()
+            loveBill.creatorId = 0
+            loveBill.creatorName = "root"
+
+            val recentBill = MusicBillBean()
+            recentBill.listId = Constant.RECENT_MUSIC_LIST_ID
+            recentBill.listName = "最近播放"
+            recentBill.createTime = System.currentTimeMillis()
+            recentBill.creatorId = 0
+            recentBill.creatorName = "root"
+
             val realm = Realm.getDefaultInstance()
             realm.beginTransaction()
-            realm.insertOrUpdate(listBean)
+            realm.insert(loveBill)
+            realm.insert(recentBill)
             realm.commitTransaction()
             realm.close()
+
             listener?.createdResult(0, Constant.MY_LOVE_MUSIC_LIST_ID, "Create Success")
         } catch (e: Exception) {
             e.printStackTrace()
             listener?.createdResult(-1, -1, e.message!!)
         }
     }
+
 
     fun addMusic2List(musicBean: MusicBean, listId: Long, listener: OnAddMusic2ListListener?) {
         try {
@@ -236,6 +234,7 @@ object MusicDataHelper {
                             MediaStore.Audio.AudioColumns.IS_MUSIC,
                             MediaStore.Audio.AudioColumns.TITLE,
                             MediaStore.Audio.AudioColumns.ARTIST,
+                            MediaStore.Audio.AudioColumns.ARTIST_ID,
                             MediaStore.Audio.AudioColumns.ALBUM,
                             MediaStore.Audio.AudioColumns.ALBUM_ID,
                             MediaStore.Audio.AudioColumns.DATA,
@@ -255,6 +254,7 @@ object MusicDataHelper {
                 val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns._ID))
                 val title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE))
                 val artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST))
+                val artistId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST_ID))
                 val album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM))
                 val albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID))
                 val path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA))
@@ -265,6 +265,7 @@ object MusicDataHelper {
                 music.musicId = id
                 music.musicTitle = title
                 music.artistName = artist
+                music.artistId = artistId
                 music.albumName = album
                 music.albumId = albumID
                 music.albumUri = albumUri
@@ -399,7 +400,7 @@ object MusicDataHelper {
         fun loadFailed(message: String)
     }
 
-    interface OnListCreateListener {
+    interface OnBillCreatedListener {
         fun createdResult(code: Int, listId: Long, message: String)
     }
 

@@ -186,7 +186,7 @@ class PersonalFragment : Fragment() {
     }
 
     private fun createMusicList(title: String) {
-        MusicDataHelper.createMusicList(title, object : MusicDataHelper.OnListCreateListener {
+        MusicDataHelper.createMusicBill(title, object : MusicDataHelper.OnBillCreatedListener {
             override fun createdResult(code: Int, listId: Long, message: String) {
                 if (code != 0) {
                     FToastUtils.init().show("创建失败:" + message)

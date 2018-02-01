@@ -85,24 +85,24 @@ class SplashActivity : AppCompatActivity() {
                 File(Constant.APP_IMAGE_PATH).mkdir()
             }
 
-            // 创建 “我喜欢的音乐” 歌单
+            // 创建 “我喜欢的音乐”,“最近播放” 歌单
             val created = FSharedPrefsUtils.getBoolean(Constant.PRE_APP_OPTION_TABLE,
-                    Constant.PRE_APP_OPTION_LOVE_CREATED, false)
+                    Constant.PRE_APP_DEFAULT_LIST_CREATED, false)
             if (!created) {
-                MusicDataHelper.createLoveList(object : MusicDataHelper.OnListCreateListener {
+                MusicDataHelper.createDefaultBill(object : MusicDataHelper.OnBillCreatedListener {
                     override fun createdResult(code: Int, listId: Long, message: String) {
                         if (code == 0) {
                             FSharedPrefsUtils.putBoolean(Constant.PRE_APP_OPTION_TABLE,
-                                    Constant.PRE_APP_OPTION_LOVE_CREATED, true)
+                                    Constant.PRE_APP_DEFAULT_LIST_CREATED, true)
                         }
                     }
                 })
             }
 
+            // 同步本地音乐至数据库
             val initSync = FSharedPrefsUtils.getBoolean(Constant.PRE_APP_OPTION_TABLE,
                     Constant.PRE_APP_OPTION_INIT_SYNC, false)
             if (!initSync) {
-                // 同步本地音乐至数据库
                 MusicDataHelper.syncLocalMusic(this,
                         object : MusicDataHelper.OnSyncLocalMusicListener {
                             override fun onResult(code: Int, message: String) {
