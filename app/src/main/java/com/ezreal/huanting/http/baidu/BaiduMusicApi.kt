@@ -2,7 +2,6 @@ package com.ezreal.huanting.http.baidu
 
 import android.text.TextUtils
 import android.util.Log
-import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.bean.RankBillBean
 import com.google.gson.Gson
 import com.google.gson.stream.JsonReader
@@ -97,10 +96,8 @@ object BaiduMusicApi {
                 .params(PARAM_NUM,num)
                 .execute(object : JsonCallBack<RecomSearchResult>(){
                     override fun onSuccess(response: Response<RecomSearchResult>?) {
-                        if (response?.body() != null
-                                && response.body()?.result != null
-                                && response.body().result?.list != null){
-                            listener.onResult(0, response.body().result?.list, "success")
+                        if (response?.body() != null && response.body()?.result != null){
+                            listener.onResult(0, response.body().result.list, "success")
                         }else{
                             listener.onResult(-1, null, "搜索推荐歌曲失败")
                         }
@@ -190,12 +187,12 @@ object BaiduMusicApi {
                     bean.billType = it.billboard.billboard_type.toInt()
                     bean.billCoverUrl = it.billboard.pic_s640
                     bean.update = it.billboard.update_date
-                    if (it.song_list?.size!! >= 1){
-                        bean.musicFirst = it.song_list?.get(0)
-                        if (it.song_list?.size!! >= 2){
-                            bean.musicSecond = it.song_list?.get(1)
-                            if (it.song_list?.size!! >= 3){
-                                bean.musicThird = it.song_list?.get(2)
+                    if (it.song_list.size >= 1){
+                        bean.musicFirst = it.song_list[0]
+                        if (it.song_list.size >= 2){
+                            bean.musicSecond = it.song_list[1]
+                            if (it.song_list.size >= 3){
+                                bean.musicThird = it.song_list[2]
                             }
                         }
                     }

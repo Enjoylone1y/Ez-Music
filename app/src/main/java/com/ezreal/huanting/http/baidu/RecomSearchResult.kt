@@ -7,11 +7,10 @@ package com.ezreal.huanting.http.baidu
 
 class RecomSearchResult {
 
-    var error_code: Int = 0
-    var result: ResultBean? = null
+    lateinit var result: ResultBean
 
     class ResultBean {
-        var list: List<RecomSongBean>? = null
+        var list = ArrayList<RecomSongBean>()
     }
 
     class RecomSongBean {

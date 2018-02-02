@@ -7,7 +7,6 @@ package com.ezreal.huanting.http.baidu
 
 class MusicSearchResult {
 
-    var error_code: Int = 0
     var songinfo: SonginfoBean? = null
     var bitrate: BitrateBean? = null
 
