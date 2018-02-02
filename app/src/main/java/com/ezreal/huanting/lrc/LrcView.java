@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 歌词
@@ -309,7 +310,7 @@ public class LrcView extends View {
             canvas.drawLine(mTimeTextWidth, centerY, getWidth() - mTimeTextWidth, centerY, mTimePaint);
 
             mTimePaint.setColor(mTimeTextColor);
-            String timeText = LrcUtils.formatTime(mLrcEntryList.get(centerLine).getTime());
+            String timeText = formatTime(mLrcEntryList.get(centerLine).getTime());
             float timeX = getWidth() - mTimeTextWidth / 2;
             float timeY = centerY - (mTimeFontMetrics.descent + mTimeFontMetrics.ascent) / 2;
             canvas.drawText(timeText, timeX, timeY, mTimePaint);
@@ -581,6 +582,14 @@ public class LrcView extends View {
         } else {
             post(r);
         }
+    }
+
+    private String formatTime(long milli) {
+        int m = (int) (milli / DateUtils.MINUTE_IN_MILLIS);
+        int s = (int) ((milli / DateUtils.SECOND_IN_MILLIS) % 60);
+        String mm = String.format(Locale.getDefault(), "%02d", m);
+        String ss = String.format(Locale.getDefault(), "%02d", s);
+        return mm + ":" + ss;
     }
 
     private Object getFlag() {

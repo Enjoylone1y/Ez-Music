@@ -22,6 +22,7 @@ import java.io.File
 import android.view.Gravity
 import android.widget.EditText
 import cn.hotapk.fastandrutils.utils.FToastUtils
+import com.ezreal.huanting.activity.DownManagerActivity
 import com.ezreal.huanting.activity.LocalBillActivity
 import com.ezreal.huanting.adapter.MusicBillAdapter
 import com.ezreal.huanting.adapter.RViewHolder
@@ -86,7 +87,7 @@ class PersonalFragment : Fragment() {
         }
 
         layout_down_manager.setOnClickListener {
-            // TODO 打开下载管理页
+            this.startActivity(Intent(context, DownManagerActivity::class.java))
         }
 
         mIvListSetting.setOnClickListener { view ->

@@ -1,6 +1,5 @@
 package com.ezreal.huanting.activity
 
-import android.app.Activity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import com.ezreal.huanting.R
@@ -24,7 +23,7 @@ import org.greenrobot.eventbus.Subscribe
  * Created by wudeng on 2018/1/30.
  */
 
-class RecomListActivity:Activity() {
+class RecomListActivity : BaseActivity() {
 
     private val mMusicList = ArrayList<MusicBean>()
     private lateinit var mAdapter:MusicAdapter

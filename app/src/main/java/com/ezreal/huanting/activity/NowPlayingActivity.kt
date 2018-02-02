@@ -5,10 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
-import android.view.GestureDetector
 import android.view.Gravity
 import android.view.MotionEvent
 import android.widget.SeekBar
@@ -35,7 +33,7 @@ import org.greenrobot.eventbus.Subscribe
  * Created by wudeng on 2017/11/28.
  */
 
-class NowPlayingActivity : AppCompatActivity() {
+class NowPlayingActivity : BaseActivity() {
 
     private val mPlayMode = listOf(Constant.PLAY_MODE_LIST_RECYCLE,
             Constant.PLAY_MODE_SINGLE_RECYCLE, Constant.PLAY_MODE_RANDOM)

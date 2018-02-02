@@ -1,42 +1,37 @@
 package com.ezreal.huanting.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import com.ezreal.huanting.R
 import com.ezreal.huanting.adapter.FragmentAdapter
-import com.ezreal.huanting.fragment.AlbumListFragment
-import com.ezreal.huanting.fragment.FolderListFragment
-import com.ezreal.huanting.fragment.ArtistListFragment
-import com.ezreal.huanting.fragment.MusicListFragment
-import kotlinx.android.synthetic.main.activity_local_music.*
-import kotlin.collections.ArrayList
+import com.ezreal.huanting.fragment.DownDoneFragment
+import com.ezreal.huanting.fragment.DownIngFragment
+import kotlinx.android.synthetic.main.activity_down_manager.*
 
 /**
- *
- * Created by wudeng on 2017/11/17.
+ * 下载管理页
+ * Created by wudeng on 2018/2/2.
  */
 
-class LocalMusicActivity : BaseActivity() {
+class DownManagerActivity : BaseActivity(){
 
-    private var mAdapter:FragmentAdapter ?= null
+    private var mAdapter: FragmentAdapter?= null
     private var mFragmentList = ArrayList<Fragment>()
-    private val mTitle = listOf("歌曲", "歌手", "专辑", "文件夹")
+    private val mTitle = listOf("已下载", "下载中")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_local_music)
+        setContentView(R.layout.activity_down_manager)
         initViewPage()
         initListener()
     }
 
+
     private fun initViewPage() {
-        mFragmentList.add(MusicListFragment())
-        mFragmentList.add(ArtistListFragment())
-        mFragmentList.add(AlbumListFragment())
-        mFragmentList.add(FolderListFragment())
+        mFragmentList.add(DownDoneFragment())
+        mFragmentList.add(DownIngFragment())
 
         mAdapter = FragmentAdapter(supportFragmentManager, mFragmentList, mTitle)
         mViewPage.adapter = mAdapter
@@ -52,14 +47,8 @@ class LocalMusicActivity : BaseActivity() {
         mIvBack.setOnClickListener {
             finish()
         }
-        mIvSearch.setOnClickListener {
-            startActivity(Intent(this,MusicSearchActivity::class.java))
-        }
-        mIvMenu.setOnClickListener {
-            // TODO 打开菜单弹窗
-        }
 
-        mTabLayout.addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
+        mTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabReselected(tab: TabLayout.Tab?) {
 
             }

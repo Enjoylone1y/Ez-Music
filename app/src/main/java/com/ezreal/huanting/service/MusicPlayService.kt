@@ -14,7 +14,6 @@ import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.event.*
 import com.ezreal.huanting.helper.GlobalMusicData
-import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.utils.Constant
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -30,7 +29,7 @@ import org.greenrobot.eventbus.Subscribe
 
 class MusicPlayService : Service() {
     private var mPlayId:Long = 0
-
+    private var isPause = false
     private val mPlayer: MediaPlayer = MediaPlayer()
     private var mAudioManager: AudioManager? = null
     private var mTimeCountThread: TimeCountThread? = null
@@ -62,6 +61,7 @@ class MusicPlayService : Service() {
             mPlayId = GlobalMusicData.getCurrentId()
             mTimeCountThread = TimeCountThread(mPlayId)
             mTimeCountThread?.start()
+            isPause = false
             // 推送播放状态更新事件
             EventBus.getDefault().post(PlayStatusChangeEvent(Constant.PLAY_STATUS_PLAYING))
         }
@@ -161,8 +161,11 @@ class MusicPlayService : Service() {
      */
     private fun dealPauseAction() {
         try {
-            mPlayer.pause()
-            EventBus.getDefault().post(PlayStatusChangeEvent(Constant.PLAY_STATUS_PAUSE))
+            if (mPlayer.isPlaying){
+                mPlayer.pause()
+                isPause = true
+                EventBus.getDefault().post(PlayStatusChangeEvent(Constant.PLAY_STATUS_PAUSE))
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -174,7 +177,10 @@ class MusicPlayService : Service() {
      */
     private fun dealResumeAction() {
         try {
-            mPlayer.start()
+            if (isPause){
+                mPlayer.start()
+                isPause = false
+            }
             EventBus.getDefault().post(PlayStatusChangeEvent(Constant.PLAY_STATUS_PLAYING))
         } catch (e: Exception) {
             e.printStackTrace()
@@ -187,7 +193,10 @@ class MusicPlayService : Service() {
     private fun dealNextAction() {
         try {
             // 停止当前播放
-            if (mPlayer.isPlaying) mPlayer.stop()
+            if (mPlayer.isPlaying){
+                mPlayer.stop()
+                isPause = false
+            }
             EventBus.getDefault().post(PlayProcessChangeEvent(0))
             // 更新播放音乐
             val currentIndex = GlobalMusicData.getCurrentIndex()
@@ -209,7 +218,10 @@ class MusicPlayService : Service() {
     private fun dealPreAction() {
         try {
             // 停止当前播放
-            if (mPlayer.isPlaying) mPlayer.stop()
+            if (mPlayer.isPlaying){
+                mPlayer.stop()
+                isPause = false
+            }
             EventBus.getDefault().post(PlayProcessChangeEvent(0))
             // 更新播放音乐
             val currentIndex = GlobalMusicData.getCurrentIndex()
@@ -244,6 +256,7 @@ class MusicPlayService : Service() {
         try {
             if (mPlayer.isPlaying){
                 mPlayer.stop()
+                isPause = false
             }
             mPlayer.reset()
         } catch (e: Exception) {
@@ -291,27 +304,33 @@ class MusicPlayService : Service() {
 
     /**
      * 音频焦点监听
-     * // TODO 音频焦点处理
      */
+
     inner class MyAudioFocusListener : AudioManager.OnAudioFocusChangeListener {
         override fun onAudioFocusChange(focusChange: Int) {
             when(focusChange){
                 AudioManager.AUDIOFOCUS_GAIN->{
-                  //  dealPlayAction()
+                    if (isPause){
+                        dealResumeAction()
+                    }
                 }
+
                 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT ->{
-                  //  dealPlayAction()
+                    if (isPause){
+                        dealResumeAction()
+                    }
                 }
+
                 AudioManager.AUDIOFOCUS_LOSS -> {
-                  //  dealStopAction()
+                    dealPauseAction()
                 }
+
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ->{
-                  // dealPauseAction()
+                    dealPauseAction()
                 }
             }
         }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

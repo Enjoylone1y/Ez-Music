@@ -1,6 +1,7 @@
 package com.ezreal.huanting.widget
 
 import android.content.Context
+import android.content.Intent
 import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.ezreal.huanting.R
+import com.ezreal.huanting.activity.BillInfoEditActivity
 import com.ezreal.huanting.bean.MusicBillBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.helper.MusicDataHelper
@@ -47,13 +49,15 @@ class BillMenuPopup : PopupWindow {
         mLayoutDelete = contentView.findViewById(R.id.mLayoutDelete)
 
         mLayoutEdInfo?.setOnClickListener {
-            // TODO 编辑歌单
             dismiss()
+            val intent = Intent(context,BillInfoEditActivity::class.java)
+            intent.putExtra("listId",mMusicBill?.listId)
+            context.startActivity(intent)
         }
 
         mLayoutDelete?.setOnClickListener {
-            showDialog(context)
             dismiss()
+            showDialog(context)
         }
     }
 

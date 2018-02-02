@@ -1,6 +1,5 @@
 package com.ezreal.huanting.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -18,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_bill_list.*
  * 榜单列表页
  * Created by wudeng on 2018/1/30.
  */
-class RankBillListActivity : Activity() {
+class RankBillListActivity : BaseActivity() {
 
     private val mRankBillList = ArrayList<RankBillBean>()
     private lateinit var mBillAdapter: RecycleViewAdapter<RankBillBean>

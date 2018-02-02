@@ -1,22 +1,25 @@
 package com.ezreal.huanting.activity
 
-import android.support.v7.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.view.KeyEvent
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.R
+import com.ezreal.huanting.fragment.DynamicFragment
 import com.ezreal.huanting.fragment.PersonalFragment
 import com.ezreal.huanting.fragment.OnlineFragment
 import com.ezreal.huanting.widget.MainMenuLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_main_title.*
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : BaseActivity(){
 
     private val mPersonalView  by lazy { PersonalFragment() }
     private val mOnlineView  by lazy{ OnlineFragment() }
+    private val mDynamicView by lazy { DynamicFragment() }
+
     private var mCurrentView:Fragment ?= null
     private  var mClickBackCount = 0
 
@@ -43,10 +46,10 @@ class MainActivity : AppCompatActivity(){
             switchFragment(mOnlineView)
         }
         mIvUser.setOnClickListener{
-            // TODO 打开个人信息页面
+            switchFragment(mDynamicView)
         }
         mIvSearch.setOnClickListener{
-            // TODO 打开搜索音乐页面
+            startActivity(Intent(this,MusicSearchActivity::class.java))
         }
 
         // 先显示本地音乐列表

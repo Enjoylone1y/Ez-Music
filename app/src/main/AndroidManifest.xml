@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/ic_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".activity.SplashActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTop">
@@ -26,14 +27,17 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.MainActivity"
-                  android:screenOrientation="portrait"/>
+        <activity android:name=".activity.BaseActivity"/>
 
-        <activity android:name=".activity.LocalMusicActivity"
+        <activity
+            android:name=".activity.MainActivity"
             android:screenOrientation="portrait"/>
-
-        <activity android:name=".activity.NowPlayingActivity"
-                  android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.LocalMusicActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.NowPlayingActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.RecentPlayActivity"
             android:screenOrientation="portrait"/>
@@ -48,6 +52,15 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.RankBillActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.MusicSearchActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.DownManagerActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.BillInfoEditActivity"
             android:screenOrientation="portrait"/>
 
         <service android:name=".service.MusicPlayService"/>

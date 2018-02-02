@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.RequiresApi
-import android.support.v7.app.AppCompatActivity
 import android.view.Window
 import android.view.WindowManager
 import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
@@ -17,16 +16,14 @@ import com.ezreal.huanting.service.MusicPlayService
 import com.ezreal.huanting.utils.Constant
 import java.io.File
 
-
-
 /**
  * 引导页
  * Created by wudeng on 2017/12/26.
  */
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
 
-    private val PERMIISION = listOf(Manifest.permission.READ_EXTERNAL_STORAGE,
+    private val mPermissions = listOf(Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.ACCESS_WIFI_STATE)
@@ -49,7 +46,7 @@ class SplashActivity : AppCompatActivity() {
     private fun initPermission() {
         val permission = checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(PERMIISION.toTypedArray(), 1)
+            requestPermissions(mPermissions.toTypedArray(), 1)
         } else {
             initApplication()
             openMain()

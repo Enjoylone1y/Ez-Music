@@ -28,6 +28,7 @@ import com.ezreal.huanting.http.baidu.BaiduMusicApi
 import com.ezreal.huanting.http.baidu.RankBillSearchResult
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.ConvertUtils
+import com.ezreal.huanting.widget.ReNestedScrollView
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.BitmapCallback
 import com.lzy.okgo.model.Response
@@ -105,31 +106,35 @@ class RankBillActivity :Activity(){
     private fun initEvent() {
 
         mIvBack.setOnClickListener { finish() }
+        mScrollView.setOnMyScrollChangeListener(object :ReNestedScrollView.ScrollInterface{
+            override fun onScrollChange(scrollX: Int, scrollY: Int,
+                                        oldScrollX: Int, oldScrollY: Int) {
+                var scroll = scrollY
+                if (scrollY < 0) {
+                    scroll = 0
+                }
+                var alpha = 0F
+                if (scroll in 1..mHeadViewHeight) {
+                    alpha = scroll * 1.0F / mHeadViewHeight
 
-        mScrollView.setOnMyScrollChangeListener { _, scrollY, _, _ ->
-            var scroll = scrollY
-            if (scrollY < 0) {
-                scroll = 0
+                } else if (scroll > mHeadViewHeight) {
+                    alpha = 1F
+                }
+
+                if (scroll > mHeadViewHeight / 2) {
+                    mTvTitle.text = mBillName
+                } else {
+                    mTvTitle.text = "音乐榜单"
+                }
+
+                val drawable = mActionBar.background
+                        ?: ContextCompat.getDrawable(this@RankBillActivity,
+                                R.drawable.action_bar_bg_black)
+                drawable?.mutate()?.alpha = (alpha * 255).toInt()
+                mActionBar.background = drawable
             }
-            var alpha = 0F
-            if (scroll in 1..mHeadViewHeight) {
-                alpha = scroll * 1.0F / mHeadViewHeight
 
-            } else if (scroll > mHeadViewHeight) {
-                alpha = 1F
-            }
-
-            if (scroll > mHeadViewHeight / 2) {
-                mTvTitle.text = mBillName
-            } else {
-                mTvTitle.text = "音乐榜单"
-            }
-
-            val drawable = mActionBar.background
-                    ?: ContextCompat.getDrawable(this, R.drawable.action_bar_bg_black)
-            drawable?.mutate()?.alpha = (alpha * 255).toInt()
-            mActionBar.background = drawable
-        }
+        })
     }
 
 

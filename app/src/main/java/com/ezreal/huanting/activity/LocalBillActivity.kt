@@ -1,33 +1,35 @@
 package com.ezreal.huanting.activity
 
-import android.graphics.BitmapFactory
-import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.ezreal.huanting.R
-import com.ezreal.huanting.adapter.MusicAdapter
-import com.ezreal.huanting.bean.MusicBillBean
-import com.ezreal.huanting.helper.MusicDataHelper
-import kotlinx.android.synthetic.main.activity_local_bill.*
-import android.provider.MediaStore
-import cn.hotapk.fastandrutils.utils.*
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Bundle
+import android.provider.MediaStore
+import android.support.v4.content.ContextCompat
 import android.support.v7.graphics.Palette
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import cn.hotapk.fastandrutils.utils.FConvertUtils
+import cn.hotapk.fastandrutils.utils.FStatusBarUtils
+import cn.hotapk.fastandrutils.utils.FToastUtils
+import com.bumptech.glide.Glide
+import com.ezreal.huanting.R
+import com.ezreal.huanting.adapter.MusicAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
+import com.ezreal.huanting.bean.MusicBillBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
+import com.ezreal.huanting.helper.MusicDataHelper
 import com.ezreal.huanting.utils.Constant
+import com.ezreal.huanting.widget.ReNestedScrollView
+import kotlinx.android.synthetic.main.activity_local_bill.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -37,7 +39,7 @@ import org.greenrobot.eventbus.Subscribe
  * Created by wudeng on 2018/1/8.
  */
 
-class LocalBillActivity : AppCompatActivity() {
+class LocalBillActivity : BaseActivity() {
 
     private val mMusicList = ArrayList<MusicBean>()
     private lateinit var mAdapter: MusicAdapter
@@ -132,30 +134,35 @@ class LocalBillActivity : AppCompatActivity() {
             }
         })
         mRcvMusic.adapter = mAdapter
-        mScrollView.setOnMyScrollChangeListener { _, scrollY, _, _ ->
-            var scroll = scrollY
-            if (scrollY < 0) {
-                scroll = 0
-            }
-            var alpha = 0F
-            if (scroll in 1..mHeadViewHeight) {
-                alpha = scroll * 1.0F / mHeadViewHeight
+        mScrollView.setOnMyScrollChangeListener(object : ReNestedScrollView.ScrollInterface {
+            override fun onScrollChange(scrollX: Int, scrollY: Int,
+                                        oldScrollX: Int, oldScrollY: Int) {
+                var scroll = scrollY
+                if (scrollY < 0) {
+                    scroll = 0
+                }
+                var alpha = 0F
+                if (scroll in 1..mHeadViewHeight) {
+                    alpha = scroll * 1.0F / mHeadViewHeight
 
-            } else if (scroll > mHeadViewHeight) {
-                alpha = 1F
+                } else if (scroll > mHeadViewHeight) {
+                    alpha = 1F
+                }
+
+                if (scroll > mHeadViewHeight / 2) {
+                    mTvTitle.text = mBill.listName
+                } else {
+                    mTvTitle.text = "歌单"
+                }
+
+                val drawable = mActionBar.background
+                        ?: ContextCompat.getDrawable(this@LocalBillActivity,
+                                R.drawable.action_bar_bg_black)
+                drawable?.mutate()?.alpha = (alpha * 255).toInt()
+                mActionBar.background = drawable
             }
 
-            if (scroll > mHeadViewHeight / 2) {
-                mTvTitle.text = mBill.listName
-            } else {
-                mTvTitle.text = "歌单"
-            }
-
-            val drawable = mActionBar.background
-                    ?: ContextCompat.getDrawable(this, R.drawable.action_bar_bg_black)
-            drawable?.mutate()?.alpha = (alpha * 255).toInt()
-            mActionBar.background = drawable
-        }
+        })
     }
 
     private fun createHeadView(): View {
