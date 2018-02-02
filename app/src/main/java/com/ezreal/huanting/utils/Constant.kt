@@ -42,10 +42,11 @@ object Constant {
 
     val NEW_MUSIC_LIST_ID = 1L          //新歌榜
     val HOT_MUSIC_LIST_ID = 2L          //热歌榜
+
     val KTV_MUSIC_LIST_ID = 6L          //KTV排行榜
     val BILL_BOARD_LIST_ID = 8L         //BILL_BOARD
     val ROCL_MUSIC_LIST_ID = 11L        //摇滚排行榜
-    val CHINESE_MUSIC_LIST_ID = 20L     //话语排行榜
+    val CHINESE_MUSIC_LIST_ID = 20L     //华语排行榜
     val ENGLISH_MUSIC_LIST_ID = 21L     //欧美排行榜
     val CLASSICAL_MUSIC_LIST_ID = 22L   //经典排行榜
     val MOVIE_MUSIC_LIST_ID = 24L       //影视排行榜
@@ -59,6 +60,10 @@ object Constant {
 
     val MY_LOVE_MUSIC_LIST_ID = 50L      //我喜欢的音乐
 
+
+    /**
+     * 网络下载文件类型
+     */
     val DOWNLOAD_TYPE_LRC = 0x10        // 歌词下载
     val DOWLOAD_TYPE_PIC = 0x11         // 封面下载
     val DOWLOAD_TYPE_MUSIC = 0x12       // 歌曲下载

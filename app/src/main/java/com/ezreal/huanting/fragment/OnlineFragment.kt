@@ -8,12 +8,14 @@ import android.os.Message
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ezreal.huanting.R
 import com.ezreal.huanting.activity.RankBillActivity
 import com.ezreal.huanting.activity.RankBillListActivity
+import com.ezreal.huanting.activity.RecomListActivity
 import com.ezreal.huanting.adapter.OnlineItemAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RankBillAdapter
@@ -132,7 +134,9 @@ class OnlineFragment : Fragment() {
     private fun initEvent() {
         // 打开推荐音乐列表
         mLayoutRecomMusic.setOnClickListener {
-
+            val intent = Intent(context, RecomListActivity::class.java)
+            intent.putExtra("BaseID",mBaseId)
+            startActivity(intent)
         }
 
         // 打开最热歌曲列表
@@ -155,7 +159,9 @@ class OnlineFragment : Fragment() {
         // 打开推荐歌曲列表
         mRecomAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
             override fun onItemClick(holder: RViewHolder, position: Int) {
-
+                val intent = Intent(context, RecomListActivity::class.java)
+                intent.putExtra("BaseID",mBaseId)
+                startActivity(intent)
             }
 
         })
@@ -243,21 +249,20 @@ class OnlineFragment : Fragment() {
     private fun getRecomBaseId() {
         // 获取推荐音乐 以数据库中歌曲播放次数为基准
         val realm = Realm.getDefaultInstance()
-        val lastOnline = realm.where(MusicBean::class.java)
+        val last = realm.where(MusicBean::class.java)
                 .equalTo("isOnline", true)
                 .findAllSorted("playCount")
                 .lastOrNull()
-        if (lastOnline != null) {
-            mBaseId = lastOnline.musicId.toString()
+
+        if (last != null) {
+            mBaseId = last.musicId.toString()
             mHandler.sendEmptyMessage(mMsgBaseIdSet)
             return
         }
-        val max = realm.where(MusicBean::class.java)
-                .equalTo("isOnline", false)
-                .max("playCount")
         val lastLocal = realm.where(MusicBean::class.java)
-                .equalTo("playCount", max.toLong())
-                .findFirst()
+                .equalTo("isOnline", false)
+                .findAllSorted("playCount")
+                .lastOrNull()
         if (lastLocal == null || lastLocal.playCount == 0L) {
             mBaseId = "74172066"
             mHandler.sendEmptyMessage(mMsgBaseIdSet)

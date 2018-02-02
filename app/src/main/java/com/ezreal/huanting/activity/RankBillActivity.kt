@@ -64,6 +64,8 @@ class RankBillActivity :Activity(){
 
         initHeadView()
         initMusicList()
+        initEvent()
+
         loadRankBill()
         loadBillMusic(0)
 
