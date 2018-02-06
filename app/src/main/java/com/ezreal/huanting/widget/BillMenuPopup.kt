@@ -9,8 +9,8 @@ import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.ezreal.huanting.R
-import com.ezreal.huanting.activity.BillInfoEditActivity
-import com.ezreal.huanting.bean.MusicBillBean
+import com.ezreal.huanting.activity.GedanEditActivity
+import com.ezreal.huanting.bean.GedanBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.helper.MusicDataHelper
 import org.greenrobot.eventbus.EventBus
@@ -26,7 +26,7 @@ class BillMenuPopup : PopupWindow {
     private var mTvListTitle: TextView? = null
     private var mLayoutEdInfo: RelativeLayout? = null
     private var mLayoutDelete: RelativeLayout? = null
-    private var mMusicBill: MusicBillBean? = null
+    private var mGedan: GedanBean? = null
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -50,8 +50,8 @@ class BillMenuPopup : PopupWindow {
 
         mLayoutEdInfo?.setOnClickListener {
             dismiss()
-            val intent = Intent(context,BillInfoEditActivity::class.java)
-            intent.putExtra("listId",mMusicBill?.listId)
+            val intent = Intent(context, GedanEditActivity::class.java)
+            intent.putExtra("listId", mGedan?.listId)
             context.startActivity(intent)
         }
 
@@ -62,20 +62,20 @@ class BillMenuPopup : PopupWindow {
     }
 
     private fun showDialog(context: Context) {
-        val title = "确定删除歌单" + mMusicBill?.listName + " 吗？"
+        val title = "确定删除歌单" + mGedan?.listName + " 吗？"
         AlertDialog.Builder(context, R.style.MyAlertDialog)
                 .setTitle(title)
                 .setNegativeButton("取消", { _, _ -> dismiss() })
                 .setPositiveButton("确定", { _, _ ->
-                    MusicDataHelper.deleteMusicList( mMusicBill?.listId!!)
+                    MusicDataHelper.deleteMusicList( mGedan?.listId!!)
                     EventBus.getDefault().post(MusicListChangeEvent(-1L))
                     dismiss()
                 })
                 .show()
     }
 
-    fun setMusicList(musicBean: MusicBillBean) {
-        mMusicBill = musicBean
+    fun setMusicList(musicBean: GedanBean) {
+        mGedan = musicBean
         mTvListTitle?.text = musicBean.listName
 
     }

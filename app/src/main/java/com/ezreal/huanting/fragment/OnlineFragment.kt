@@ -12,7 +12,7 @@ import com.ezreal.huanting.activity.RankBillListActivity
 import com.ezreal.huanting.activity.RecomListActivity
 import com.ezreal.huanting.adapter.*
 import com.ezreal.huanting.http.BaiduMusicApi
-import com.ezreal.huanting.http.result.HotBillResult.ContentBean.ListBean
+import com.ezreal.huanting.http.result.HotGedanResult.ContentBean.ListBean
 import com.ezreal.huanting.http.result.RecomAlbumResult.Plaze.RMBean.Album.RecomAlbumBean
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import kotlinx.android.synthetic.main.fragment_online_music.*

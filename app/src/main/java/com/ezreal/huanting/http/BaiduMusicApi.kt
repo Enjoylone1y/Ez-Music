@@ -29,6 +29,10 @@ object BaiduMusicApi {
     private val METHOD_RECOM_ALBUM = "baidu.ting.plaza.getRecommendAlbum"
     private val METHOD_RANK_BILL_LIST = "baidu.ting.billboard.billCategory"
     private val METHOD_EDITOR_RECOM = "baidu.ting.song.getEditorRecommend"
+    private val METHOD_CATEGORY_LIST = "baidu.ting.diy.gedanCategory"
+    private val METHOD_GEDAN_ALL = "baidu.ting.diy.gedan"
+    private val METHOD_GEDAN_SEARCH = "baidu.ting.diy.search"
+    private val METHOD_GEDAN_INFO = "baidu.ting.diy.gedanInfo"
 
     private val PARAM_FLAG = "kflag"
     private val PARAM_METHOD = "method"
@@ -44,6 +48,9 @@ object BaiduMusicApi {
     private val PARAM_TING_UID = "tinguid"
     private val PARAM_QUERY = "query"
     private val PARAM_LIMIT = "limit"
+    private val PARAM_PAGE_NO = "page_no"
+    private val PARAM_PAGE_SIZE = "page_size"
+    private val PARAM_LIST_ID = "listid"
 
     private val VALUE_FROM = "android"
     private val VALUE_VERSION = "5.6.5.6"
@@ -72,14 +79,14 @@ object BaiduMusicApi {
 
     /** 获取推荐歌单 */
     fun loadHotBillList(num: Int, listener: BaiduMusicApi.OnHotBillLoadListener) {
-        OkGo.get<HotBillResult>(BASE_URL)
+        OkGo.get<HotGedanResult>(BASE_URL)
                 .params(PARAM_FROM, VALUE_FROM)
                 .params(PARAM_VERSION, VALUE_VERSION)
                 .params(PARAM_FORMAT, VALUE_FORMAT)
                 .params(PARAM_METHOD, METHOD_HOT_BILL)
                 .params(PARAM_NUM, num)
-                .execute(object : JsonCallBack<HotBillResult>() {
-                    override fun onSuccess(response: Response<HotBillResult>?) {
+                .execute(object : JsonCallBack<HotGedanResult>() {
+                    override fun onSuccess(response: Response<HotGedanResult>?) {
                         if (response?.body() != null) {
                             listener.onResult(0, response.body().content.list, "success")
                         } else {
@@ -168,11 +175,83 @@ object BaiduMusicApi {
     }
 
     /** 获取歌单标签 */
-    fun loadGedanCategory(){
+    fun loadGedanCategory(listener: OnCategoryListListener) {
+        OkGo.get<CategoryListResult>(BASE_URL)
+                .params(PARAM_FROM, VALUE_FROM)
+                .params(PARAM_VERSION, VALUE_VERSION)
+                .params(PARAM_FORMAT, VALUE_FORMAT)
+                .params(PARAM_METHOD, METHOD_CATEGORY_LIST)
+                .execute(object : JsonCallBack<CategoryListResult>() {
+                    override fun onSuccess(response: Response<CategoryListResult>?) {
+                        if (response?.body()?.content != null) {
+                            listener.onResult(0, response.body().content, "success")
+                        } else {
+                            listener.onResult(-1, null, "failed")
+                        }
+                    }
+                })
 
     }
 
+    /** 获取所有歌单 */
+    fun loadAllGedan(pageNo: Int, listener: OnGedanListListener) {
+        OkGo.get<GedanListResult>(BASE_URL)
+                .params(PARAM_FROM, VALUE_FROM)
+                .params(PARAM_VERSION, VALUE_VERSION)
+                .params(PARAM_FORMAT, VALUE_FORMAT)
+                .params(PARAM_METHOD, METHOD_GEDAN_ALL)
+                .params(PARAM_PAGE_NO, pageNo)
+                .params(PARAM_PAGE_SIZE, 10)
+                .execute(object : JsonCallBack<GedanListResult>() {
+                    override fun onSuccess(response: Response<GedanListResult>?) {
+                        if (response?.body() != null) {
+                            listener.onResult(0, response.body().content, "success")
+                        } else {
+                            listener.onResult(-1, null, "failed")
+                        }
+                    }
+                })
+    }
 
+    /** 获取带标签的歌单 */
+    fun loadGedanByTag(pageNo: Int, tag: String, listener: OnGedanListListener) {
+        OkGo.get<GedanListResult>(BASE_URL)
+                .params(PARAM_FROM, VALUE_FROM)
+                .params(PARAM_VERSION, VALUE_VERSION)
+                .params(PARAM_FORMAT, VALUE_FORMAT)
+                .params(PARAM_METHOD, METHOD_GEDAN_SEARCH)
+                .params(PARAM_PAGE_NO, pageNo)
+                .params(PARAM_PAGE_SIZE, 10)
+                .params(PARAM_QUERY, tag)
+                .execute(object : JsonCallBack<GedanListResult>() {
+                    override fun onSuccess(response: Response<GedanListResult>?) {
+                        if (response?.body() != null) {
+                            listener.onResult(0, response.body().content, "success")
+                        } else {
+                            listener.onResult(-1, null, "failed")
+                        }
+                    }
+                })
+    }
+
+    /** 获取歌单数据 */
+    fun loadGedanInfo(listId: String, listener: OnGedanInfoListener) {
+        OkGo.get<GedanInfoResult>(BASE_URL)
+                .params(PARAM_FROM, VALUE_FROM)
+                .params(PARAM_VERSION, VALUE_VERSION)
+                .params(PARAM_FORMAT, VALUE_FORMAT)
+                .params(PARAM_METHOD, METHOD_GEDAN_INFO)
+                .params(PARAM_LIST_ID, listId)
+                .execute(object : JsonCallBack<GedanInfoResult>() {
+                    override fun onSuccess(response: Response<GedanInfoResult>?) {
+                        if (response?.body() != null){
+                            listener.onResult(0,response.body(),"success")
+                        }else{
+                            listener.onResult(-1,null,"failed")
+                        }
+                    }
+                })
+    }
 
     /**
      * 根据关键字（音乐名 歌手名）搜索百度音乐库， 可以获取得到歌曲 ID
@@ -286,7 +365,8 @@ object BaiduMusicApi {
     }
 
     interface OnHotBillLoadListener {
-        fun onResult(code: Int, result: List<HotBillResult.ContentBean.ListBean>?, message: String?)
+        fun onResult(code: Int, result: List<HotGedanResult.ContentBean.ListBean>?,
+                     message: String?)
     }
 
     interface OnRecomAlbumListener {
@@ -295,11 +375,27 @@ object BaiduMusicApi {
     }
 
     interface OnRankBillListListener {
-        fun onResult(code: Int, result: List<RankBillListResult.RankBillBean>?, message: String?)
+        fun onResult(code: Int, result: List<RankBillListResult.RankBillBean>?,
+                     message: String?)
+    }
+
+    interface OnCategoryListListener {
+        fun onResult(code: Int, result: List<CategoryListResult.Category>?,
+                     message: String?)
+    }
+
+    interface OnGedanListListener {
+        fun onResult(code: Int, result: List<GedanListResult.GedanBean>?,
+                     message: String?)
+    }
+
+    interface OnGedanInfoListener {
+        fun onResult(code: Int, result: GedanInfoResult?, message: String?)
     }
 
     interface OnRecomListListener {
-        fun onResult(code: Int, result: List<RecomListResult.ContentBean.SongListBean>?, message: String?)
+        fun onResult(code: Int, result: List<RecomListResult.ContentBean.SongListBean>?,
+                     message: String?)
     }
 
     interface OnKeywordSearchListener {
@@ -311,7 +407,8 @@ object BaiduMusicApi {
     }
 
     interface OnRecomSearchListener{
-        fun onResult(code: Int, result: List<RecomSearchResult.RecomSongBean>?, message: String?)
+        fun onResult(code: Int, result: List<RecomSearchResult.RecomSongBean>?,
+                     message: String?)
     }
 
     interface OnArtistSearchListener {
@@ -321,7 +418,6 @@ object BaiduMusicApi {
     interface OnBillSearchListener {
         fun onResult(code: Int, result: RankBillSearchResult?, message: String?)
     }
-
 
     interface OnMusicInfoSearchListener{
         fun onResult(code: Int, result: MusicSearchResult?, message: String?)

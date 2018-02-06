@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
@@ -20,7 +19,7 @@ import com.ezreal.huanting.adapter.MusicBillAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.bean.MusicBillBean
+import com.ezreal.huanting.bean.GedanBean
 import com.ezreal.huanting.event.MusicPlayAction
 import com.ezreal.huanting.event.PlayActionEvent
 import com.ezreal.huanting.helper.GlobalMusicData
@@ -123,7 +122,7 @@ class MusicMenuPopup : PopupWindow {
 
     private fun add2MusicList(context: Context) {
         MusicDataHelper.loadMusicListAll(object : MusicDataHelper.OnListLoadListener {
-            override fun loadSuccess(bill: List<MusicBillBean>) {
+            override fun loadSuccess(bill: List<GedanBean>) {
                 showSelectList(context, bill)
             }
 
@@ -133,7 +132,7 @@ class MusicMenuPopup : PopupWindow {
         })
     }
 
-    private fun showSelectList(context: Context, bill: List<MusicBillBean>) {
+    private fun showSelectList(context: Context, bill: List<GedanBean>) {
         // 构造 dialog
         val rootView = LayoutInflater.from(context).inflate(R.layout.dialog_add_2_list,
                 null, false)

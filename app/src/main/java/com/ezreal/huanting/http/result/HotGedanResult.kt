@@ -7,7 +7,7 @@ import java.util.ArrayList
  * Created by wudeng on 2018/2/5.
  */
 
-class HotBillResult {
+class HotGedanResult {
 
     lateinit var content: ContentBean
 

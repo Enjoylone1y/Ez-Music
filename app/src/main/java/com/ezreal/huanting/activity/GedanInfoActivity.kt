@@ -23,7 +23,7 @@ import com.ezreal.huanting.adapter.MusicAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.bean.MusicBillBean
+import com.ezreal.huanting.bean.GedanBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.MusicDataHelper
@@ -35,15 +35,15 @@ import org.greenrobot.eventbus.Subscribe
 
 
 /**
- * 本地歌单详情页
+ * 歌单
  * Created by wudeng on 2018/1/8.
  */
 
-class LocalBillActivity : BaseActivity() {
+class GedanInfoActivity : BaseActivity() {
 
     private val mMusicList = ArrayList<MusicBean>()
     private lateinit var mAdapter: MusicAdapter
-    private lateinit var mBill: MusicBillBean
+    private lateinit var mBill: GedanBean
     private var mBackColor = Color.parseColor("#bfbfbf")
     private var mHeadViewHeight = 0
 
@@ -58,7 +58,7 @@ class LocalBillActivity : BaseActivity() {
     private fun getMusicList() {
         val listId = intent.getLongExtra("ListId", -1)
         MusicDataHelper.getMusicListById(listId, object : MusicDataHelper.OnListLoadListener {
-            override fun loadSuccess(bill: List<MusicBillBean>) {
+            override fun loadSuccess(bill: List<GedanBean>) {
                 if (bill.isEmpty()) {
                     FToastUtils.init().show("读取歌单信息失败！")
                     finish()
@@ -156,7 +156,7 @@ class LocalBillActivity : BaseActivity() {
                 }
 
                 val drawable = mActionBar.background
-                        ?: ContextCompat.getDrawable(this@LocalBillActivity,
+                        ?: ContextCompat.getDrawable(this@GedanInfoActivity,
                                 R.drawable.action_bar_bg_black)
                 drawable?.mutate()?.alpha = (alpha * 255).toInt()
                 mActionBar.background = drawable

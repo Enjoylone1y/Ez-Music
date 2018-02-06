@@ -2,7 +2,7 @@ package com.ezreal.huanting.adapter
 
 import android.content.Context
 import com.ezreal.huanting.R
-import com.ezreal.huanting.http.result.HotBillResult.ContentBean.ListBean
+import com.ezreal.huanting.http.result.HotGedanResult.ContentBean.ListBean
 
 /**
  * （个人创建）歌单列表 适配器

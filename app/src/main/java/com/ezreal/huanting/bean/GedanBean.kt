@@ -9,17 +9,30 @@ import io.realm.annotations.PrimaryKey
  * Created by wudeng on 2017/12/29.
  */
 
-open class MusicBillBean :RealmObject(){
+open class GedanBean :RealmObject(){
 
     @PrimaryKey
     var listId:Long = -1
 
     lateinit var listName:String
-    var creatorId:Long = -1L
     lateinit var creatorName:String
+    var creatorId:Long = -1L
     var createTime:Long = 0
+
     var sortFieldName:String ?= null
     var coverPathByEd:String ?= null
+
     var musicList:RealmList<MusicBean> = RealmList()
 
+    var isOnline = false
+
+    /**
+     * 网络歌单数据
+     */
+    lateinit var title: String
+    lateinit var pic: String
+    lateinit var listenum: String
+    lateinit var collectnum: String
+    lateinit var tag: String
+    lateinit var desc: String
 }

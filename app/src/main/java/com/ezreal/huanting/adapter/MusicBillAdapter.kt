@@ -7,7 +7,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.ezreal.huanting.R
-import com.ezreal.huanting.bean.MusicBillBean
+import com.ezreal.huanting.bean.GedanBean
 import com.ezreal.huanting.utils.PopupShowUtils
 import com.ezreal.huanting.widget.BillMenuPopup
 
@@ -16,8 +16,8 @@ import com.ezreal.huanting.widget.BillMenuPopup
  * Created by wudeng on 2018/1/8.
  */
 class MusicBillAdapter(private val mContext: Context,
-                       private val mBill: List<MusicBillBean>,private val showMenu:Boolean)
-    : RecycleViewAdapter<MusicBillBean>(mContext, mBill) {
+                       private val mBill: List<GedanBean>, private val showMenu:Boolean)
+    : RecycleViewAdapter<GedanBean>(mContext, mBill) {
 
     private var mBillMenuPopup: BillMenuPopup? = null
 
@@ -59,7 +59,7 @@ class MusicBillAdapter(private val mContext: Context,
 
     }
 
-    private fun showPopupWindow(billBean: MusicBillBean, view: View) {
+    private fun showPopupWindow(billBean: GedanBean, view: View) {
         if (mBillMenuPopup == null) {
             mBillMenuPopup = BillMenuPopup(mContext)
         }

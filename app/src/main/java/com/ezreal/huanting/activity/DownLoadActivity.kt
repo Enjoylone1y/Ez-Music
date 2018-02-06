@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_down_manager.*
  * Created by wudeng on 2018/2/2.
  */
 
-class DownManagerActivity : BaseActivity(){
+class DownLoadActivity : BaseActivity(){
 
     private var mAdapter: FragmentAdapter?= null
     private var mFragmentList = ArrayList<Fragment>()

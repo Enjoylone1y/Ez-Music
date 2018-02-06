@@ -22,12 +22,12 @@ import java.io.File
 import android.view.Gravity
 import android.widget.EditText
 import cn.hotapk.fastandrutils.utils.FToastUtils
-import com.ezreal.huanting.activity.DownManagerActivity
-import com.ezreal.huanting.activity.LocalBillActivity
+import com.ezreal.huanting.activity.DownLoadActivity
+import com.ezreal.huanting.activity.GedanInfoActivity
 import com.ezreal.huanting.adapter.MusicBillAdapter
 import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
-import com.ezreal.huanting.bean.MusicBillBean
+import com.ezreal.huanting.bean.GedanBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.utils.PopupShowUtils
@@ -40,7 +40,7 @@ import org.greenrobot.eventbus.Subscribe
  */
 class PersonalFragment : Fragment() {
 
-    private val mMusicList = ArrayList<MusicBillBean>()
+    private val mMusicList = ArrayList<GedanBean>()
     private var mBillAdapter: MusicBillAdapter?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +65,7 @@ class PersonalFragment : Fragment() {
         mBillAdapter = MusicBillAdapter(context!!, mMusicList,true)
         mBillAdapter?.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                val intent = Intent(context, LocalBillActivity::class.java)
+                val intent = Intent(context, GedanInfoActivity::class.java)
                 intent.putExtra("ListId", mMusicList[position].listId)
                 context?.startActivity(intent)
             }
@@ -87,7 +87,7 @@ class PersonalFragment : Fragment() {
         }
 
         layout_down_manager.setOnClickListener {
-            this.startActivity(Intent(context, DownManagerActivity::class.java))
+            this.startActivity(Intent(context, DownLoadActivity::class.java))
         }
 
         mIvListSetting.setOnClickListener { view ->
@@ -98,7 +98,7 @@ class PersonalFragment : Fragment() {
 
     private fun loadMyMusicList() {
         MusicDataHelper.loadMusicListAll(object : MusicDataHelper.OnListLoadListener {
-            override fun loadSuccess(bill: List<MusicBillBean>) {
+            override fun loadSuccess(bill: List<GedanBean>) {
                 mMusicList.clear()
                 mMusicList.addAll(bill)
                 mBillAdapter?.notifyDataSetChanged()
@@ -127,7 +127,7 @@ class PersonalFragment : Fragment() {
         val changeItem = mMusicList.first { it.listId == event.listId }
         val index = mMusicList.indexOf(changeItem)
         MusicDataHelper.getMusicListById(event.listId, object : MusicDataHelper.OnListLoadListener {
-            override fun loadSuccess(bill: List<MusicBillBean>) {
+            override fun loadSuccess(bill: List<GedanBean>) {
                 if (bill.isNotEmpty()) {
                     mMusicList[index] = bill[0]
                     mBillAdapter?.notifyItemChanged(index)
@@ -197,7 +197,7 @@ class PersonalFragment : Fragment() {
                 FToastUtils.init().show("创建成功~~")
 
                 MusicDataHelper.getMusicListById(listId, object : MusicDataHelper.OnListLoadListener {
-                    override fun loadSuccess(bill: List<MusicBillBean>) {
+                    override fun loadSuccess(bill: List<GedanBean>) {
                         if (bill.isNotEmpty()) {
                             mMusicList.add(bill[0])
                             mBillAdapter?.notifyDataSetChanged()

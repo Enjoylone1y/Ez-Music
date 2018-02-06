@@ -7,7 +7,7 @@ import cn.hotapk.fastandrutils.utils.FDeviceUtils
 import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import com.ezreal.huanting.bean.AlbumBean
 import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.bean.MusicBillBean
+import com.ezreal.huanting.bean.GedanBean
 import com.ezreal.huanting.event.MusicListChangeEvent
 import com.ezreal.huanting.utils.Constant
 import io.reactivex.Observable
@@ -41,7 +41,7 @@ object MusicDataHelper {
     fun loadRecentPlayFromDB(listener: OnMusicLoadListener?) {
         val realm = Realm.getDefaultInstance()
         try {
-            val results = realm.where(MusicBillBean::class.java)
+            val results = realm.where(GedanBean::class.java)
                     .equalTo("listId",Constant.RECENT_MUSIC_LIST_ID).findFirst()
             listener?.loadSuccess(results.musicList.sort("lastPlayTime"))
         } catch (e: Exception) {
@@ -54,7 +54,7 @@ object MusicDataHelper {
         var count = 0
         val realm = Realm.getDefaultInstance()
         try {
-            count = realm.where(MusicBillBean::class.java)
+            count = realm.where(GedanBean::class.java)
                     .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
                     .findFirst().musicList.size
         } catch (e: Exception) {
@@ -67,7 +67,7 @@ object MusicDataHelper {
         val realm = Realm.getDefaultInstance()
         try {
             realm.beginTransaction()
-            val recent = realm.where(MusicBillBean::class.java)
+            val recent = realm.where(GedanBean::class.java)
                     .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
                     .findFirst()
             val first = recent.musicList.firstOrNull { it.musicId == musicBean.musicId }
@@ -89,7 +89,7 @@ object MusicDataHelper {
         val realm = Realm.getDefaultInstance()
         try {
             realm.beginTransaction()
-            val recent = realm.where(MusicBillBean::class.java)
+            val recent = realm.where(GedanBean::class.java)
                     .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
                     .findFirst()
             recent.musicList.clear()
@@ -107,7 +107,7 @@ object MusicDataHelper {
                     Constant.PRE_USER_NAME, "unKnow")
 
             val realm = Realm.getDefaultInstance()
-            val exit = realm.where(MusicBillBean::class.java)
+            val exit = realm.where(GedanBean::class.java)
                     .beginsWith("listName", title)
                     .equalTo("creatorId", userId)
                     .count()
@@ -117,8 +117,8 @@ object MusicDataHelper {
                 return
             }
 
-            var count = realm.where(MusicBillBean::class.java).count()
-            val listBean = MusicBillBean()
+            var count = realm.where(GedanBean::class.java).count()
+            val listBean = GedanBean()
             listBean.listId = ++count
             listBean.listName = title
             listBean.createTime = System.currentTimeMillis()
@@ -138,7 +138,7 @@ object MusicDataHelper {
     fun deleteMusicList(listId: Long) {
         val instance = Realm.getDefaultInstance()
         instance.beginTransaction()
-        instance.where(MusicBillBean::class.java)
+        instance.where(GedanBean::class.java)
                 .equalTo("listId", listId)
                 .findFirst().deleteFromRealm()
         instance.commitTransaction()
@@ -147,7 +147,7 @@ object MusicDataHelper {
     fun loadMusicListAll(listener: OnListLoadListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            val realmResults = realm.where(MusicBillBean::class.java)
+            val realmResults = realm.where(GedanBean::class.java)
                     .notEqualTo("listId",Constant.RECENT_MUSIC_LIST_ID).findAll()
             listener?.loadSuccess(realmResults)
         } catch (e: Exception) {
@@ -159,7 +159,7 @@ object MusicDataHelper {
     fun getMusicListById(listId: Long, listener: OnListLoadListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            val results = realm.where(MusicBillBean::class.java)
+            val results = realm.where(GedanBean::class.java)
                     .equalTo("listId", listId)
                     .findAll()
             listener?.loadSuccess(results)
@@ -174,14 +174,14 @@ object MusicDataHelper {
      */
     fun createDefaultBill(listener: OnBillCreatedListener?) {
         try {
-            val loveBill = MusicBillBean()
+            val loveBill = GedanBean()
             loveBill.listId = Constant.MY_LOVE_MUSIC_LIST_ID
             loveBill.listName = "我喜欢的音乐"
             loveBill.createTime = System.currentTimeMillis()
             loveBill.creatorId = 0
             loveBill.creatorName = "root"
 
-            val recentBill = MusicBillBean()
+            val recentBill = GedanBean()
             recentBill.listId = Constant.RECENT_MUSIC_LIST_ID
             recentBill.listName = "最近播放"
             recentBill.createTime = System.currentTimeMillis()
@@ -206,7 +206,7 @@ object MusicDataHelper {
     fun addMusic2List(musicBean: MusicBean, listId: Long, listener: OnAddMusic2ListListener?) {
         try {
             val realm = Realm.getDefaultInstance()
-            val results = realm.where(MusicBillBean::class.java)
+            val results = realm.where(GedanBean::class.java)
                     .equalTo("listId", listId).findFirst()
             val findFirst = results.musicList.where().equalTo("musicId",
                     musicBean.musicId).findFirst()
@@ -407,7 +407,7 @@ object MusicDataHelper {
     }
 
     interface OnListLoadListener {
-        fun loadSuccess(bill: List<MusicBillBean>)
+        fun loadSuccess(bill: List<GedanBean>)
         fun loadFailed(message: String)
     }
 
