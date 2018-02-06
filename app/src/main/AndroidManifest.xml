@@ -62,6 +62,7 @@
         <activity
             android:name=".activity.BillInfoEditActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".activity.DiyBillListActivity"/>
 
         <service android:name=".service.MusicPlayService"/>
     </application>

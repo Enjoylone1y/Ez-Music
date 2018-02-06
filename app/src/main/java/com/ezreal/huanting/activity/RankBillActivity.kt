@@ -24,8 +24,8 @@ import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.OnlineMusicHelper
-import com.ezreal.huanting.http.baidu.BaiduMusicApi
-import com.ezreal.huanting.http.baidu.RankBillSearchResult
+import com.ezreal.huanting.http.BaiduMusicApi
+import com.ezreal.huanting.http.result.RankBillSearchResult
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.ConvertUtils
 import com.ezreal.huanting.widget.ReNestedScrollView
@@ -53,7 +53,7 @@ class RankBillActivity :Activity(){
 
     private var mBillId = 0L
     private lateinit var mBillName: String
-    private var mRankBill:RankBillSearchResult.BillboardBean ?= null
+    private var mRankBill: RankBillSearchResult.BillboardBean ?= null
     private val mMusicList = ArrayList<MusicBean>()
     private lateinit var mAdapter: MusicAdapter
 
@@ -156,19 +156,19 @@ class RankBillActivity :Activity(){
     }
 
     private fun setHeadViewData(){
-        val coverUrl = mRankBill?.pic_s640
+        val coverUrl = mRankBill?.pic
         OkGo.get<Bitmap>(coverUrl).execute(object : BitmapCallback() {
             override fun onSuccess(response: Response<Bitmap>?) {
                 if (response?.body() != null) {
                     mBackColor = Palette.from(response.body()).generate().darkVibrantSwatch?.rgb
                             ?: ContextCompat.getColor(this@RankBillActivity, R.color.color_gray)
                     mHeadName.text = mBillName
-                    mHeadUpdate.text = mRankBill?.update_date
-                    if (mRankBill?.pic_s640.isNullOrEmpty()) {
+                    mHeadUpdate.text = mRankBill?.update
+                    if (mRankBill?.pic.isNullOrEmpty()) {
                         mHeadCover.setImageResource(R.drawable.splash)
                     } else {
                         Glide.with(this@RankBillActivity)
-                                .load(mRankBill?.pic_s640)
+                                .load(mRankBill?.pic)
                                 .asBitmap()
                                 .error(R.drawable.splash)
                                 .into(mHeadCover)
@@ -199,8 +199,8 @@ class RankBillActivity :Activity(){
         BaiduMusicApi.searchRankBill(mBillId.toInt(), 10, offset, object :
                 BaiduMusicApi.OnBillSearchListener {
             override fun onResult(code: Int, result: RankBillSearchResult?, message: String?) {
-                if (code == 0 && result?.song_list != null) {
-                    covert2Music(result.song_list)
+                if (code == 0 && result?.list != null) {
+                    covert2Music(result.list)
                 } else {
                     FToastUtils.init().show("加载失败，请重试~~")
                 }

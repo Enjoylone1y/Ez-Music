@@ -1,4 +1,6 @@
-package com.ezreal.huanting.http.baidu
+package com.ezreal.huanting.http.result
+
+import com.google.gson.annotations.SerializedName
 
 /**
  * 歌曲排行榜搜索返回
@@ -8,18 +10,24 @@ package com.ezreal.huanting.http.baidu
 class RankBillSearchResult {
 
     lateinit var billboard: BillboardBean
-    var song_list = ArrayList<BillSongBean>()
+
+    @SerializedName("song_list")
+    var list = ArrayList<BillSongBean>()
 
     class BillboardBean {
         /**
          * billboard_type : 16
          * update_date : 2012-09-11
-         * pic_s640 :
+         * pic_s444 :
          */
+        @SerializedName("billboard_type")
+        lateinit var type: String
 
-        lateinit var billboard_type: String
-        lateinit var update_date: String
-        lateinit var pic_s640: String
+        @SerializedName("update_date")
+        lateinit var update: String
+
+        @SerializedName("pic_s192")
+        lateinit var pic: String
     }
 
     class BillSongBean {

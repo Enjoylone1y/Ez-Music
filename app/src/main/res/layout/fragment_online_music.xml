@@ -3,18 +3,36 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <com.jude.rollviewpager.RollPagerView
+            android:id="@+id/mViewPage"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            app:rollviewpager_play_delay="3000"/>
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            layout="@layout/layout_online_banna"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@color/color_light_gray"/>
+
         <RelativeLayout
-            android:id="@+id/mLayoutRecomMusic"
+            android:id="@+id/mLayoutRecomBill"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_marginTop="5dp">
+            android:layout_marginTop="10dp">
 
             <View
                 android:id="@+id/view_left_1"
@@ -32,7 +50,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_toRightOf="@+id/view_left_1"
                 android:gravity="center"
-                android:text="@string/tv_recom_music"
+                android:text="@string/tv_recom_bill"
                 android:textColor="@color/color_black"
                 android:textSize="16sp"/>
 
@@ -46,56 +64,14 @@
         </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/mRcvRecomMusic"
+            android:id="@+id/mRcvRecomBill"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:minHeight="120dp"/>
 
         <RelativeLayout
-            android:id="@+id/mLayoutHotMusic"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="5dp">
-
-            <View
-                android:id="@+id/view_left_3"
-                android:layout_width="2dp"
-                android:layout_height="15dp"
-                android:layout_centerVertical="true"
-                android:background="@color/color_black"/>
-
-            <TextView
-                android:id="@+id/tv_center_3"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_toRightOf="@+id/view_left_3"
-                android:gravity="center"
-                android:text="最热音乐"
-                android:textColor="@color/color_black"
-                android:textSize="16sp"/>
-
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/tv_center_3"
-                android:src="@mipmap/arrow_right"/>
-
-        </RelativeLayout>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/mRcvHotMusic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:minHeight="120dp"/>
-
-        <RelativeLayout
-            android:id="@+id/mLayoutNewMusic"
+            android:id="@+id/mLayoutRecomAlbum"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginTop="5dp">
@@ -116,7 +92,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_toRightOf="@+id/view_left_2"
                 android:gravity="center"
-                android:text="@string/tv_new_music"
+                android:text="@string/tv_recom_album"
                 android:textColor="@color/color_black"
                 android:textSize="16sp"/>
 
@@ -130,52 +106,12 @@
         </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/mRcvNewMusic"
+            android:id="@+id/mRcvRecomAlbum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:minHeight="120dp"/>
 
-        <RelativeLayout
-            android:id="@+id/mLayoutMusicBill"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="5dp">
-
-            <View
-                android:id="@+id/view_left_4"
-                android:layout_width="2dp"
-                android:layout_height="15dp"
-                android:layout_centerVertical="true"
-                android:background="@color/color_black"/>
-
-            <TextView
-                android:id="@+id/tv_center_4"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_toRightOf="@+id/view_left_4"
-                android:gravity="center"
-                android:text="@string/tv_music_bill"
-                android:textColor="@color/color_black"
-                android:textSize="16sp"/>
-
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/tv_center_4"
-                android:src="@mipmap/arrow_right"/>
-
-        </RelativeLayout>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/mRcvMusicRank"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"/>
     </LinearLayout>
 
 </ScrollView>

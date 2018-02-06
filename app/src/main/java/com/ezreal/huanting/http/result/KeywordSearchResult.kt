@@ -1,4 +1,4 @@
-package com.ezreal.huanting.http.baidu
+package com.ezreal.huanting.http.result
 
 /**
  * 关键词搜索返回结果 bean

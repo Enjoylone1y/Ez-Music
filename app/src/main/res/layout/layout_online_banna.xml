@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <View
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:id="@+id/mLayoutRecomMusic"
+        android:layout_width="wrap_content"
+        android:layout_height="85dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/img_round_bg"
+            android:padding="10dp"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/ic_online_calen"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/mTvDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:textSize="12sp"
+            android:textColor="@color/color_black"
+            android:paddingTop="5dp"/>
+
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv1"
+            android:text="@string/tv_recom_date"
+            android:layout_centerHorizontal="true"
+            android:textSize="12sp"
+            android:textColor="@color/color_black"
+            android:layout_marginTop="5dp"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:id="@+id/mLayoutBill"
+        android:layout_width="wrap_content"
+        android:layout_height="85dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/img_round_bg"
+            android:padding="10dp"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/ic_online_bill"/>
+
+        <TextView
+            android:id="@+id/tv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv2"
+            android:text="@string/tv_bill"
+            android:textSize="12sp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/color_black"
+            android:layout_marginTop="5dp"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:id="@+id/mLayoutArtist"
+        android:layout_width="wrap_content"
+        android:layout_height="85dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/img_round_bg"
+            android:padding="10dp"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/ic_online_artist"/>
+
+        <TextView
+            android:id="@+id/tv3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv3"
+            android:text="@string/tv_singer_2"
+            android:textSize="12sp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/color_black"
+            android:layout_marginTop="5dp"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:id="@+id/mLayoutRank"
+        android:layout_width="wrap_content"
+        android:layout_height="85dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/img_round_bg"
+            android:padding="10dp"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/ic_online_rank"/>
+
+        <TextView
+            android:id="@+id/tv4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv4"
+            android:text="@string/tv_rank_bill"
+            android:textSize="12sp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/color_black"
+            android:layout_marginTop="5dp"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

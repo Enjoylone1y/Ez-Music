@@ -1,4 +1,4 @@
-package com.ezreal.huanting.http.baidu
+package com.ezreal.huanting.http.result
 
 /**
  * 歌手信息搜索

@@ -1,4 +1,4 @@
-package com.ezreal.huanting.http.baidu
+package com.ezreal.huanting.http.result
 
 /**
  * 在线歌词搜索结果 bean

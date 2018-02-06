@@ -1,6 +1,6 @@
 package com.ezreal.huanting.bean
 
-import com.ezreal.huanting.http.baidu.RankBillSearchResult
+import com.ezreal.huanting.http.result.RankBillSearchResult
 
 /**
  *

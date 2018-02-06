@@ -3,12 +3,14 @@ package com.ezreal.huanting.helper
 import android.text.TextUtils
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.OnlineDownloadEvent
-import com.ezreal.huanting.http.baidu.BaiduMusicApi
-import com.ezreal.huanting.http.baidu.MusicSearchResult
+import com.ezreal.huanting.http.BaiduMusicApi
+import com.ezreal.huanting.http.result.KeywordSearchResult
+import com.ezreal.huanting.http.result.MusicSearchResult
 import com.ezreal.huanting.utils.Constant
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.AbsCallback
 import com.lzy.okgo.model.Response
+import io.realm.Realm
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.FileOutputStream
@@ -117,6 +119,43 @@ object OnlineMusicHelper {
         })
     }
 
+
+
+    private fun getRecomBaseId() {
+        var mBaseId = ""
+        // 获取推荐音乐 以数据库中歌曲播放次数为基准
+        val realm = Realm.getDefaultInstance()
+        val last = realm.where(MusicBean::class.java)
+                .equalTo("isOnline", true)
+                .findAllSorted("playCount")
+                .lastOrNull()
+
+        if (last != null) {
+            mBaseId = last.musicId.toString()
+            return
+        }
+        val lastLocal = realm.where(MusicBean::class.java)
+                .equalTo("isOnline", false)
+                .findAllSorted("playCount")
+                .lastOrNull()
+        if (lastLocal == null || lastLocal.playCount == 0L) {
+            mBaseId = "74172066"
+            return
+        }
+
+        val key = lastLocal.musicTitle + " " + lastLocal.artistName
+        BaiduMusicApi.searchMusicByKey(key, object :
+                BaiduMusicApi.OnKeywordSearchListener {
+            override fun onResult(code: Int, result: KeywordSearchResult.SongBean?, message: String?) {
+                mBaseId = if (code == 0 && result != null) {
+                    result.songid
+                } else {
+                    "74172066"
+                }
+            }
+        })
+    }
+
     interface OnInfoLoadedListener {
          fun onResult(code: Int,musicBean: MusicBean?,message: String?)
     }
@@ -149,4 +188,5 @@ object OnlineMusicHelper {
             }
         }
     }
+
 }

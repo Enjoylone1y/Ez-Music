@@ -2,11 +2,8 @@ package com.ezreal.huanting.helper
 
 import android.text.TextUtils
 import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.http.baidu.BaiduMusicApi
-import com.ezreal.huanting.http.baidu.KeywordSearchResult
-import com.ezreal.huanting.http.netease.NKeySearchResult
-import com.ezreal.huanting.http.netease.NLrcSearchResult
-import com.ezreal.huanting.http.netease.NeteaseMusicApi
+import com.ezreal.huanting.http.BaiduMusicApi
+import com.ezreal.huanting.http.result.KeywordSearchResult
 import com.ezreal.huanting.utils.Constant
 import java.io.File
 import java.io.FileWriter
@@ -46,31 +43,6 @@ object LrcLoadHelper {
         }
     }
 
-    fun loadLrcFromNetease(musicBean: MusicBean, listener: OnLoadLrcListener) {
-        try {
-            val name = if (musicBean.musicTitle.length < 50) musicBean.musicTitle
-            else musicBean.musicTitle.substring(0, 50)
-            val artist = if (musicBean.artistName.length < 50) musicBean.artistName
-            else musicBean.artistName.substring(0, 50)
-            val path = Constant.APP_LRC_PATH + File.separator + name + "_" + artist + ".lrc"
-            listener.onLoadOnline()
-            val keyWord = musicBean.musicTitle + " " + musicBean.artistName
-            NeteaseMusicApi.searchMusicByKeyWord(keyWord, 1, 0, object :
-                    NeteaseMusicApi.OnKeywordSearchListener {
-                override fun onResult(code: Int, result: NKeySearchResult?, message: String?) {
-                    if (code == 0 && result?.result != null && result.result?.songs?.size!! > 0){
-                        getLrcOnlineByFromNetease(result.result?.songs?.get(0)?.id!!,path,listener)
-                    }else{
-                        listener.onFailed()
-                    }
-                }
-            })
-        } catch (e: Exception) {
-            e.printStackTrace()
-            listener.onFailed()
-        }
-    }
-
 
     private fun getLrcOnlineFromBaidu(songId: String, path: String, listener: OnLoadLrcListener) {
         BaiduMusicApi.searchLrcById(songId, object : BaiduMusicApi.OnLrcSearchListener {
@@ -87,23 +59,6 @@ object LrcLoadHelper {
             }
         })
     }
-
-    private fun getLrcOnlineByFromNetease(songId: Long, path: String, listener: OnLoadLrcListener) {
-        NeteaseMusicApi.searchLrcById(songId, object : NeteaseMusicApi.OnLrcSearchListener {
-            override fun onResult(code: Int, result: NLrcSearchResult?, message: String?) {
-                if (code != 0 || result == null || result.lrc == null) {
-                    listener.onFailed()
-                    return
-                }
-                if (!saveLrc(path, result.lrc?.lyric!!)) {
-                    listener.onFailed()
-                } else {
-                    listener.onSuccess(path)
-                }
-            }
-        })
-    }
-
 
     private fun saveLrc(path: String, lrcString: String): Boolean {
         try {

@@ -1,36 +1,24 @@
 package com.ezreal.huanting.fragment
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ezreal.huanting.R
-import com.ezreal.huanting.activity.RankBillActivity
 import com.ezreal.huanting.activity.RankBillListActivity
 import com.ezreal.huanting.activity.RecomListActivity
-import com.ezreal.huanting.adapter.OnlineItemAdapter
-import com.ezreal.huanting.adapter.RViewHolder
-import com.ezreal.huanting.adapter.RankBillAdapter
-import com.ezreal.huanting.adapter.RecycleViewAdapter
-import com.ezreal.huanting.bean.MusicBean
-import com.ezreal.huanting.bean.RankBillBean
-import com.ezreal.huanting.http.baidu.BaiduMusicApi
-import com.ezreal.huanting.http.baidu.KeywordSearchResult.SongBean
-import com.ezreal.huanting.http.baidu.RankBillSearchResult
-import com.ezreal.huanting.http.baidu.RankBillSearchResult.BillSongBean
-import com.ezreal.huanting.http.baidu.RecomSearchResult.RecomSongBean
-import com.ezreal.huanting.utils.Constant
+import com.ezreal.huanting.adapter.*
+import com.ezreal.huanting.http.BaiduMusicApi
+import com.ezreal.huanting.http.result.HotBillResult.ContentBean.ListBean
+import com.ezreal.huanting.http.result.RecomAlbumResult.Plaze.RMBean.Album.RecomAlbumBean
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
-import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_online_music.*
+import kotlinx.android.synthetic.main.layout_online_banna.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * 在线音乐
@@ -38,36 +26,14 @@ import kotlinx.android.synthetic.main.fragment_online_music.*
  */
 class OnlineFragment : Fragment() {
 
-    private val mMsgBaseIdSet = 0x100
+    private val mImageUrlList = ArrayList<String>()
+    private val mRecomBillList = ArrayList<ListBean>()
+    private val mRecomAlbumList = ArrayList<RecomAlbumBean>()
 
-    private lateinit var mBaseId: String
-    // 推荐歌曲
-    private val mRecomMusicList = ArrayList<RecomSongBean>()
-    // 最热歌曲
-    private val mHotMusicList = ArrayList<BillSongBean>()
-    // 最新歌曲
-    private val mNewMusicList = ArrayList<BillSongBean>()
-    // 音乐榜单
-    private val mRankBillList = ArrayList<RankBillBean>()
+    private lateinit var mPageAdapter: AutoPageAdapter
+    private lateinit var mRecomBillAdapter:DiyBillAdapter
+    private lateinit var mRecomAlbumAdapter:RecomAlbumAdapter
 
-    private lateinit var mRecomAdapter: RecycleViewAdapter<RecomSongBean>
-    private lateinit var mHotAdapter: OnlineItemAdapter
-    private lateinit var mNewAdapter: OnlineItemAdapter
-    private lateinit var mBillAdapter: RankBillAdapter
-
-    private val mHandler = MyHandler()
-
-    @SuppressLint("HandlerLeak")
-    inner class MyHandler : Handler() {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            when (msg.what) {
-                mMsgBaseIdSet -> {
-                    loadRecomMusic()
-                }
-            }
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -82,205 +48,83 @@ class OnlineFragment : Fragment() {
     }
 
     private fun initView() {
-        // 推荐音乐
-        mRcvRecomMusic.layoutManager = GridLayoutManager(context, 3)
-        mRcvRecomMusic.addItemDecoration(
+
+        val calendar = Calendar.getInstance()
+        val format = SimpleDateFormat("dd")
+        val day = format.format(calendar.time)
+        mTvDay.text = day
+
+        mPageAdapter = AutoPageAdapter(mImageUrlList,mViewPage)
+        mViewPage.setAdapter(mPageAdapter)
+
+        mRcvRecomBill.layoutManager = GridLayoutManager(context!!, 3)
+        mRcvRecomBill.addItemDecoration(
                 RecyclerViewDivider.with(context!!).color(android.R.color.white).size(5).build())
-        mRcvRecomMusic.isNestedScrollingEnabled = false
-        mRcvRecomMusic.setHasFixedSize(false)
-        mRecomAdapter = object :
-                RecycleViewAdapter<RecomSongBean>(context!!, mRecomMusicList) {
-            override fun setItemLayoutId(position: Int): Int {
-                return R.layout.item_online_music
-            }
+        mRcvRecomBill.isNestedScrollingEnabled = false
+        mRcvRecomBill.setHasFixedSize(false)
+        mRecomBillAdapter = DiyBillAdapter(context!!, mRecomBillList)
+        mRcvRecomBill.adapter = mRecomBillAdapter
 
-            override fun bindView(holder: RViewHolder, position: Int) {
-                val bean = mRecomMusicList[position]
-                holder.setImageByUrl(context!!, R.id.iv_big_pic, bean.pic_big, R.drawable.splash)
-                holder.setText(R.id.tv_music_title, bean.title)
-                holder.setText(R.id.tv_artist, bean.author)
-            }
-        }
-        mRcvRecomMusic.adapter = mRecomAdapter
-
-        // 最热音乐
-        mRcvHotMusic.layoutManager = GridLayoutManager(context, 3)
-        mRcvHotMusic.addItemDecoration(RecyclerViewDivider.with(context!!)
-                .color(android.R.color.white).size(5).build())
-        mRcvHotMusic.isNestedScrollingEnabled = false
-        mRcvHotMusic.setHasFixedSize(false)
-        mHotAdapter = OnlineItemAdapter(context!!, mHotMusicList)
-        mRcvHotMusic.adapter = mHotAdapter
-
-        // 最新音乐
-        mRcvNewMusic.layoutManager = GridLayoutManager(context, 3)
-        mRcvNewMusic.addItemDecoration(RecyclerViewDivider.with(context!!)
-                .color(android.R.color.white).size(5).build())
-        mRcvNewMusic.isNestedScrollingEnabled = false
-        mRcvNewMusic.setHasFixedSize(false)
-        mNewAdapter = OnlineItemAdapter(context!!, mNewMusicList)
-        mRcvNewMusic.adapter = mNewAdapter
-
-        // 音乐榜单
-        mRcvMusicRank.layoutManager = LinearLayoutManager(context)
-        mRcvMusicRank.isNestedScrollingEnabled = false
-        mRcvMusicRank.setHasFixedSize(false)
-        mRcvMusicRank.addItemDecoration(RecyclerViewDivider.with(context!!)
-                .color(android.R.color.white).size(5).build())
-        mBillAdapter = RankBillAdapter(context!!,mRankBillList)
-        mRcvMusicRank.adapter = mBillAdapter
+        mRcvRecomAlbum.layoutManager = GridLayoutManager(context, 3)
+        mRcvRecomAlbum.addItemDecoration(
+                RecyclerViewDivider.with(context!!).color(android.R.color.white).size(5).build())
+        mRcvRecomAlbum.isNestedScrollingEnabled = false
+        mRcvRecomAlbum.setHasFixedSize(false)
+        mRecomAlbumAdapter = RecomAlbumAdapter(context!!,mRecomAlbumList)
+        mRcvRecomAlbum.adapter = mRecomAlbumAdapter
     }
 
     private fun initEvent() {
-        // 打开推荐音乐列表
+        // 打开每日推荐
         mLayoutRecomMusic.setOnClickListener {
-            val intent = Intent(context, RecomListActivity::class.java)
-            intent.putExtra("BaseID",mBaseId)
-            startActivity(intent)
+            startActivity(Intent(context,RecomListActivity::class.java))
         }
 
-        // 打开最热歌曲列表
-        mLayoutHotMusic.setOnClickListener {
-            val intent = Intent(context, RankBillActivity::class.java)
-            intent.putExtra("BillID",Constant.HOT_MUSIC_LIST_ID)
-            startActivity(intent)
-        }
-        // 打开最新歌曲列表
-        mLayoutNewMusic.setOnClickListener {
-            val intent = Intent(context, RankBillActivity::class.java)
-            intent.putExtra("BillID",Constant.NEW_MUSIC_LIST_ID)
-            startActivity(intent)
-        }
-        // 打开榜单列表
-        mLayoutMusicBill.setOnClickListener {
-            startActivity(Intent(context,RankBillListActivity::class.java))
+        // 打开推荐歌单
+        mLayoutBill.setOnClickListener {
+
         }
 
-        // 打开推荐歌曲列表
-        mRecomAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                val intent = Intent(context, RecomListActivity::class.java)
-                intent.putExtra("BaseID",mBaseId)
-                startActivity(intent)
-            }
+        // 打开歌手推荐
+        mLayoutArtist.setOnClickListener {
 
-        })
-        // 打开最热歌曲列表
-        mHotAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                val intent = Intent(context, RankBillActivity::class.java)
-                intent.putExtra("BillID",Constant.HOT_MUSIC_LIST_ID)
-                startActivity(intent)
-            }
+        }
 
-        })
-        // 打开最新歌曲列表
-         mNewAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                val intent = Intent(context, RankBillActivity::class.java)
-                intent.putExtra("BillID",Constant.NEW_MUSIC_LIST_ID)
-                startActivity(intent)
-            }
-
-        })
-
-        // 打开对应的榜单
-        mBillAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                val intent = Intent(context, RankBillActivity::class.java)
-                intent.putExtra("BillID", mRankBillList[position].billType.toLong())
-                startActivity(intent)
-            }
-        })
-
+        // 打开排行榜
+         mLayoutRank.setOnClickListener {
+             startActivity(Intent(context,RankBillListActivity::class.java))
+        }
     }
 
     private fun loadData() {
-        getRecomBaseId()
 
-        // 获取最热音乐
-        BaiduMusicApi.searchRankBill(2, 3, 0, object :
-                BaiduMusicApi.OnBillSearchListener {
-            override fun onResult(code: Int, result: RankBillSearchResult?, message: String?) {
-                if (code == 0 && result?.song_list != null) {
-                    mHotMusicList.addAll(result.song_list)
-                    mHotAdapter.notifyDataSetChanged()
-                }
-            }
-        })
-
-        // 获取最新音乐
-        BaiduMusicApi.searchRankBill(1, 3, 0, object :
-                BaiduMusicApi.OnBillSearchListener {
-            override fun onResult(code: Int, result: RankBillSearchResult?, message: String?) {
-                if (code == 0 && result?.song_list != null) {
-                    mNewMusicList.addAll(result.song_list)
-                    mNewAdapter.notifyDataSetChanged()
-                }
-            }
-        })
-
-        // 获取歌曲榜单
-        val types = listOf(20, 21, 22)
-        BaiduMusicApi.searchBillList(types, 3, 0, object :
-                BaiduMusicApi.OnBillListSearchListener {
-            override fun onResult(code: Int, result: List<RankBillBean>?, message: String?) {
-                if (code == 0 && result != null) {
-                    mRankBillList.addAll(result)
-                    mBillAdapter.notifyDataSetChanged()
+        BaiduMusicApi.loadImageUrls(5,object :BaiduMusicApi.OnUrlLoadListener{
+            override fun onResult(code: Int, result: List<String>?, message: String?) {
+                if (code == 0){
+                    mImageUrlList.addAll(result!!)
+                    mPageAdapter.notifyDataSetChanged()
                 }
             }
 
         })
-    }
 
-    private fun loadRecomMusic() {
-        BaiduMusicApi.searchRecomMusic(mBaseId,
-                3, object : BaiduMusicApi.OnRecomSearchListener {
-            override fun onResult(code: Int, result: List<RecomSongBean>?, message: String?) {
-                if (code == 0 && result != null) {
-                    mRecomMusicList.addAll(result)
-                    mRecomAdapter.notifyDataSetChanged()
+        BaiduMusicApi.loadHotBillList(6,object:BaiduMusicApi.OnHotBillLoadListener{
+            override fun onResult(code: Int, result: List<ListBean>?, message: String?) {
+                if (code == 0 && result != null){
+                    mRecomBillList.addAll(result)
+                    mRecomBillAdapter.notifyDataSetChanged()
+                }
+            }
+
+        })
+
+        BaiduMusicApi.loadRecomAlbum(0,6,object :BaiduMusicApi.OnRecomAlbumListener{
+            override fun onResult(code: Int, result: List<RecomAlbumBean>?, total: Int, message: String?) {
+                if (code == 0 && result != null){
+                    mRecomAlbumList.addAll(result)
+                    mRecomAlbumAdapter.notifyDataSetChanged()
                 }
             }
         })
     }
-
-    private fun getRecomBaseId() {
-        // 获取推荐音乐 以数据库中歌曲播放次数为基准
-        val realm = Realm.getDefaultInstance()
-        val last = realm.where(MusicBean::class.java)
-                .equalTo("isOnline", true)
-                .findAllSorted("playCount")
-                .lastOrNull()
-
-        if (last != null) {
-            mBaseId = last.musicId.toString()
-            mHandler.sendEmptyMessage(mMsgBaseIdSet)
-            return
-        }
-        val lastLocal = realm.where(MusicBean::class.java)
-                .equalTo("isOnline", false)
-                .findAllSorted("playCount")
-                .lastOrNull()
-        if (lastLocal == null || lastLocal.playCount == 0L) {
-            mBaseId = "74172066"
-            mHandler.sendEmptyMessage(mMsgBaseIdSet)
-            return
-        }
-
-        val key = lastLocal.musicTitle + " " + lastLocal.artistName
-        BaiduMusicApi.searchMusicByKey(key, object :
-                BaiduMusicApi.OnKeywordSearchListener {
-            override fun onResult(code: Int, result: SongBean?, message: String?) {
-                mBaseId = if (code == 0 && result != null) {
-                    result.songid
-                } else {
-                    "74172066"
-                }
-                mHandler.sendEmptyMessage(mMsgBaseIdSet)
-            }
-        })
-    }
-
 }

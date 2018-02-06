@@ -21,6 +21,7 @@
     <string name="tv_list_tip">歌单：</string>
     <string name="add_to_list">收藏到歌单</string>
     <string name="tv_singer">歌手：</string>
+    <string name="tv_singer_2">歌手</string>
     <string name="tv_album">专辑：</string>
     <string name="tv_delete">删除</string>
     <string name="tv_list_creator">歌单创建者</string>
@@ -40,4 +41,12 @@
     <string name="tv_download">下载</string>
     <string name="tv_share">分享</string>
     <string name="tv_recom_list">推荐列表</string>
+    <string name="tv_recom_bill">推荐歌单</string>
+    <string name="tv_recom_date">每日推荐</string>
+    <string name="tv_bill">歌单</string>
+    <string name="tv_rank_bill">排行榜</string>
+    <string name="tv_recom_album">推荐专辑</string>
+    <string name="tv_tip_shou">首</string>
+    <string name="tv_recom_day">每日推荐</string>
+    <string name="tv_recom_tip">百度音乐编辑推荐歌曲列表，每日更新</string>
 </resources>

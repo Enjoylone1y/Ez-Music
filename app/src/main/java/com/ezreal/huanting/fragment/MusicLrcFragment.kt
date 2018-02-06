@@ -103,22 +103,7 @@ class MusicLrcFragment :Fragment() {
         })
     }
 
-    private fun searchFromNetease() {
-        LrcLoadHelper.loadLrcFromNetease(mCurrentPlay!!, object : LrcLoadHelper.OnLoadLrcListener {
-            override fun onSuccess(lrcPath: String) {
-                mLrcView.loadLrc(File(lrcPath))
-            }
 
-            override fun onLoadOnline() {
-                mLrcView.setLabel("从网易云获取ing……")
-            }
-
-            override fun onFailed() {
-                mLrcView.setLabel("暂无歌词")
-            }
-
-        })
-    }
 
     /**
      * 监听播放进度更新,此方法将会由子线程发起

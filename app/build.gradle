@@ -58,4 +58,6 @@ dependencies {
     compile 'com.github.pinguo-zhouwei:EasyBlur:v1.0.0'
     // 可添加head的 recyclerview
     compile 'com.jcodecraeer:xrecyclerview:1.5.7'
+    // 图片轮播
+    compile 'com.jude:rollviewpager:1.4.6'
 }
