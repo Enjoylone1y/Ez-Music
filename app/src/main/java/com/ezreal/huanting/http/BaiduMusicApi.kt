@@ -205,9 +205,10 @@ object BaiduMusicApi {
                 .execute(object : JsonCallBack<GedanListResult>() {
                     override fun onSuccess(response: Response<GedanListResult>?) {
                         if (response?.body() != null) {
-                            listener.onResult(0, response.body().content, "success")
+                            listener.onResult(0, response.body().content,response.body().total,
+                                    "success")
                         } else {
-                            listener.onResult(-1, null, "failed")
+                            listener.onResult(-1, null, 0,"failed")
                         }
                     }
                 })
@@ -226,16 +227,17 @@ object BaiduMusicApi {
                 .execute(object : JsonCallBack<GedanListResult>() {
                     override fun onSuccess(response: Response<GedanListResult>?) {
                         if (response?.body() != null) {
-                            listener.onResult(0, response.body().content, "success")
+                            listener.onResult(0, response.body().content,response.body().total,
+                                    "success")
                         } else {
-                            listener.onResult(-1, null, "failed")
+                            listener.onResult(-1, null,0, "failed")
                         }
                     }
                 })
     }
 
     /** 获取歌单数据 */
-    fun loadGedanInfo(listId: String, listener: OnGedanInfoListener) {
+    fun loadGedanInfo(listId: Long, listener: OnGedanInfoListener) {
         OkGo.get<GedanInfoResult>(BASE_URL)
                 .params(PARAM_FROM, VALUE_FROM)
                 .params(PARAM_VERSION, VALUE_VERSION)
@@ -385,7 +387,7 @@ object BaiduMusicApi {
     }
 
     interface OnGedanListListener {
-        fun onResult(code: Int, result: List<GedanListResult.GedanBean>?,
+        fun onResult(code: Int, result: List<GedanListResult.GedanBean>?,total: Int,
                      message: String?)
     }
 

@@ -67,6 +67,7 @@ class PersonalFragment : Fragment() {
             override fun onItemClick(holder: RViewHolder, position: Int) {
                 val intent = Intent(context, GedanInfoActivity::class.java)
                 intent.putExtra("ListId", mMusicList[position].listId)
+                intent.putExtra("isOnline",false)
                 context?.startActivity(intent)
             }
 

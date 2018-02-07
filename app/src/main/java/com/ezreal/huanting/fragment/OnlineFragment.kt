@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ezreal.huanting.R
+import com.ezreal.huanting.activity.GedanInfoActivity
 import com.ezreal.huanting.activity.RankBillListActivity
 import com.ezreal.huanting.activity.RecomListActivity
 import com.ezreal.huanting.adapter.*
@@ -94,10 +95,20 @@ class OnlineFragment : Fragment() {
          mLayoutRank.setOnClickListener {
              startActivity(Intent(context,RankBillListActivity::class.java))
         }
+
+        mRecomBillAdapter.setItemClickListener(object :
+                RecycleViewAdapter.OnItemClickListener {
+            override fun onItemClick(holder: RViewHolder, position: Int) {
+                val bean = mRecomBillList[position]
+                val intent = Intent(context, GedanInfoActivity::class.java)
+                intent.putExtra("ListId",bean.listid.toLong())
+                intent.putExtra("isOnline",true)
+                context?.startActivity(intent)
+            }
+        })
     }
 
     private fun loadData() {
-
         BaiduMusicApi.loadImageUrls(5,object :BaiduMusicApi.OnUrlLoadListener{
             override fun onResult(code: Int, result: List<String>?, message: String?) {
                 if (code == 0){

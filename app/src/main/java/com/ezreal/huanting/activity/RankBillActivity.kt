@@ -15,7 +15,6 @@ import android.widget.TextView
 import cn.hotapk.fastandrutils.utils.FConvertUtils
 import cn.hotapk.fastandrutils.utils.FStatusBarUtils
 import cn.hotapk.fastandrutils.utils.FToastUtils
-import com.bumptech.glide.Glide
 import com.ezreal.huanting.R
 import com.ezreal.huanting.adapter.MusicAdapter
 import com.ezreal.huanting.adapter.RViewHolder
@@ -36,6 +35,7 @@ import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_rank_bill.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.lang.Exception
 
 /**
  * 网络榜单 页面
@@ -156,30 +156,26 @@ class RankBillActivity :Activity(){
     }
 
     private fun setHeadViewData(){
-        val coverUrl = mRankBill?.pic
-        OkGo.get<Bitmap>(coverUrl).execute(object : BitmapCallback() {
-            override fun onSuccess(response: Response<Bitmap>?) {
-                if (response?.body() != null) {
-                    mBackColor = Palette.from(response.body()).generate().darkVibrantSwatch?.rgb
-                            ?: ContextCompat.getColor(this@RankBillActivity, R.color.color_gray)
-                    mHeadName.text = mBillName
-                    mHeadUpdate.text = mRankBill?.update
-                    if (mRankBill?.pic.isNullOrEmpty()) {
-                        mHeadCover.setImageResource(R.drawable.splash)
-                    } else {
-                        Glide.with(this@RankBillActivity)
-                                .load(mRankBill?.pic)
-                                .asBitmap()
-                                .error(R.drawable.splash)
-                                .into(mHeadCover)
+        mHeadName.text = mBillName
+        mHeadUpdate.text = mRankBill?.update
+        try {
+            OkGo.get<Bitmap>(mRankBill?.pic!!).execute(object : BitmapCallback() {
+                override fun onSuccess(response: Response<Bitmap>?) {
+                    if (response?.body() != null) {
+                        mHeadCover.setImageBitmap(response.body())
+                        mBackColor = Palette.from(response.body()).generate()
+                                .darkVibrantSwatch?.rgb!!
+                        setHeadViewBackColor()
                     }
-                    setHeadViewBackByCover()
                 }
-            }
-        })
+            })
+        }catch (e:Exception){
+            e.printStackTrace()
+            setHeadViewBackColor()
+        }
     }
 
-    private fun setHeadViewBackByCover() {
+    private fun setHeadViewBackColor() {
         val headBarBitmap = Bitmap.createBitmap(resources.displayMetrics.widthPixels,
                 FConvertUtils.dip2px(271f), Bitmap.Config.ARGB_8888)
         headBarBitmap.eraseColor(mBackColor)//填充颜色

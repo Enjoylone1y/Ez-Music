@@ -24,7 +24,11 @@
         android:layout_marginTop="20dp"
         android:layout_toRightOf="@+id/mIvListCover"
         android:textColor="@color/colorAccent"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:maxLines="2"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:maxWidth="200dp"/>
 
     <TextView
         android:id="@+id/mTvCreator"

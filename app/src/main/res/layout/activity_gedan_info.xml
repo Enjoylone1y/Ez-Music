@@ -44,14 +44,18 @@
             android:layout_height="wrap_content"
             android:src="@mipmap/title_back"/>
 
-        <TextView
+        <com.ezreal.huanting.widget.FocusedTextView
             android:id="@+id/mTvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_toRightOf="@+id/mIvBack"
             android:textColor="@android:color/white"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:maxWidth="200dp"
+            android:marqueeRepeatLimit="marquee_forever"/>
 
         <ImageView
             android:id="@+id/mIvSearch"
