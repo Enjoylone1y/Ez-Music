@@ -316,7 +316,7 @@ class NowPlayingActivity : BaseActivity() {
      * 封面/歌词页面切换,由mLrcFragment，mCoverFragment 根据手势调用
      */
 
-    fun changeView(){
+    private fun changeView(){
         if (showCover) {
             showCover = false
             switchFragment(mLrcFragment)

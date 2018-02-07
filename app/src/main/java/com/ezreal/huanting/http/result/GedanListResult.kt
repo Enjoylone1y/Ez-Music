@@ -24,8 +24,10 @@ class GedanListResult {
         @SerializedName("pic_300")
         lateinit var pic: String
 
-        var title: String? = null
-        var listenum: String? = null
-        var listid: String? = null
+        lateinit var title: String
+        lateinit var listenum: String
+        lateinit var listid: String
+        var desc:String ?= null
+        var tag:String  ?= null
     }
 }

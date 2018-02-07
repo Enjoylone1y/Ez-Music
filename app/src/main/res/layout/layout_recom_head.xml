@@ -3,17 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="150dp"
-    android:background="@drawable/recom_title_back">
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/recom_title_back"/>
 
     <RelativeLayout
+        android:id="@+id/layout_calen"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:gravity="center"
-        android:layout_marginTop="50dp">
+        android:layout_centerVertical="true">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:scaleType="center"
             android:layout_centerInParent="true"
             android:src="@mipmap/ic_calen_big"/>
@@ -25,18 +32,19 @@
             android:textSize="18sp"
             android:textColor="@color/colorAccent"
             android:gravity="center"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:text="1"/>
 
     </RelativeLayout>
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
         android:text="@string/tv_recom_tip"
         android:textColor="@color/colorAccent"
         android:textSize="12sp"
-        android:layout_marginLeft="10dp"/>
+        android:gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="120dp"/>
 
 </RelativeLayout>

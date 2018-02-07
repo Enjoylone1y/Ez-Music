@@ -62,6 +62,7 @@
         <activity
             android:name=".activity.GedanEditActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".activity.GedanListActivity"/>
 
 
         <service android:name=".service.MusicPlayService"/>

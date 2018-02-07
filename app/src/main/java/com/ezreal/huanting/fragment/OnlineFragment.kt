@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.ezreal.huanting.R
 import com.ezreal.huanting.activity.GedanInfoActivity
+import com.ezreal.huanting.activity.GedanListActivity
 import com.ezreal.huanting.activity.RankBillListActivity
 import com.ezreal.huanting.activity.RecomListActivity
 import com.ezreal.huanting.adapter.*
@@ -32,9 +33,8 @@ class OnlineFragment : Fragment() {
     private val mRecomAlbumList = ArrayList<RecomAlbumBean>()
 
     private lateinit var mPageAdapter: AutoPageAdapter
-    private lateinit var mRecomBillAdapter:DiyBillAdapter
+    private lateinit var mRecomBillAdapter: GedanAdapter
     private lateinit var mRecomAlbumAdapter:RecomAlbumAdapter
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -59,16 +59,16 @@ class OnlineFragment : Fragment() {
         mViewPage.setAdapter(mPageAdapter)
 
         mRcvRecomBill.layoutManager = GridLayoutManager(context!!, 3)
-        mRcvRecomBill.addItemDecoration(
-                RecyclerViewDivider.with(context!!).color(android.R.color.white).size(5).build())
+        mRcvRecomBill.addItemDecoration(RecyclerViewDivider.with(context!!)
+                .color(android.R.color.white).size(5).build())
         mRcvRecomBill.isNestedScrollingEnabled = false
         mRcvRecomBill.setHasFixedSize(false)
-        mRecomBillAdapter = DiyBillAdapter(context!!, mRecomBillList)
+        mRecomBillAdapter = GedanAdapter()
         mRcvRecomBill.adapter = mRecomBillAdapter
 
         mRcvRecomAlbum.layoutManager = GridLayoutManager(context, 3)
-        mRcvRecomAlbum.addItemDecoration(
-                RecyclerViewDivider.with(context!!).color(android.R.color.white).size(5).build())
+        mRcvRecomAlbum.addItemDecoration(RecyclerViewDivider.with(context!!)
+                .color(android.R.color.white).size(5).build())
         mRcvRecomAlbum.isNestedScrollingEnabled = false
         mRcvRecomAlbum.setHasFixedSize(false)
         mRecomAlbumAdapter = RecomAlbumAdapter(context!!,mRecomAlbumList)
@@ -81,12 +81,12 @@ class OnlineFragment : Fragment() {
             startActivity(Intent(context,RecomListActivity::class.java))
         }
 
-        // 打开推荐歌单
+        // 打开歌单列表
         mLayoutBill.setOnClickListener {
-
+            startActivity(Intent(context, GedanListActivity::class.java))
         }
 
-        // 打开歌手推荐
+        // 打开歌手列表
         mLayoutArtist.setOnClickListener {
 
         }
@@ -137,5 +137,22 @@ class OnlineFragment : Fragment() {
                 }
             }
         })
+    }
+
+    inner class GedanAdapter:RecycleViewAdapter<ListBean>(context!!,mRecomBillList){
+        override fun setItemLayoutId(position: Int): Int {
+            return R.layout.item_diy_bill
+        }
+
+        override fun bindView(holder: RViewHolder, position: Int) {
+            val bean = mRecomBillList[position]
+            holder.setText(R.id.tv_bill_title,bean.title)
+            holder.setText(R.id.tv_listen_count,getNumString(bean.listenum.toLong()))
+            holder.setImageByUrl(context!!,R.id.iv_bill_cover,bean.pic,R.drawable.splash)
+        }
+
+        private fun getNumString(num:Long):String{
+            return if (num > 10000) (num / 10000).toString() + "万" else num.toString()
+        }
     }
 }

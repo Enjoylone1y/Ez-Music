@@ -2,6 +2,8 @@ package com.ezreal.huanting.activity
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.view.LayoutInflater
+import android.widget.TextView
 import com.ezreal.huanting.R
 import com.ezreal.huanting.adapter.MusicAdapter
 import com.ezreal.huanting.adapter.RViewHolder
@@ -44,10 +46,13 @@ class RecomListActivity : BaseActivity() {
 
     private fun initView(){
 
+        val headView = LayoutInflater.from(this).inflate(R.layout.layout_recom_head,
+                null, false)
+        val dayText = headView.findViewById<TextView>(R.id.mTvRecomDay)
         val calendar = Calendar.getInstance()
         val format = SimpleDateFormat("dd")
-        val day = format.format(calendar.time)
-        mTvRecomDay.text = day
+        dayText.text = format.format(calendar.time)
+        mRcvRecomList.addHeaderView(headView)
 
         mRcvRecomList.setPullRefreshEnabled(false)
         mRcvRecomList.setLoadingMoreEnabled(false)
@@ -60,6 +65,7 @@ class RecomListActivity : BaseActivity() {
         })
         mRcvRecomList.adapter = mAdapter
     }
+
 
     private fun loadRecomList(){
         BaiduMusicApi.loadRecomMusicList(object :BaiduMusicApi.OnRecomListListener{
