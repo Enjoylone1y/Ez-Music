@@ -26,4 +26,4 @@ APP 部分界面截图：
 ![image](images/img_play.png)                 ![image](images/img_lrc.png)
 
 
-![image](images/img_save_to_list.png) 
+![image](images/img_recom_list.png)           ![image](images/img_gedan_list.png) 

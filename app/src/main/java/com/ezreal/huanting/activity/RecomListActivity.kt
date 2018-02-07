@@ -60,7 +60,7 @@ class RecomListActivity : BaseActivity() {
         mAdapter = MusicAdapter(this,Constant.RECOM_MUSIC_LIST_ID,mMusicList)
         mAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter.playMusic(position - 1)
+                mAdapter.playMusic(position - 2)
             }
         })
         mRcvRecomList.adapter = mAdapter
@@ -125,7 +125,7 @@ class RecomListActivity : BaseActivity() {
         if (prePlay != null) {
             val preIndex = mMusicList.indexOf(prePlay)
             prePlay.playStatus = Constant.PLAY_STATUS_NORMAL
-            mAdapter.notifyItemChanged(preIndex + 1)
+            mAdapter.notifyItemChanged(preIndex + 2)
         }
 
         if (event.newIndex == -1){
@@ -137,7 +137,7 @@ class RecomListActivity : BaseActivity() {
         if (currentPlay != null && currentPlay.playFromListId == Constant.RECOM_MUSIC_LIST_ID) {
             val currentIndex = mMusicList.indexOf(currentPlay)
             mMusicList[currentIndex].playStatus = Constant.PLAY_STATUS_PLAYING
-            mAdapter.notifyItemChanged(currentIndex + 1)
+            mAdapter.notifyItemChanged(currentIndex + 2)
         }
     }
 
