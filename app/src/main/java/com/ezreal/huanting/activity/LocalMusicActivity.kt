@@ -21,7 +21,7 @@ import kotlin.collections.ArrayList
 
 class LocalMusicActivity : BaseActivity() {
 
-    private var mAdapter:FragmentAdapter ?= null
+    private lateinit var mAdapter:FragmentAdapter
     private var mFragmentList = ArrayList<Fragment>()
     private val mTitle = listOf("歌曲", "歌手", "专辑", "文件夹")
 
@@ -53,7 +53,7 @@ class LocalMusicActivity : BaseActivity() {
             finish()
         }
         mIvSearch.setOnClickListener {
-            startActivity(Intent(this,MusicSearchActivity::class.java))
+            startActivity(Intent(this, LocalSearchActivity::class.java))
         }
         mIvMenu.setOnClickListener {
             // TODO 打开菜单弹窗

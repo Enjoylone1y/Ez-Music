@@ -54,7 +54,7 @@
             android:name=".activity.RankBillActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".activity.MusicSearchActivity"
+            android:name=".activity.LocalSearchActivity"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.DownLoadActivity"
@@ -62,8 +62,12 @@
         <activity
             android:name=".activity.GedanEditActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activity.GedanListActivity"/>
-
+        <activity
+            android:name=".activity.GedanListActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.GlobalSearchActivity"
+            android:screenOrientation="portrait"/>
 
         <service android:name=".service.MusicPlayService"/>
     </application>

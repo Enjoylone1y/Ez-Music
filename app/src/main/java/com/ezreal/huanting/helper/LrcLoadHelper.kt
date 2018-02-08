@@ -3,11 +3,13 @@ package com.ezreal.huanting.helper
 import android.text.TextUtils
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.http.BaiduMusicApi
-import com.ezreal.huanting.http.result.KeywordSearchResult
+import com.ezreal.huanting.http.FileCallBack
+import com.ezreal.huanting.http.result.LrcPicSearchResult.SongInfoBean
 import com.ezreal.huanting.utils.Constant
+import com.lzy.okgo.OkGo
+import com.lzy.okgo.model.Response
+import io.realm.Realm
 import java.io.File
-import java.io.FileWriter
-import java.io.IOException
 
 /**
  * 本地歌曲歌词搜索工具类
@@ -17,22 +19,20 @@ object LrcLoadHelper {
 
     fun loadLrcFileBaidu(musicBean: MusicBean, listener: OnLoadLrcListener) {
         try {
-            val name =  if (musicBean.musicTitle.length < 50)  musicBean.musicTitle
-                else  musicBean.musicTitle.substring(0, 50)
-            val artist = if (musicBean.artistName.length < 50)  musicBean.artistName
-                 else  musicBean.artistName.substring(0, 50)
-            val path = Constant.APP_LRC_PATH + File.separator + name + "_" + artist + ".lrc"
-            if (File(path).exists()) {
-                listener.onSuccess(path)
-                return
-            }
-            listener.onLoadOnline()
-            val keyWord = musicBean.musicTitle + " " + musicBean.artistName
-            BaiduMusicApi.searchMusicByKey(keyWord, object : BaiduMusicApi.OnKeywordSearchListener {
-                override fun onResult(code: Int, result: KeywordSearchResult.SongBean?, message: String?) {
-                    if (code == 0 && result != null) {
-                        getLrcOnlineFromBaidu(result.songid, path, listener)
-                    } else {
+            BaiduMusicApi.searchLrcPicByKey(musicBean.musicTitle,musicBean.artistName,object :
+                    BaiduMusicApi.OnLrcPicSearchListener{
+                override fun onResult(code: Int, result: List<SongInfoBean>?, message: String?) {
+                    if (code == 0 && result != null){
+                        val match = result.firstOrNull { musicBean.musicTitle == it.title
+                                    && musicBean.artistName == it.author
+                                    && !TextUtils.isEmpty(it.lrclink)
+                        }
+                        if (match != null){
+                            loadLrc(musicBean,match,listener)
+                        }else{
+                            listener.onFailed()
+                        }
+                    }else{
                         listener.onFailed()
                     }
                 }
@@ -43,43 +43,28 @@ object LrcLoadHelper {
         }
     }
 
-
-    private fun getLrcOnlineFromBaidu(songId: String, path: String, listener: OnLoadLrcListener) {
-        BaiduMusicApi.searchLrcById(songId, object : BaiduMusicApi.OnLrcSearchListener {
-            override fun onResult(code: Int, lrcString: String?, message: String?) {
-                if (code != 0 || TextUtils.isEmpty(lrcString)) {
-                    listener.onFailed()
-                    return
-                }
-                if (!saveLrc(path, lrcString!!)) {
-                    listener.onFailed()
-                } else {
+    private fun loadLrc(musicBean: MusicBean,song:SongInfoBean, listener: OnLoadLrcListener){
+        val url = song.lrclink
+        val path = Constant.APP_LRC_PATH + File.separator + song.song_id + ".lrc"
+        OkGo.get<File>(url).execute(object :FileCallBack(path){
+            override fun onSuccess(response: Response<File>?) {
+                if (response?.body() != null){
                     listener.onSuccess(path)
+                    val realm = Realm.getDefaultInstance()
+                    realm.beginTransaction()
+                    musicBean.lrcPath = path
+                    realm.commitTransaction()
+
+                }else{
+                    listener.onFailed()
                 }
             }
         })
     }
 
-    private fun saveLrc(path: String, lrcString: String): Boolean {
-        try {
-            val lrcFile = File(path)
-            if (!lrcFile.createNewFile()) {
-                return false
-            }
-            val fileWriter = FileWriter(lrcFile)
-            fileWriter.write(lrcString)
-            fileWriter.flush()
-            fileWriter.close()
-            return true
-        } catch (e: IOException) {
-            return false
-        }
-    }
-
 
     interface OnLoadLrcListener {
         fun onSuccess(lrcPath: String)
-        fun onLoadOnline()
         fun onFailed()
     }
 }

@@ -1,13 +1,16 @@
 package com.ezreal.huanting.http
 
-import android.text.TextUtils
 import com.ezreal.huanting.http.result.*
+import com.ezreal.huanting.http.utils.AESTools
 import com.google.gson.Gson
 import com.google.gson.stream.JsonReader
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.AbsCallback
 import com.lzy.okgo.model.Response
+import java.io.UnsupportedEncodingException
+import java.lang.StringBuilder
 import java.lang.reflect.ParameterizedType
+import java.net.URLEncoder
 
 /**
  * 网络歌曲 网络请求类  百度 api
@@ -21,7 +24,6 @@ object BaiduMusicApi {
     private val METHOD_GET_MUSIC_LIST = "baidu.ting.billboard.billList"
     private val METHOD_ARTIST_INFO = "baidu.ting.artist.getInfo"
     private val METHOD_SEARCH_MUSIC = "baidu.ting.search.catalogSug"
-    private val METHOD_LRC = "baidu.ting.song.lry"
     private val METHOD_RECOM = "baidu.ting.song.getRecommandSongList"
     private val METHOD_PLAY = "baidu.ting.song.play"
     private val METHOD_FOCCUS_PIC = "baidu.ting.plaza.getFocusPic"
@@ -33,7 +35,10 @@ object BaiduMusicApi {
     private val METHOD_GEDAN_ALL = "baidu.ting.diy.gedan"
     private val METHOD_GEDAN_SEARCH = "baidu.ting.diy.search"
     private val METHOD_GEDAN_INFO = "baidu.ting.diy.gedanInfo"
+    private val METHOD_LRC_PIC = "baidu.ting.search.lrcpic"
 
+    private val PARAM_TS = "ts"
+    private val PARAM_E = "e"
     private val PARAM_FLAG = "kflag"
     private val PARAM_METHOD = "method"
     private val PARAM_FROM = "from"
@@ -255,49 +260,52 @@ object BaiduMusicApi {
                 })
     }
 
-    /**
-     * 根据关键字（音乐名 歌手名）搜索百度音乐库， 可以获取得到歌曲 ID
-     */
-    fun searchMusicByKey(keyWord: String, listener: OnKeywordSearchListener) {
-        OkGo.get<KeywordSearchResult>(BASE_URL)
-                .params(PARAM_METHOD, METHOD_SEARCH_MUSIC)
-                .params(PARAM_QUERY, keyWord)
-                .execute(object : JsonCallBack<KeywordSearchResult>() {
-                    override fun onSuccess(response: Response<KeywordSearchResult>?) {
-                        if (response?.body() != null && response.body()?.song?.size!! > 0) {
-                            listener.onResult(0,response.body()?.song?.get(0),"success")
-                        } else {
-                            listener.onResult(-1, null, "未找到歌曲")
-                        }
-                    }
+    /** 搜索歌词和图片 */
+    fun searchLrcPicByKey(title: String, artist: String, listener: OnLrcPicSearchListener) {
+        val ts = System.currentTimeMillis().toString()
+        val query = encode(title) + "$$" + encode(artist)
+        val e = AESTools.encrpty("query=$title$$$artist&ts=$ts")
+        val url = StringBuilder(BASE_URL)
+                .append("?").append(PARAM_FROM).append("=").append(VALUE_FROM)
+                .append("&").append(PARAM_VERSION).append("=").append(VALUE_VERSION)
+                .append("&").append(PARAM_FORMAT).append("=").append(VALUE_FORMAT)
+                .append("&").append(PARAM_METHOD).append("=").append(METHOD_LRC_PIC)
+                .append("&").append(PARAM_QUERY).append("=").append(query)
+                .append("&").append(PARAM_TS).append("=").append(ts)
+                .append("&").append(PARAM_E).append("=").append(e)
+                .append("&").append(PARAM_TYPE).append("=").append(2)
+                .toString()
 
-                    override fun onError(response: Response<KeywordSearchResult>?) {
-                        super.onError(response)
-                        listener.onResult(-1, null, response?.exception?.message)
+        OkGo.get<LrcPicSearchResult>(url)
+                .execute(object : JsonCallBack<LrcPicSearchResult>() {
+                    override fun onSuccess(response: Response<LrcPicSearchResult>?) {
+                        if (response?.body() != null) {
+                            listener.onResult(0, response.body().songinfo, "success")
+                        } else {
+                            listener.onResult(-1,null,"failed")
+                        }
                     }
                 })
     }
 
-    /**
-     * 根据音乐id，搜索歌曲歌词
-     */
-    fun searchLrcById(songId: String, listener: OnLrcSearchListener) {
-        OkGo.get<LrcSearchResult>(BASE_URL)
-                .params(PARAM_METHOD, METHOD_LRC)
-                .params(PARAM_SONG_ID, songId)
-                .execute(object : JsonCallBack<LrcSearchResult>() {
-                    override fun onSuccess(response: Response<LrcSearchResult>?) {
-                        if (response?.body() != null
-                                && !TextUtils.isEmpty(response.body().lrcContent)) {
-                            listener.onResult(0, response.body().lrcContent, "onSuccess")
-                        } else {
-                            listener.onResult(-1, null, "未找到歌词")
-                        }
-                    }
 
-                    override fun onError(response: Response<LrcSearchResult>?) {
-                        super.onError(response)
-                        listener.onResult(-1, null, response?.exception?.message)
+    /**
+     * 根据关键字（音乐名 歌手名）搜索百度音乐库
+     */
+    fun searchMusicByKey(keyWord: String, listener: OnKeywordSearchListener) {
+        OkGo.get<KeywordSearchResult>(BASE_URL)
+                .params(PARAM_FROM, VALUE_FROM)
+                .params(PARAM_VERSION, VALUE_VERSION)
+                .params(PARAM_FORMAT, VALUE_FORMAT)
+                .params(PARAM_METHOD, METHOD_SEARCH_MUSIC)
+                .params(PARAM_QUERY, keyWord)
+                .execute(object : JsonCallBack<KeywordSearchResult>() {
+                    override fun onSuccess(response: Response<KeywordSearchResult>?) {
+                        if (response?.body() != null){
+                            listener.onResult(0,response.body(),"success")
+                        }else{
+                            listener.onResult(-1,null,"failed")
+                        }
                     }
                 })
     }
@@ -306,7 +314,6 @@ object BaiduMusicApi {
     /**
      * 根据参考的音乐 ID ,获取相似推荐歌曲
      */
-
     fun searchRecomById(musicId: String, num: Int, listener: OnRecomSearchListener) {
         OkGo.get<RecomSearchResult>(BASE_URL)
                 .params(PARAM_METHOD, METHOD_RECOM)
@@ -347,19 +354,6 @@ object BaiduMusicApi {
                 })
     }
 
-    /**
-     * 根据歌手 id 搜索歌手信息
-     */
-    fun searchArtistInfoById(artistId: String, listener: OnArtistSearchListener) {
-        OkGo.get<ArtistSearchResult>(BASE_URL)
-                .params(PARAM_METHOD, METHOD_ARTIST_INFO)
-                .params(PARAM_TING_UID, artistId)
-                .execute(object : JsonCallBack<ArtistSearchResult>() {
-                    override fun onSuccess(response: Response<ArtistSearchResult>?) {
-
-                    }
-                })
-    }
 
 
     interface OnUrlLoadListener {
@@ -395,26 +389,22 @@ object BaiduMusicApi {
         fun onResult(code: Int, result: GedanInfoResult?, message: String?)
     }
 
+    interface OnLrcPicSearchListener {
+        fun onResult(code: Int, result: List<LrcPicSearchResult.SongInfoBean>?, message: String?)
+    }
+
     interface OnRecomListListener {
         fun onResult(code: Int, result: List<RecomListResult.ContentBean.SongListBean>?,
                      message: String?)
     }
 
     interface OnKeywordSearchListener {
-        fun onResult(code: Int, result: KeywordSearchResult.SongBean?, message: String?)
-    }
-
-    interface OnLrcSearchListener {
-        fun onResult(code: Int, lrcString: String?, message: String?)
+        fun onResult(code: Int, result: KeywordSearchResult?, message: String?)
     }
 
     interface OnRecomSearchListener{
         fun onResult(code: Int, result: List<RecomSearchResult.RecomSongBean>?,
                      message: String?)
-    }
-
-    interface OnArtistSearchListener {
-        fun onResult(code: Int, result: ArtistSearchResult?, message: String?)
     }
 
     interface OnBillSearchListener {
@@ -423,6 +413,15 @@ object BaiduMusicApi {
 
     interface OnMusicInfoSearchListener{
         fun onResult(code: Int, result: MusicSearchResult?, message: String?)
+    }
+
+    private fun encode(str: String): String {
+        try {
+            return URLEncoder.encode(str, "utf-8")
+        } catch (e: UnsupportedEncodingException) {
+            e.printStackTrace()
+        }
+        return str
     }
 
     abstract class JsonCallBack<T> : AbsCallback<T>() {

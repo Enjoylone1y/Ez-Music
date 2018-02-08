@@ -21,6 +21,7 @@ import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_music_cover.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.io.File
 
 /**
  * 播放页 -- 专辑封面
@@ -110,12 +111,11 @@ class MusicCoverFragment : Fragment() {
                 R.drawable.default_play_cover))
         // 设置封面
         if (mCurrentPlay?.isOnline!!) {
-            val url = mCurrentPlay?.picLocal
-            if (TextUtils.isEmpty(url)) {
-                // 本地封面为空，从网络下载
-                OnlineMusicHelper.loadAndSavePic(mCurrentPlay?.musicId!!, mCurrentPlay?.bigPic!!)
+            val path = mCurrentPlay?.picLocal
+            if (!TextUtils.isEmpty(path) && File(path).exists()) {
+                setMusicCover(1, path!!)
             } else {
-                setMusicCover(1, url!!)
+                OnlineMusicHelper.loadAndSavePic(mCurrentPlay!!)
             }
         } else {
             val path = mCurrentPlay?.albumUri

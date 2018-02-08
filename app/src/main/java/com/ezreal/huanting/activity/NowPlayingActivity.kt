@@ -26,6 +26,7 @@ import com.zhouwei.blurlibrary.EasyBlur
 import kotlinx.android.synthetic.main.activty_now_playing.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.io.File
 
 
 /**
@@ -280,12 +281,12 @@ class NowPlayingActivity : BaseActivity() {
         }
 
         if (mCurrentPlay?.isOnline!!){
-            val url = mCurrentPlay?.picLocal
-            if (TextUtils.isEmpty(url)) {
+            val path = mCurrentPlay?.picLocal
+            if (!TextUtils.isEmpty(path) && File(path).exists()) {
                 // 本地封面为空，从网络下载
-                OnlineMusicHelper.loadAndSavePic(mCurrentPlay?.musicId!!, mCurrentPlay?.bigPic!!)
+                setBackWithBitmap(1, path!!)
             } else {
-                setBackWithBitmap(1, url!!)
+                OnlineMusicHelper.loadAndSavePic(mCurrentPlay!!)
             }
 
         } else {

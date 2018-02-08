@@ -49,7 +49,7 @@ class MainActivity : BaseActivity(){
             switchFragment(mDynamicView)
         }
         mIvSearch.setOnClickListener{
-            startActivity(Intent(this,MusicSearchActivity::class.java))
+            startActivity(Intent(this, GlobalSearchActivity::class.java))
         }
 
         // 先显示本地音乐列表

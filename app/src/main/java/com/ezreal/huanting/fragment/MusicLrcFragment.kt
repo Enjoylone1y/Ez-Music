@@ -6,7 +6,6 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import com.ezreal.huanting.R
-import com.ezreal.huanting.activity.NowPlayingActivity
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.OnlineDownloadEvent
 import com.ezreal.huanting.event.PlayMusicChangeEvent
@@ -28,7 +27,6 @@ import java.io.File
 class MusicLrcFragment :Fragment() {
 
     private var mCurrentPlay: MusicBean?= null
-    private lateinit var mDetector: GestureDetector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,13 +74,21 @@ class MusicLrcFragment :Fragment() {
 
     private fun bindView(){
         if (mCurrentPlay?.isOnline!!){
-            if (TextUtils.isEmpty(mCurrentPlay?.lrcLocal)){
-                OnlineMusicHelper.loadAndSaveLrc(mCurrentPlay?.musicId!!,mCurrentPlay?.lrcLink!!)
+            val path = mCurrentPlay?.lrcLocal
+            if (!TextUtils.isEmpty(path) && File(path).exists()){
+                mLrcView.loadLrc(File(path))
             }else{
-                mLrcView.loadLrc(File(mCurrentPlay?.lrcLocal))
+                mLrcView.setLabel("正在获取歌词……")
+                OnlineMusicHelper.loadAndSaveLrc(mCurrentPlay!!)
             }
         }else{
-            searchFromBaidu()
+            val path = mCurrentPlay?.lrcPath
+            if (!TextUtils.isEmpty(path) && File(path).exists()){
+                mLrcView.loadLrc(File(path))
+            }else{
+                mLrcView.setLabel("正在获取歌词……")
+                searchFromBaidu()
+            }
         }
     }
 
@@ -92,18 +98,12 @@ class MusicLrcFragment :Fragment() {
                 mLrcView.loadLrc(File(lrcPath))
             }
 
-            override fun onLoadOnline() {
-                mLrcView.setLabel("从百度获取ing……")
-            }
-
             override fun onFailed() {
                 mLrcView.setLabel("暂无歌词")
             }
 
         })
     }
-
-
 
     /**
      * 监听播放进度更新,此方法将会由子线程发起
@@ -114,7 +114,6 @@ class MusicLrcFragment :Fragment() {
             mLrcView.updateTime(event.process.toLong())
         }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

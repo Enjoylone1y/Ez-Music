@@ -1,5 +1,7 @@
 package com.ezreal.huanting.event
 
+import com.ezreal.huanting.http.result.KeywordSearchResult
+
 /**
  * 播放指令事件
  */
@@ -44,5 +46,10 @@ data class MusicListChangeEvent(val listId:Long)
  * 播放模式变化事件
  */
 data class PlayModeChangeEvent(val mode:Int)
+
+/**
+ * 全局搜索结果更新事件
+ */
+data class SearchResultEvent(val result:KeywordSearchResult)
 
 

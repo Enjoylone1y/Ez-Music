@@ -8,7 +8,7 @@ import com.ezreal.huanting.R
  * Created by wudeng on 2018/2/2.
  */
 
-class MusicSearchActivity :BaseActivity(){
+class LocalSearchActivity :BaseActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

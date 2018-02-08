@@ -50,4 +50,5 @@
     <string name="tv_recom_day">每日推荐</string>
     <string name="tv_recom_tip">百度音乐编辑推荐歌曲列表，每日更新</string>
     <string name="tv_all_gedan">全部歌单</string>
+    <string name="tv_key_word">请输入关键词</string>
 </resources>

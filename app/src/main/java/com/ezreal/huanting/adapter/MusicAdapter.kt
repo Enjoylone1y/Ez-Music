@@ -43,7 +43,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
     override fun bindView(holder: RViewHolder, position: Int) {
         holder.setText(R.id.mTvSongTitle, mList[position].musicTitle)
         holder.setText(R.id.mTvArtist, mList[position].artistName)
-        holder.setText(R.id.tv_album, mList[position].albumName)
+        holder.setText(R.id.mTvAlbum, mList[position].albumName)
         holder.getImageView(R.id.iv_play_status)?.visibility = View.GONE
         when {
             mList[position].playStatus == Constant.PLAY_STATUS_PLAYING -> {

@@ -4,6 +4,7 @@ import android.text.TextUtils
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.OnlineDownloadEvent
 import com.ezreal.huanting.http.BaiduMusicApi
+import com.ezreal.huanting.http.FileCallBack
 import com.ezreal.huanting.http.result.KeywordSearchResult
 import com.ezreal.huanting.http.result.MusicSearchResult
 import com.ezreal.huanting.utils.Constant
@@ -60,28 +61,35 @@ object OnlineMusicHelper {
     }
 
 
-    fun loadAndSaveLrc(musicId:Long,lrcLink:String){
-        if (TextUtils.isEmpty(lrcLink)){
+    fun loadAndSaveLrc(music:MusicBean){
+        if (TextUtils.isEmpty(music.lrcLink)){
             EventBus.getDefault().post(OnlineDownloadEvent(Constant.DOWNLOAD_TYPE_LRC,
                     -1,null,"lrcLink is null or empty"))
             return
         }
-        // 下载歌词文件
-        val path = Constant.APP_LRC_PATH + File.separator + musicId + ".lrc"
+        val realm = Realm.getDefaultInstance()
+        val path = Constant.APP_LRC_PATH + File.separator + music.musicId + ".lrc"
         val lrcFile = File(path)
         if (lrcFile.exists()){
             EventBus.getDefault().post(OnlineDownloadEvent(Constant.DOWNLOAD_TYPE_LRC,
                     0,path,"success"))
+            realm.beginTransaction()
+            music.lrcLocal = path
+            realm.commitTransaction()
             return
         }else{
             lrcFile.createNewFile()
         }
 
-        OkGo.get<File>(lrcLink).execute(object :FileCallBack(path){
+        // 下载歌词文件
+        OkGo.get<File>(music.lrcLink).execute(object : FileCallBack(path){
             override fun onSuccess(response: Response<File>?) {
                 if (response?.body() != null){
                     EventBus.getDefault().post(OnlineDownloadEvent(Constant.DOWNLOAD_TYPE_LRC,
                             0,path,"success"))
+                    realm.beginTransaction()
+                    music.lrcLocal = path
+                    realm.commitTransaction()
                 }else{
                     EventBus.getDefault().post(OnlineDownloadEvent(Constant.DOWNLOAD_TYPE_LRC,
                             -1,null,"download failed"))
@@ -90,27 +98,37 @@ object OnlineMusicHelper {
         })
     }
 
-    fun loadAndSavePic(musicId:Long,picLink:String){
-        if (TextUtils.isEmpty(picLink)){
+    /**
+     * 下载并保存封面
+     */
+    fun loadAndSavePic(music:MusicBean){
+        if (TextUtils.isEmpty(music.bigPic)){
             EventBus.getDefault().post(OnlineDownloadEvent(Constant.DOWLOAD_TYPE_PIC,
                     -1,null,"picLink is null or empty"))
             return
         }
+        val realm = Realm.getDefaultInstance()
         // 下载封面文件
-        val path = Constant.APP_IMAGE_PATH + File.separator + musicId + ".jpg"
+        val path = Constant.APP_IMAGE_PATH + File.separator + music.musicId + ".jpg"
         val picFile =  File(path)
         if (picFile.exists()){
             EventBus.getDefault().post(OnlineDownloadEvent(Constant.DOWLOAD_TYPE_PIC,
                     0,path,"success"))
+            realm.beginTransaction()
+            music.picLocal = path
+            realm.commitTransaction()
             return
         }else{
             picFile.createNewFile()
         }
-        OkGo.get<File>(picLink).execute(object :FileCallBack(path){
+        OkGo.get<File>(music.bigPic).execute(object :FileCallBack(path){
             override fun onSuccess(response: Response<File>?) {
                 if (response?.body() != null){
                     EventBus.getDefault().post(OnlineDownloadEvent(Constant.DOWLOAD_TYPE_PIC,
                             0,path,"success"))
+                    realm.beginTransaction()
+                    music.picLocal = path
+                    realm.commitTransaction()
                 }else{
                     EventBus.getDefault().post(OnlineDownloadEvent(Constant.DOWLOAD_TYPE_PIC,
                             -1,null,"download failed"))
@@ -118,7 +136,6 @@ object OnlineMusicHelper {
             }
         })
     }
-
 
 
     private fun getRecomBaseId() {
@@ -143,50 +160,9 @@ object OnlineMusicHelper {
             return
         }
 
-        val key = lastLocal.musicTitle + " " + lastLocal.artistName
-        BaiduMusicApi.searchMusicByKey(key, object :
-                BaiduMusicApi.OnKeywordSearchListener {
-            override fun onResult(code: Int, result: KeywordSearchResult.SongBean?, message: String?) {
-                mBaseId = if (code == 0 && result != null) {
-                    result.songid
-                } else {
-                    "74172066"
-                }
-            }
-        })
-    }
 
+    }
     interface OnInfoLoadedListener {
          fun onResult(code: Int,musicBean: MusicBean?,message: String?)
     }
-
-    abstract class FileCallBack(val path:String):AbsCallback<File>(){
-        override fun convertResponse(response: okhttp3.Response?): File? {
-            if (TextUtils.isEmpty(path)){
-                return null
-            }
-            val file = File(path)
-            if (!file.exists()){
-                file.createNewFile()
-            }
-            val byteStream = response?.body()?.byteStream()
-            if (byteStream != null){
-                val outputStream = FileOutputStream(file)
-                val buffer = ByteArray(1024)
-                var length:Int
-                length = byteStream.read(buffer)
-                while (length != -1){
-                    outputStream.write(buffer,0,length)
-                    length = byteStream.read(buffer)
-                }
-                outputStream.flush()
-                outputStream.close()
-                byteStream.close()
-                return file
-            }else{
-                return null
-            }
-        }
-    }
-
 }
