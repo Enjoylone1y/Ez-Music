@@ -50,7 +50,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_toRightOf="@+id/view_left_1"
                 android:gravity="center"
-                android:text="@string/tv_recom_bill"
+                android:text="@string/tv_hot_gedan"
                 android:textColor="@color/color_black"
                 android:textSize="16sp"/>
 

@@ -82,7 +82,7 @@ object BaiduMusicApi {
                 })
     }
 
-    /** 获取推荐歌单 */
+    /** 获取热门歌单 */
     fun loadHotBillList(num: Int, listener: BaiduMusicApi.OnHotBillLoadListener) {
         OkGo.get<HotGedanResult>(BASE_URL)
                 .params(PARAM_FROM, VALUE_FROM)
@@ -316,6 +316,9 @@ object BaiduMusicApi {
      */
     fun searchRecomById(musicId: String, num: Int, listener: OnRecomSearchListener) {
         OkGo.get<RecomSearchResult>(BASE_URL)
+                .params(PARAM_FROM, VALUE_FROM)
+                .params(PARAM_VERSION, VALUE_VERSION)
+                .params(PARAM_FORMAT, VALUE_FORMAT)
                 .params(PARAM_METHOD, METHOD_RECOM)
                 .params(PARAM_RECOM_SONG_ID,musicId)
                 .params(PARAM_NUM,num)

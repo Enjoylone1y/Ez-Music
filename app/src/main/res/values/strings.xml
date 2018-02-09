@@ -48,7 +48,8 @@
     <string name="tv_recom_album">推荐专辑</string>
     <string name="tv_tip_shou">首</string>
     <string name="tv_recom_day">每日推荐</string>
-    <string name="tv_recom_tip">百度音乐编辑推荐歌曲列表，每日更新</string>
+    <string name="tv_recom_tip">以您的音乐库中播放次数最多的歌曲为参考生成的推荐列表，每日更新</string>
     <string name="tv_all_gedan">全部歌单</string>
     <string name="tv_key_word">请输入关键词</string>
+    <string name="tv_hot_gedan">热门歌单</string>
 </resources>

@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.widget.TextView
+import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import com.ezreal.huanting.R
 import com.ezreal.huanting.adapter.MusicAdapter
-import com.ezreal.huanting.adapter.RViewHolder
-import com.ezreal.huanting.adapter.RecycleViewAdapter
+import com.ezreal.huanting.bean.GedanBean
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.http.BaiduMusicApi
-import com.ezreal.huanting.http.result.RecomListResult.ContentBean.SongListBean
+import com.ezreal.huanting.http.result.RecomSearchResult
 import com.ezreal.huanting.utils.Constant
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_recom_list.*
@@ -39,7 +39,7 @@ class RecomListActivity : BaseActivity() {
         mIvBack.setOnClickListener { finish() }
 
         initView()
-        loadRecomList()
+        checkAndLoadRecom()
 
         EventBus.getDefault().register(this)
     }
@@ -62,27 +62,63 @@ class RecomListActivity : BaseActivity() {
     }
 
 
-    private fun loadRecomList(){
-        BaiduMusicApi.loadRecomMusicList(object :BaiduMusicApi.OnRecomListListener{
-            override fun onResult(code: Int, result: List<SongListBean>?, message: String?) {
+    private fun checkAndLoadRecom(){
+        val oneDay = 24 * 60 * 60 * 1000
+        val time = FSharedPrefsUtils.getLong(Constant.PRE_APP_OPTION_TABLE,
+                Constant.PRE_LOAD_RECOM_TIME, 0)
+        val current = System.currentTimeMillis()
+        if ((current - time) >= oneDay ){
+            loadRecomOnline()
+        }else {
+            loadRecomLocal()
+        }
+    }
+
+    private fun loadRecomOnline(){
+        val baseId = OnlineMusicHelper.getRecomBaseId()
+        BaiduMusicApi.searchRecomById(baseId,20,object :
+                BaiduMusicApi.OnRecomSearchListener{
+            override fun onResult(code: Int, result: List<RecomSearchResult.RecomSongBean>?,
+                                  message: String?) {
                 if (code == 0 && result != null){
                     covert2Music(result)
+                    updateLoadTime()
                 }
             }
         })
     }
 
-    private fun covert2Music(list: List<SongListBean>) {
+    private fun loadRecomLocal(){
+        val mainRealm = Realm.getDefaultInstance()
+        val gedanBean = mainRealm.where(GedanBean::class.java).equalTo("listId",
+                Constant.RECOM_MUSIC_LIST_ID).findFirst()
+        if (gedanBean.musicList.isEmpty()){
+            loadRecomOnline()
+        }else{
+            mMusicList += gedanBean.musicList
+            mAdapter.notifyChangeWidthStatus()
+        }
+    }
+
+    private fun covert2Music(list: List<RecomSearchResult.RecomSongBean>) {
         var afterSize = list.size
         val index = ArrayList<String>()
 
         val mainRealm = Realm.getDefaultInstance()
+        mainRealm.beginTransaction()
+
+        // 清空原有推荐歌曲
+        val recomGedan = mainRealm.where(GedanBean::class.java).equalTo("listId",
+                Constant.RECOM_MUSIC_LIST_ID).findFirst()
+        recomGedan.musicList.clear()
+
         // 从数据库中读取已保存过的数据
         for (bean in list) {
             val music = mainRealm.where(MusicBean::class.java)
                     .equalTo("musicId", bean.song_id.toLong()).findFirst()
             if (music != null) {
                 mMusicList.add(music)
+                recomGedan.musicList.add(music)
             } else {
                 index.add(bean.song_id)
             }
@@ -93,13 +129,13 @@ class RecomListActivity : BaseActivity() {
         }
 
         // 对于未保存的数据，从网络获取，并存到数据库
-        mainRealm.beginTransaction()
         for (id in index) {
             OnlineMusicHelper.loadAndSaveInfo(id, object : OnlineMusicHelper.OnInfoLoadedListener {
                 override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
                     if (code == 0 && musicBean != null) {
                         mMusicList.add(musicBean)
                         mainRealm.insert(musicBean)
+                        recomGedan.musicList.add(musicBean)
                         // 在添加完成后更新数据库，刷新页面
                         if (mMusicList.size == afterSize){
                             mainRealm.commitTransaction()
@@ -111,6 +147,16 @@ class RecomListActivity : BaseActivity() {
                 }
             })
         }
+    }
+
+    private fun updateLoadTime(){
+        val instance = Calendar.getInstance()
+        instance.set(Calendar.HOUR_OF_DAY,6)
+        instance.set(Calendar.MINUTE,0)
+        instance.set(Calendar.SECOND,0)
+
+        FSharedPrefsUtils.putLong(Constant.PRE_APP_OPTION_TABLE,
+                Constant.PRE_LOAD_RECOM_TIME, instance.timeInMillis)
     }
 
     @Subscribe

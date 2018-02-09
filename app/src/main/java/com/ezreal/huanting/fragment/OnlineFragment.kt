@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.R
 import com.ezreal.huanting.activity.GedanInfoActivity
 import com.ezreal.huanting.activity.GedanListActivity
@@ -88,7 +89,7 @@ class OnlineFragment : Fragment() {
 
         // 打开歌手列表
         mLayoutArtist.setOnClickListener {
-
+            FToastUtils.init().show("歌手列表页面还没做好喔~")
         }
 
         // 打开排行榜

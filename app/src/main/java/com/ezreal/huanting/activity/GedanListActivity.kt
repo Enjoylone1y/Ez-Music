@@ -77,7 +77,8 @@ class GedanListActivity : BaseActivity() {
         mIvBack.setOnClickListener { finish() }
         mRecGedanList.setLoadingListener(object :XRecyclerView.LoadingListener{
             override fun onLoadMore() {
-
+                mPageNo++
+                loadGedanList()
             }
 
             override fun onRefresh() {
@@ -149,7 +150,13 @@ class GedanListActivity : BaseActivity() {
                     if (code == 0 && result != null) {
                         mGedanList.addAll(result)
                         mGedanAdapter.notifyDataSetChanged()
+                        if (mGedanList.size < total){
+                            mRecGedanList.setLoadingMoreEnabled(true)
+                        }
+                    }else{
+                        mPageNo--
                     }
+                    mRecGedanList.loadMoreComplete()
                 }
             })
         } else {
@@ -160,7 +167,10 @@ class GedanListActivity : BaseActivity() {
                     if (code == 0 && result != null) {
                         mGedanList.addAll(result)
                         mGedanAdapter.notifyDataSetChanged()
+                    }else{
+                        mPageNo--
                     }
+                    mRecGedanList.loadMoreComplete()
                 }
             })
         }

@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
             android:textSize="18sp"
-            android:text="@string/tv_recom_bill"
+            android:text="@string/tv_hot_gedan"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="25dp"
             android:drawableLeft="@mipmap/ic_winner"

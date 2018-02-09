@@ -116,9 +116,10 @@ object MusicDataHelper {
                 return
             }
 
-            var count = realm.where(GedanBean::class.java).count()
+            val max = realm.where(GedanBean::class.java).max("listId").toLong()
+            val listId = if (max == 0L) 50 else max + 1L
             val listBean = GedanBean()
-            listBean.listId = ++count
+            listBean.listId = listId
             listBean.listName = title
             listBean.createTime = System.currentTimeMillis()
             listBean.creatorId = userId
@@ -147,7 +148,11 @@ object MusicDataHelper {
         try {
             val realm = Realm.getDefaultInstance()
             val realmResults = realm.where(GedanBean::class.java)
-                    .notEqualTo("listId",Constant.RECENT_MUSIC_LIST_ID).findAll()
+                    .beginGroup()
+                    .notEqualTo("listId",Constant.RECENT_MUSIC_LIST_ID)
+                    .notEqualTo("listId",Constant.RECOM_MUSIC_LIST_ID)
+                    .endGroup()
+                    .findAll()
             listener?.loadSuccess(realmResults)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -187,10 +192,18 @@ object MusicDataHelper {
             recentBill.creatorId = 0
             recentBill.creatorName = "root"
 
+            val recomBill = GedanBean()
+            recomBill.listId = Constant.RECOM_MUSIC_LIST_ID
+            recomBill.listName = "每日推荐"
+            recomBill.createTime = System.currentTimeMillis()
+            recomBill.creatorId = 0
+            recomBill.creatorName = "root"
+
             val realm = Realm.getDefaultInstance()
             realm.beginTransaction()
             realm.insert(loveBill)
             realm.insert(recentBill)
+            realm.insert(recomBill)
             realm.commitTransaction()
             realm.close()
 

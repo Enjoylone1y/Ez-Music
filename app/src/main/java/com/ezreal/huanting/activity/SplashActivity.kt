@@ -16,6 +16,7 @@ import com.ezreal.huanting.service.MusicPlayService
 import com.ezreal.huanting.utils.Constant
 import java.io.File
 
+
 /**
  * 引导页
  * Created by wudeng on 2017/12/26.
@@ -66,52 +67,63 @@ class SplashActivity : BaseActivity() {
         startService(Intent(this, MusicPlayService::class.java))
         Thread({
             // 创建程序文件夹
-            if (!File(Constant.APP_MAIN_DIR_PATH).exists()) {
-                File(Constant.APP_MAIN_DIR_PATH).mkdir()
-            }
-
-            if (!File(Constant.APP_MUSIC_PATH).exists()) {
-                File(Constant.APP_MUSIC_PATH).mkdir()
-            }
-
-            if (!File(Constant.APP_LRC_PATH).exists()) {
-                File(Constant.APP_LRC_PATH).mkdir()
-            }
-
-            if (!File(Constant.APP_IMAGE_PATH).exists()) {
-                File(Constant.APP_IMAGE_PATH).mkdir()
-            }
-
+            createAppDir()
             // 创建 “我喜欢的音乐”,“最近播放” 歌单
-            val created = FSharedPrefsUtils.getBoolean(Constant.PRE_APP_OPTION_TABLE,
-                    Constant.PRE_APP_DEFAULT_LIST_CREATED, false)
-            if (!created) {
-                MusicDataHelper.createDefaultBill(object : MusicDataHelper.OnBillCreatedListener {
-                    override fun createdResult(code: Int, listId: Long, message: String) {
-                        if (code == 0) {
-                            FSharedPrefsUtils.putBoolean(Constant.PRE_APP_OPTION_TABLE,
-                                    Constant.PRE_APP_DEFAULT_LIST_CREATED, true)
-                        }
-                    }
-                })
-            }
-
+            createMyDefaultList()
             // 同步本地音乐至数据库
-            val initSync = FSharedPrefsUtils.getBoolean(Constant.PRE_APP_OPTION_TABLE,
-                    Constant.PRE_APP_OPTION_INIT_SYNC, false)
-            if (!initSync) {
-                MusicDataHelper.syncLocalMusic(this,
-                        object : MusicDataHelper.OnSyncLocalMusicListener {
-                            override fun onResult(code: Int, message: String) {
-                                if (code == 0){
-                                    FSharedPrefsUtils.putBoolean(Constant.PRE_APP_OPTION_TABLE,
-                                            Constant.PRE_APP_OPTION_INIT_SYNC, true)
-                                }
-                            }
-                        })
-            }
+            syncMusic()
 
         }).start()
+    }
+
+    private fun createAppDir(){
+        if (!File(Constant.APP_MAIN_DIR_PATH).exists()) {
+            File(Constant.APP_MAIN_DIR_PATH).mkdir()
+        }
+
+        if (!File(Constant.APP_MUSIC_PATH).exists()) {
+            File(Constant.APP_MUSIC_PATH).mkdir()
+        }
+
+        if (!File(Constant.APP_LRC_PATH).exists()) {
+            File(Constant.APP_LRC_PATH).mkdir()
+        }
+
+        if (!File(Constant.APP_IMAGE_PATH).exists()) {
+            File(Constant.APP_IMAGE_PATH).mkdir()
+        }
+
+    }
+
+    private fun createMyDefaultList(){
+        val created = FSharedPrefsUtils.getBoolean(Constant.PRE_APP_OPTION_TABLE,
+                Constant.PRE_APP_DEFAULT_LIST_CREATED, false)
+        if (!created) {
+            MusicDataHelper.createDefaultBill(object : MusicDataHelper.OnBillCreatedListener {
+                override fun createdResult(code: Int, listId: Long, message: String) {
+                    if (code == 0) {
+                        FSharedPrefsUtils.putBoolean(Constant.PRE_APP_OPTION_TABLE,
+                                Constant.PRE_APP_DEFAULT_LIST_CREATED, true)
+                    }
+                }
+            })
+        }
+    }
+
+    private fun syncMusic(){
+        val initSync = FSharedPrefsUtils.getBoolean(Constant.PRE_APP_OPTION_TABLE,
+                Constant.PRE_APP_OPTION_INIT_SYNC, false)
+        if (!initSync) {
+            MusicDataHelper.syncLocalMusic(this,
+                    object : MusicDataHelper.OnSyncLocalMusicListener {
+                        override fun onResult(code: Int, message: String) {
+                            if (code == 0){
+                                FSharedPrefsUtils.putBoolean(Constant.PRE_APP_OPTION_TABLE,
+                                        Constant.PRE_APP_OPTION_INIT_SYNC, true)
+                            }
+                        }
+                    })
+        }
     }
 
     private fun openMain() {

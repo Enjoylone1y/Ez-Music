@@ -58,6 +58,7 @@ object Constant {
     val RECENT_MUSIC_LIST_ID = 41L       //最近播放
     val DOWNLOAD_MUSIC_LIST_ID = 42L     //下载的音乐
 
+
     val MY_LOVE_MUSIC_LIST_ID = 50L      //我喜欢的音乐
 
 
@@ -82,4 +83,9 @@ object Constant {
     val PRE_APP_OPTION_TABLE = "APP_OPTION_TABLE"
     val PRE_APP_DEFAULT_LIST_CREATED = "APP_DEFAULT_LIST_CREATED"
     val PRE_APP_OPTION_INIT_SYNC = "APP_OPTION_INIT_SYNC"
+
+    /**
+     * 推荐歌曲更新时间
+     */
+    val PRE_LOAD_RECOM_TIME = "LOAD_RECOM_TIME"
 }
