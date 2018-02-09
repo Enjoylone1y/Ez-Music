@@ -103,7 +103,7 @@ object MusicDataHelper {
             val userId = FSharedPrefsUtils.getLong(Constant.PRE_USER_TABLE,
                     Constant.PRE_USER_ID, 0)
             val userName = FSharedPrefsUtils.getString(Constant.PRE_USER_TABLE,
-                    Constant.PRE_USER_NAME, "unKnow")
+                    Constant.PRE_USER_NAME, "EzMusic")
 
             val realm = Realm.getDefaultInstance()
             val exit = realm.where(GedanBean::class.java)
@@ -183,21 +183,21 @@ object MusicDataHelper {
             loveBill.listName = "我喜欢的音乐"
             loveBill.createTime = System.currentTimeMillis()
             loveBill.creatorId = 0
-            loveBill.creatorName = "root"
+            loveBill.creatorName = "EzMusic"
 
             val recentBill = GedanBean()
             recentBill.listId = Constant.RECENT_MUSIC_LIST_ID
             recentBill.listName = "最近播放"
             recentBill.createTime = System.currentTimeMillis()
             recentBill.creatorId = 0
-            recentBill.creatorName = "root"
+            recentBill.creatorName = "EzMusic"
 
             val recomBill = GedanBean()
             recomBill.listId = Constant.RECOM_MUSIC_LIST_ID
             recomBill.listName = "每日推荐"
             recomBill.createTime = System.currentTimeMillis()
             recomBill.creatorId = 0
-            recomBill.creatorName = "root"
+            recomBill.creatorName = "EzMusic"
 
             val realm = Realm.getDefaultInstance()
             realm.beginTransaction()
@@ -207,7 +207,8 @@ object MusicDataHelper {
             realm.commitTransaction()
             realm.close()
 
-            listener?.createdResult(0, Constant.MY_LOVE_MUSIC_LIST_ID, "Create Success")
+            listener?.createdResult(0, Constant.MY_LOVE_MUSIC_LIST_ID,
+                    "Create Success")
         } catch (e: Exception) {
             e.printStackTrace()
             listener?.createdResult(-1, -1, e.message!!)

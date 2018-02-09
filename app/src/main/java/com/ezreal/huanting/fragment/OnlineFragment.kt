@@ -9,10 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.R
-import com.ezreal.huanting.activity.GedanInfoActivity
-import com.ezreal.huanting.activity.GedanListActivity
-import com.ezreal.huanting.activity.RankBillListActivity
-import com.ezreal.huanting.activity.RecomListActivity
+import com.ezreal.huanting.activity.*
 import com.ezreal.huanting.adapter.*
 import com.ezreal.huanting.http.BaiduMusicApi
 import com.ezreal.huanting.http.result.HotGedanResult.ContentBean.ListBean
@@ -106,6 +103,17 @@ class OnlineFragment : Fragment() {
                 intent.putExtra("isOnline",true)
                 context?.startActivity(intent)
             }
+        })
+
+        mRecomAlbumAdapter.setItemClickListener(object :
+                RecycleViewAdapter.OnItemClickListener{
+            override fun onItemClick(holder: RViewHolder, position: Int) {
+                val bean =  mRecomAlbumList[position]
+                val intent = Intent(context, AlbumInfoActivity::class.java)
+                intent.putExtra("AlbumId",bean.album_id)
+                context?.startActivity(intent)
+            }
+
         })
     }
 

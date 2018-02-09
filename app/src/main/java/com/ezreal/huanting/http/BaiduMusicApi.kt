@@ -36,6 +36,7 @@ object BaiduMusicApi {
     private val METHOD_GEDAN_SEARCH = "baidu.ting.diy.search"
     private val METHOD_GEDAN_INFO = "baidu.ting.diy.gedanInfo"
     private val METHOD_LRC_PIC = "baidu.ting.search.lrcpic"
+    private val METHOD_ALBUM_INFO = "baidu.ting.album.getAlbumInfo"
 
     private val PARAM_TS = "ts"
     private val PARAM_E = "e"
@@ -56,6 +57,7 @@ object BaiduMusicApi {
     private val PARAM_PAGE_NO = "page_no"
     private val PARAM_PAGE_SIZE = "page_size"
     private val PARAM_LIST_ID = "listid"
+    private val PARAM_ALBUM_ID = "album_id"
 
     private val VALUE_FROM = "android"
     private val VALUE_VERSION = "5.6.5.6"
@@ -121,6 +123,24 @@ object BaiduMusicApi {
                         }
                     }
 
+                })
+    }
+
+    fun loadAlbumInfo(albumId:String,listener:OnAlbumInfoListener){
+        OkGo.get<AlbumInfoResult>(BASE_URL)
+                .params(PARAM_FROM, VALUE_FROM)
+                .params(PARAM_VERSION, VALUE_VERSION)
+                .params(PARAM_FORMAT, VALUE_FORMAT)
+                .params(PARAM_METHOD, METHOD_ALBUM_INFO)
+                .params(PARAM_ALBUM_ID,albumId)
+                .execute(object :JsonCallBack<AlbumInfoResult>(){
+                    override fun onSuccess(response: Response<AlbumInfoResult>?) {
+                        if (response?.body() != null){
+                            listener.onResult(0,response.body(),"success")
+                        }else{
+                            listener.onResult(-1,null,"failed")
+                        }
+                    }
                 })
     }
 
@@ -260,6 +280,7 @@ object BaiduMusicApi {
                 })
     }
 
+
     /** 搜索歌词和图片 */
     fun searchLrcPicByKey(title: String, artist: String, listener: OnLrcPicSearchListener) {
         val ts = System.currentTimeMillis().toString()
@@ -390,6 +411,10 @@ object BaiduMusicApi {
 
     interface OnGedanInfoListener {
         fun onResult(code: Int, result: GedanInfoResult?, message: String?)
+    }
+
+    interface OnAlbumInfoListener{
+        fun onResult(code: Int, result: AlbumInfoResult?, message: String?)
     }
 
     interface OnLrcPicSearchListener {

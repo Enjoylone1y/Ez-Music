@@ -31,7 +31,7 @@
     <string name="app_name">EZ Music</string>
     <string name="app_version">v 1.0</string>
     <string name="tv_intro">EZ Music 是以 网易云音乐 为模板，使用 Kotlin 语言打造的一款 音乐播放 APP。
-        将会实现本地和在线音乐播放、歌单创建和管理、歌词和音乐下载等，各功能在会逐步完成。项目已开源至GitHub
+        将会实现本地和在线音乐播放、歌单创建和管理、歌词和音乐下载等，各功能会逐步完成。项目已开源至GitHub
         (见于本人主页 https://github.com/Enjoylone1y 欢迎 Fork Or Star）</string>
     <string name="tv_ed_info">修改信息</string>
     <string name="tv_recom_music">推荐音乐</string>

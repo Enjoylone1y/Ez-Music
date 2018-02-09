@@ -1,42 +1,33 @@
 package com.ezreal.huanting.activity
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.support.v4.content.ContextCompat
 import android.support.v7.graphics.Palette
 import android.support.v7.widget.LinearLayoutManager
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import cn.hotapk.fastandrutils.utils.FConvertUtils
 import cn.hotapk.fastandrutils.utils.FStatusBarUtils
-import cn.hotapk.fastandrutils.utils.FToastUtils
 import com.ezreal.huanting.R
 import com.ezreal.huanting.adapter.MusicAdapter
-import com.ezreal.huanting.adapter.RViewHolder
-import com.ezreal.huanting.adapter.RecycleViewAdapter
-import com.ezreal.huanting.bean.GedanBean
 import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
-import com.ezreal.huanting.helper.MusicDataHelper
 import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.http.BaiduMusicApi
-import com.ezreal.huanting.http.result.GedanInfoResult
+import com.ezreal.huanting.http.result.AlbumInfoResult
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.widget.ReNestedScrollView
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.BitmapCallback
 import com.lzy.okgo.model.Response
 import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_gedan_info.*
+import kotlinx.android.synthetic.main.activity_album_info.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -45,43 +36,36 @@ import org.greenrobot.eventbus.Subscribe
  * Created by wudeng on 2018/1/8.
  */
 
-class GedanInfoActivity : BaseActivity() {
+class AlbumInfoActivity : BaseActivity() {
 
     private var mBackColor = Color.parseColor("#bfbfbf")
 
     private lateinit var mHeadView: View
     private lateinit var mHeadCover: ImageView
     private lateinit var mHeadName: TextView
-    private lateinit var mHeadDesc: TextView
+    private lateinit var mHeadAuthor: TextView
 
     private val mMusicList = ArrayList<MusicBean>()
     private lateinit var mAdapter: MusicAdapter
-    private lateinit var mGedan: GedanBean
+    private lateinit var mAlbumInfo:AlbumInfoResult.AlbumInfoBean
 
     private var mHeadViewHeight = 0
 
-    private var isOnline = false
-    private var listName = ""
-    private var dsec = ""
-    private var author = ""
-    private var listId = -1L
+    private var albumTitle = ""
+    private var albumAuthor = ""
+    private var albumId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_gedan_info)
+        setContentView(R.layout.activity_album_info)
 
-        isOnline = intent.getBooleanExtra("isOnline", false)
-        listId = intent.getLongExtra("ListId", -1)
+        albumId = intent.getStringExtra("AlbumId")
 
         initHeadView()
         initMusicList()
         initEvent()
 
-        if (isOnline) {
-            loadOnlineGedan()
-        } else {
-            loadLocalGedan()
-        }
+        loadAlbumInfo()
 
         EventBus.getDefault().register(this)
     }
@@ -92,11 +76,11 @@ class GedanInfoActivity : BaseActivity() {
         FStatusBarUtils.translucent(this)
         // 构建 headView
         mHeadView = LayoutInflater.from(this)
-                .inflate(R.layout.layout_gedan_head, null, false)
+                .inflate(R.layout.layout_album_head, null, false)
         mHeadViewHeight = FConvertUtils.dip2px(200f)
-        mHeadCover = mHeadView.findViewById(R.id.mIvGedanCover)
-        mHeadName = mHeadView.findViewById(R.id.mTvGedanName)
-        mHeadDesc = mHeadView.findViewById(R.id.mTvDesc)
+        mHeadCover = mHeadView.findViewById(R.id.mIvAlbumCover)
+        mHeadName = mHeadView.findViewById(R.id.mTvAlbumName)
+        mHeadAuthor = mHeadView.findViewById(R.id.mTvAuthor)
         // 添加默认 headView
         mRcvMusic.addHeaderView(mHeadView)
     }
@@ -107,7 +91,7 @@ class GedanInfoActivity : BaseActivity() {
         mRcvMusic.setLoadingMoreEnabled(false)
         mRcvMusic.isNestedScrollingEnabled = false
         mRcvMusic.setHasFixedSize(false)
-        mAdapter = MusicAdapter(this, listId, mMusicList)
+        mAdapter = MusicAdapter(this, albumId.toLong(), mMusicList)
         mRcvMusic.adapter = mAdapter
     }
 
@@ -129,13 +113,13 @@ class GedanInfoActivity : BaseActivity() {
                 }
 
                 if (scroll > mHeadViewHeight / 2) {
-                    mTvTitle.text = listName
+                    mTvTitle.text = albumTitle
                 } else {
-                    mTvTitle.text = "歌单"
+                    mTvTitle.text = "专辑"
                 }
 
                 val drawable = mActionBar.background
-                        ?: ContextCompat.getDrawable(this@GedanInfoActivity,
+                        ?: ContextCompat.getDrawable(this@AlbumInfoActivity,
                                 R.drawable.action_bar_bg_black)
                 drawable?.mutate()?.alpha = (alpha * 255).toInt()
                 mActionBar.background = drawable
@@ -144,61 +128,24 @@ class GedanInfoActivity : BaseActivity() {
         })
     }
 
-    /** 加载网络歌单数据 */
-    private fun loadOnlineGedan() {
-        BaiduMusicApi.loadGedanInfo(listId, object : BaiduMusicApi.OnGedanInfoListener {
-            override fun onResult(code: Int, result: GedanInfoResult?, message: String?) {
-                if (code == 0 && result != null) {
-                    val gedan = GedanBean()
-                    gedan.listId = listId
-                    gedan.title = result.title
-                    gedan.tag = result.tag
-                    gedan.desc = result.desc
-                    gedan.pic = result.pic
-                    gedan.listenum = result.listenum
-                    gedan.collectnum = result.collectnum
-
-                    mGedan = gedan
-                    listName = result.title
-                    dsec = result.desc
+    private fun loadAlbumInfo() {
+        BaiduMusicApi.loadAlbumInfo(albumId,object :BaiduMusicApi.OnAlbumInfoListener{
+            override fun onResult(code: Int, result: AlbumInfoResult?, message: String?) {
+                if (code == 0 && result != null){
+                    mAlbumInfo = result.albumInfo
+                    albumTitle = mAlbumInfo.title
+                    albumAuthor = mAlbumInfo.author
                     setHeadViewData()
 
-                    covert2Music(result.content)
-                } else {
-                    FToastUtils.init().show("读取歌单信息失败！")
-                    finish()
-                }
-            }
-        })
-    }
-
-    /** 加载本地歌单数据 ***/
-    private fun loadLocalGedan() {
-        MusicDataHelper.getMusicListById(listId, object : MusicDataHelper.OnListLoadListener {
-            override fun loadSuccess(bill: List<GedanBean>) {
-                if (bill.isEmpty()) {
-                    FToastUtils.init().show("读取歌单信息失败！")
-                    finish()
-                } else {
-                    mGedan = bill[0]
-                    listName = mGedan.listName
-                    author = mGedan.creatorName
-                    setHeadViewData()
-
-                    val musicList = mGedan.musicList
-                    mMusicList.addAll(musicList)
-                    mAdapter.notifyChangeWidthStatus()
+                    covert2Music(result.songlist)
                 }
             }
 
-            override fun loadFailed(message: String) {
-                FToastUtils.init().show("读取歌单信息失败！")
-                finish()
-            }
         })
+
     }
 
-    private fun covert2Music(list: List<GedanInfoResult.ContentBean>) {
+    private fun covert2Music(list: List<AlbumInfoResult.AlbumSongBean>) {
         var afterSize = mMusicList.size + list.size
         val index = ArrayList<String>()
 
@@ -206,11 +153,11 @@ class GedanInfoActivity : BaseActivity() {
         // 从数据库中读取已保存过的数据
         for (bean in list) {
             val music = mainRealm.where(MusicBean::class.java)
-                    .equalTo("musicId", bean.song_id?.toLong()).findFirst()
+                    .equalTo("musicId", bean.song_id.toLong()).findFirst()
             if (music != null) {
                 mMusicList.add(music)
             } else {
-                index.add(bean.song_id!!)
+                index.add(bean.song_id)
             }
         }
         if (index.size == 0) {
@@ -241,65 +188,25 @@ class GedanInfoActivity : BaseActivity() {
 
     private fun setHeadViewData() {
         // 设置标题
-        mHeadName.text = listName
-
+        mHeadName.text = albumTitle
+        mHeadAuthor.text = albumAuthor
         try {
-            // 网络歌单
-            if (isOnline) {
-                loadOnlineBitmap(mGedan.pic)
-                mHeadDesc.text = dsec
-                return
-            }
-
-            mHeadDesc.text = author
-
-            // 本地歌单
-            // 如果有自定义封面
-            if (!TextUtils.isEmpty(mGedan.coverPathByEd)) {
-                val bitmap = BitmapFactory.decodeFile(mGedan.coverPathByEd)
-                mHeadCover.setImageBitmap(bitmap)
-                mBackColor = Palette.from(bitmap).generate().darkVibrantSwatch?.rgb!!
-                setHeadViewBackColor()
-                return
-            }
-            // 判断歌单是否为空
-            if (mGedan.musicList.isEmpty()){
-                setHeadViewBackColor()
-                return
-            }
-
-            // 否则从第一首获取
-            val musicBean = mGedan.musicList.sort("musicTitle")[0]
-            if (musicBean.isOnline) {
-                loadOnlineBitmap(musicBean.bigPic)
-            } else {
-                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver,
-                        Uri.parse(musicBean.albumUri))
-                mHeadCover.setImageBitmap(bitmap)
-                val palette = Palette.from(bitmap).generate()
-                mBackColor = palette.darkVibrantSwatch?.rgb ?: palette.lightVibrantSwatch?.rgb!!
-                setHeadViewBackColor()
-            }
-
+            OkGo.get<Bitmap>(mAlbumInfo.pic).execute(object : BitmapCallback() {
+                override fun onSuccess(response: Response<Bitmap>?) {
+                    if (response?.body() != null) {
+                        mHeadCover.setImageBitmap(response.body())
+                        mBackColor = Palette.from(response.body())
+                                .generate().darkVibrantSwatch?.rgb!!
+                        setHeadViewBackColor()
+                    }
+                }
+            })
         } catch (e: Exception) {
             e.printStackTrace()
             setHeadViewBackColor()
         }
     }
 
-    /** 加载网络封面  */
-    private fun loadOnlineBitmap(url: String) {
-        OkGo.get<Bitmap>(url).execute(object : BitmapCallback() {
-            override fun onSuccess(response: Response<Bitmap>?) {
-                if (response?.body() != null) {
-                    mHeadCover.setImageBitmap(response.body())
-                    mBackColor = Palette.from(response.body())
-                            .generate().darkVibrantSwatch?.rgb!!
-                    setHeadViewBackColor()
-                }
-            }
-        })
-    }
 
     /** 设置封面背景色 */
     private fun setHeadViewBackColor() {
@@ -333,7 +240,7 @@ class GedanInfoActivity : BaseActivity() {
 
         // 更新新播放歌曲状态
         val currentPlay = GlobalMusicData.getCurrentPlay()
-        if (currentPlay != null && currentPlay.playFromListId == listId) {
+        if (currentPlay != null && currentPlay.playFromListId == albumId.toLong()) {
             val currentIndex = mMusicList.indexOf(currentPlay)
             mMusicList[currentIndex].playStatus = Constant.PLAY_STATUS_PLAYING
             mAdapter.notifyItemChanged(currentIndex + 2)

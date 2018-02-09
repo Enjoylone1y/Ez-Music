@@ -68,6 +68,7 @@
         <activity
             android:name=".activity.GlobalSearchActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".activity.AlbumInfoActivity"/>
 
         <service android:name=".service.MusicPlayService"/>
     </application>

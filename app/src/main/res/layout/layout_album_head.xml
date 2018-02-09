@@ -9,7 +9,7 @@
     android:background="@color/color_light_black">
 
     <ImageView
-        android:id="@+id/mIvGedanCover"
+        android:id="@+id/mIvAlbumCover"
         android:layout_width="100dp"
         android:layout_height="120dp"
         android:background="@color/color_light_gray"
@@ -18,12 +18,12 @@
         android:src="@drawable/splash"/>
 
     <TextView
-        android:id="@+id/mTvGedanName"
+        android:id="@+id/mTvAlbumName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="20dp"
-        android:layout_toRightOf="@+id/mIvGedanCover"
+        android:layout_toRightOf="@+id/mIvAlbumCover"
         android:textColor="@color/colorAccent"
         android:textSize="18sp"
         android:maxLines="2"
@@ -32,23 +32,20 @@
         android:maxWidth="200dp"/>
 
     <TextView
-        android:id="@+id/mTvDesc"
+        android:id="@+id/mTvAuthor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/mTvGedanName"
+        android:layout_below="@+id/mTvAlbumName"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="30dp"
-        android:layout_toRightOf="@+id/mIvGedanCover"
+        android:layout_toRightOf="@+id/mIvAlbumCover"
         android:textColor="@color/color_light_gray"
-        android:textSize="14sp"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:maxWidth="200dp"/>
+        android:textSize="16sp"/>
 
     <include
         layout="@layout/layout_ex_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/mIvGedanCover"
+        android:layout_below="@+id/mIvAlbumCover"
         android:layout_marginTop="25dp"/>
 </RelativeLayout>
