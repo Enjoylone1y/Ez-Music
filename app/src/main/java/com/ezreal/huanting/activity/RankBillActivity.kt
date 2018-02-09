@@ -94,11 +94,6 @@ class RankBillActivity :Activity(){
         mRcvMusic.isNestedScrollingEnabled = false
         mRcvMusic.setHasFixedSize(false)
         mAdapter = MusicAdapter(this, mBillId, mMusicList)
-        mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter.playMusic(position - 2)
-            }
-        })
         mRcvMusic.adapter = mAdapter
     }
 

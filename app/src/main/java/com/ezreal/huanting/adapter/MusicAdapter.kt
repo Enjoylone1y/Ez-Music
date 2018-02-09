@@ -59,8 +59,11 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         view.setOnClickListener {
             showPopupWindow(view, mList[position])
         }
-    }
 
+        holder.convertView.setOnClickListener {
+            playMusic(position)
+        }
+    }
 
     private fun showPopupWindow(view: View, music: MusicBean) {
         if (mMenuPopupWindow == null) {
@@ -79,7 +82,7 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         PopupShowUtils.lightOff(mContext as Activity)
     }
 
-    fun playMusic(position: Int) {
+    private fun playMusic(position: Int) {
         if(GlobalMusicData.getListId() == listId){
             if (GlobalMusicData.getCurrentIndex() == position) {
                 mContext.startActivity(Intent(mContext, NowPlayingActivity::class.java))
@@ -88,7 +91,6 @@ class MusicAdapter(private val mContext: Context, private val listId: Long,
         }else{
             GlobalMusicData.updatePlayList(listId, mList)
         }
-
         GlobalMusicData.updateCurrentPlay(position)
         EventBus.getDefault().post(PlayActionEvent(MusicPlayAction.PLAY, -1))
     }

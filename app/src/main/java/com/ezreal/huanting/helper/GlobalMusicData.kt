@@ -54,6 +54,7 @@ object GlobalMusicData {
      * 更新当前播放列表
      */
     fun updatePlayList(listId: Long, list: List<MusicBean>) {
+
         mCurrentListId = listId
         mCurrentPlayList.clear()
         mCurrentPlayList.addAll(list)

@@ -44,13 +44,7 @@ class RecentPlayActivity : AppCompatActivity() {
 
         mAdapter = MusicAdapter(this@RecentPlayActivity,
                 Constant.RECENT_MUSIC_LIST_ID ,mMusicList)
-        mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener{
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter.playMusic(position-1)
-            }
-        })
         mRvRecentPlay.adapter = mAdapter
-
     }
 
     private fun initListener() {

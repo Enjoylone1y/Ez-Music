@@ -22,7 +22,7 @@ object LrcLoadHelper {
             BaiduMusicApi.searchLrcPicByKey(musicBean.musicTitle,musicBean.artistName,object :
                     BaiduMusicApi.OnLrcPicSearchListener{
                 override fun onResult(code: Int, result: List<SongInfoBean>?, message: String?) {
-                    if (code == 0 && result != null){
+                    if (code == 0 && result != null && result.isNotEmpty()){
                         val match = result.firstOrNull { musicBean.musicTitle == it.title
                                     && musicBean.artistName == it.author
                                     && !TextUtils.isEmpty(it.lrclink)

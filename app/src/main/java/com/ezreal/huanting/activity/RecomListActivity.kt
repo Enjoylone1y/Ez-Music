@@ -58,11 +58,6 @@ class RecomListActivity : BaseActivity() {
         mRcvRecomList.setLoadingMoreEnabled(false)
         mRcvRecomList.layoutManager = LinearLayoutManager(this)
         mAdapter = MusicAdapter(this,Constant.RECOM_MUSIC_LIST_ID,mMusicList)
-        mAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter.playMusic(position - 2)
-            }
-        })
         mRcvRecomList.adapter = mAdapter
     }
 

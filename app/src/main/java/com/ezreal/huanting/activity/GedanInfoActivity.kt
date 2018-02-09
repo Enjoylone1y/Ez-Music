@@ -106,11 +106,6 @@ class GedanInfoActivity : BaseActivity() {
         mRcvMusic.isNestedScrollingEnabled = false
         mRcvMusic.setHasFixedSize(false)
         mAdapter = MusicAdapter(this, listId, mMusicList)
-        mAdapter.setItemClickListener(object : RecycleViewAdapter.OnItemClickListener {
-            override fun onItemClick(holder: RViewHolder, position: Int) {
-                mAdapter.playMusic(position - 2)
-            }
-        })
         mRcvMusic.adapter = mAdapter
     }
 
