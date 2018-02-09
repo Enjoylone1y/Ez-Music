@@ -157,10 +157,16 @@ class RankBillActivity :Activity(){
             OkGo.get<Bitmap>(mRankBill?.pic!!).execute(object : BitmapCallback() {
                 override fun onSuccess(response: Response<Bitmap>?) {
                     if (response?.body() != null) {
-                        mHeadCover.setImageBitmap(response.body())
-                        mBackColor = Palette.from(response.body()).generate()
-                                .darkVibrantSwatch?.rgb!!
-                        setHeadViewBackColor()
+                        try {
+                            mHeadCover.setImageBitmap(response.body())
+                            val palette = Palette.from(response.body()).generate()
+                            mBackColor = palette.darkVibrantSwatch?.rgb ?:
+                                    palette.lightVibrantSwatch?.rgb!!
+                            setHeadViewBackColor()
+                        }catch (e:Exception){
+                            e.printStackTrace()
+                        }
+
                     }
                 }
             })

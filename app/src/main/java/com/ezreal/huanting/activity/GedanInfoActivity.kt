@@ -258,7 +258,8 @@ class GedanInfoActivity : BaseActivity() {
             if (!TextUtils.isEmpty(mGedan.coverPathByEd)) {
                 val bitmap = BitmapFactory.decodeFile(mGedan.coverPathByEd)
                 mHeadCover.setImageBitmap(bitmap)
-                mBackColor = Palette.from(bitmap).generate().darkVibrantSwatch?.rgb!!
+                val palette = Palette.from(bitmap).generate()
+                mBackColor = palette.darkVibrantSwatch?.rgb ?: palette.lightVibrantSwatch?.rgb!!
                 setHeadViewBackColor()
                 return
             }
@@ -288,13 +289,18 @@ class GedanInfoActivity : BaseActivity() {
     }
 
     /** 加载网络封面  */
+    @Throws(Exception::class)
     private fun loadOnlineBitmap(url: String) {
         OkGo.get<Bitmap>(url).execute(object : BitmapCallback() {
             override fun onSuccess(response: Response<Bitmap>?) {
                 if (response?.body() != null) {
-                    mHeadCover.setImageBitmap(response.body())
-                    mBackColor = Palette.from(response.body())
-                            .generate().darkVibrantSwatch?.rgb!!
+                    try {
+                        mHeadCover.setImageBitmap(response.body())
+                        val p =  Palette.from(response.body()).generate()
+                        mBackColor =  p.darkVibrantSwatch?.rgb ?:  p.lightVibrantSwatch?.rgb!!
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                    }
                     setHeadViewBackColor()
                 }
             }
