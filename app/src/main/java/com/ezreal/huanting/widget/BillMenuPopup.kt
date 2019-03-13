@@ -2,9 +2,11 @@ package com.ezreal.huanting.widget
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.WindowManager
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -39,6 +41,9 @@ class BillMenuPopup : PopupWindow {
 
         isTouchable = true
         isFocusable = true
+
+        setBackgroundDrawable(ColorDrawable())
+        inputMethodMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 
         initView(context)
     }

@@ -2,12 +2,14 @@ package com.ezreal.huanting.widget
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -56,6 +58,9 @@ class PlayListPopup : PopupWindow {
         contentView = root
         this.height = context?.resources?.displayMetrics?.heightPixels!! / 2
         this.width = context.resources?.displayMetrics?.widthPixels!!
+        setBackgroundDrawable(ColorDrawable())
+        inputMethodMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+
         initView(root)
         initList(context)
 

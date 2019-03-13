@@ -3,12 +3,14 @@ package com.ezreal.huanting.widget
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -57,6 +59,8 @@ class MusicMenuPopup : PopupWindow {
         this.width = context.resources.displayMetrics.widthPixels
         isTouchable = true
         isFocusable = true
+        setBackgroundDrawable(ColorDrawable())
+        inputMethodMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 
         initView(context)
     }

@@ -45,6 +45,11 @@ class SplashActivity : BaseActivity() {
      */
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            initApplication()
+            openMain()
+            return
+        }
         val permission = checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
         if (permission != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(mPermissions.toTypedArray(), 1)
