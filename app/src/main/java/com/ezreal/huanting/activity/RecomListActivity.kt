@@ -15,7 +15,6 @@ import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.http.BaiduMusicApi
 import com.ezreal.huanting.http.result.RecomSearchResult
 import com.ezreal.huanting.utils.Constant
-import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_recom_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -89,40 +88,40 @@ class RecomListActivity : BaseActivity() {
     }
 
     private fun loadRecomLocal(){
-        val mainRealm = Realm.getDefaultInstance()
-        val gedanBean = mainRealm.where(GedanBean::class.java).equalTo("listId",
-                Constant.RECOM_MUSIC_LIST_ID).findFirst()
-        if (gedanBean.musicList.isEmpty()){
-            loadRecomOnline()
-        }else{
-            mMusicList += gedanBean.musicList
-            mAdapter.notifyChangeWidthStatus()
-        }
+//        val mainRealm = Realm.getDefaultInstance()
+//        val gedanBean = mainRealm.where(GedanBean::class.java).equalTo("listId",
+//                Constant.RECOM_MUSIC_LIST_ID).findFirst()
+//        if (gedanBean.musicList.isEmpty()){
+//            loadRecomOnline()
+//        }else{
+//            mMusicList += gedanBean.musicList
+//            mAdapter.notifyChangeWidthStatus()
+//        }
     }
 
     private fun covert2Music(list: List<RecomSearchResult.RecomSongBean>) {
         var afterSize = list.size
         val index = ArrayList<String>()
 
-        val mainRealm = Realm.getDefaultInstance()
-        mainRealm.beginTransaction()
-
-        // 清空原有推荐歌曲
-        val recomGedan = mainRealm.where(GedanBean::class.java).equalTo("listId",
-                Constant.RECOM_MUSIC_LIST_ID).findFirst()
-        recomGedan.musicList.clear()
-
-        // 从数据库中读取已保存过的数据
-        for (bean in list) {
-            val music = mainRealm.where(MusicBean::class.java)
-                    .equalTo("musicId", bean.song_id.toLong()).findFirst()
-            if (music != null) {
-                mMusicList.add(music)
-                recomGedan.musicList.add(music)
-            } else {
-                index.add(bean.song_id)
-            }
-        }
+//        val mainRealm = Realm.getDefaultInstance()
+//        mainRealm.beginTransaction()
+//
+//        // 清空原有推荐歌曲
+//        val recomGedan = mainRealm.where(GedanBean::class.java).equalTo("listId",
+//                Constant.RECOM_MUSIC_LIST_ID).findFirst()
+//        recomGedan.musicList.clear()
+//
+//        // 从数据库中读取已保存过的数据
+//        for (bean in list) {
+//            val music = mainRealm.where(MusicBean::class.java)
+//                    .equalTo("musicId", bean.song_id.toLong()).findFirst()
+//            if (music != null) {
+//                mMusicList.add(music)
+//                recomGedan.musicList.add(music)
+//            } else {
+//                index.add(bean.song_id)
+//            }
+//        }
         if (index.size == 0){
             mAdapter.notifyChangeWidthStatus()
             return
@@ -133,14 +132,14 @@ class RecomListActivity : BaseActivity() {
             OnlineMusicHelper.loadAndSaveInfo(id, object : OnlineMusicHelper.OnInfoLoadedListener {
                 override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
                     if (code == 0 && musicBean != null) {
-                        mMusicList.add(musicBean)
-                        mainRealm.insert(musicBean)
-                        recomGedan.musicList.add(musicBean)
-                        // 在添加完成后更新数据库，刷新页面
-                        if (mMusicList.size == afterSize){
-                            mainRealm.commitTransaction()
-                            mAdapter.notifyChangeWidthStatus()
-                        }
+//                        mMusicList.add(musicBean)
+//                        mainRealm.insert(musicBean)
+//                        recomGedan.musicList.add(musicBean)
+//                        // 在添加完成后更新数据库，刷新页面
+//                        if (mMusicList.size == afterSize){
+//                            mainRealm.commitTransaction()
+//                            mAdapter.notifyChangeWidthStatus()
+//                        }
                     }else{
                         afterSize -= 1
                     }

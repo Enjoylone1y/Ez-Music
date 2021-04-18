@@ -35,7 +35,7 @@ import com.ezreal.huanting.widget.ReNestedScrollView
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.BitmapCallback
 import com.lzy.okgo.model.Response
-import io.realm.Realm
+//import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_gedan_info.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -65,6 +65,8 @@ class GedanInfoActivity : BaseActivity() {
     private var dsec = ""
     private var author = ""
     private var listId = -1L
+
+    private val musicList = {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -185,7 +187,7 @@ class GedanInfoActivity : BaseActivity() {
                     author = mGedan.creatorName
                     setHeadViewData()
 
-                    val musicList = mGedan.musicList
+                    val musicList = listOf(MusicBean())
                     mMusicList.addAll(musicList)
                     mAdapter.notifyChangeWidthStatus()
                 }
@@ -202,41 +204,41 @@ class GedanInfoActivity : BaseActivity() {
         var afterSize = mMusicList.size + list.size
         val index = ArrayList<String>()
 
-        val mainRealm = Realm.getDefaultInstance()
-        // 从数据库中读取已保存过的数据
-        for (bean in list) {
-            val music = mainRealm.where(MusicBean::class.java)
-                    .equalTo("musicId", bean.song_id?.toLong()).findFirst()
-            if (music != null) {
-                mMusicList.add(music)
-            } else {
-                index.add(bean.song_id!!)
-            }
-        }
-        if (index.size == 0) {
-            mAdapter.notifyChangeWidthStatus()
-            return
-        }
-
-        // 对于未保存的数据，从网络获取，并存到数据库
-        mainRealm.beginTransaction()
-        for (id in index) {
-            OnlineMusicHelper.loadAndSaveInfo(id, object : OnlineMusicHelper.OnInfoLoadedListener {
-                override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
-                    if (code == 0 && musicBean != null) {
-                        mMusicList.add(musicBean)
-                        mainRealm.insert(musicBean)
-                        // 在添加完成后更新数据库，刷新页面
-                        if (mMusicList.size == afterSize) {
-                            mainRealm.commitTransaction()
-                            mAdapter.notifyChangeWidthStatus()
-                        }
-                    } else {
-                        afterSize -= 1
-                    }
-                }
-            })
-        }
+//        val mainRealm = Realm.getDefaultInstance()
+//        // 从数据库中读取已保存过的数据
+//        for (bean in list) {
+//            val music = mainRealm.where(MusicBean::class.java)
+//                    .equalTo("musicId", bean.song_id?.toLong()).findFirst()
+//            if (music != null) {
+//                mMusicList.add(music)
+//            } else {
+//                index.add(bean.song_id!!)
+//            }
+//        }
+//        if (index.size == 0) {
+//            mAdapter.notifyChangeWidthStatus()
+//            return
+//        }
+//
+//        // 对于未保存的数据，从网络获取，并存到数据库
+//        mainRealm.beginTransaction()
+//        for (id in index) {
+//            OnlineMusicHelper.loadAndSaveInfo(id, object : OnlineMusicHelper.OnInfoLoadedListener {
+//                override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
+//                    if (code == 0 && musicBean != null) {
+//                        mMusicList.add(musicBean)
+//                        mainRealm.insert(musicBean)
+//                        // 在添加完成后更新数据库，刷新页面
+//                        if (mMusicList.size == afterSize) {
+//                            mainRealm.commitTransaction()
+//                            mAdapter.notifyChangeWidthStatus()
+//                        }
+//                    } else {
+//                        afterSize -= 1
+//                    }
+//                }
+//            })
+//        }
     }
 
     private fun setHeadViewData() {
@@ -270,7 +272,8 @@ class GedanInfoActivity : BaseActivity() {
             }
 
             // 否则从第一首获取
-            val musicBean = mGedan.musicList.sort("musicTitle")[0]
+//            val musicBean = mGedan.musicList.sort("musicTitle")[0]
+            val musicBean = MusicBean()
             if (musicBean.isOnline) {
                 loadOnlineBitmap(musicBean.bigPic)
             } else {

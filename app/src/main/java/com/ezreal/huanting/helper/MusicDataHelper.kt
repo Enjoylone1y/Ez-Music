@@ -14,7 +14,6 @@ import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.realm.Realm
 import org.greenrobot.eventbus.EventBus
 
 /**
@@ -24,153 +23,153 @@ import org.greenrobot.eventbus.EventBus
 object MusicDataHelper {
 
     fun loadMusicFromDB(listener: OnMusicLoadListener?) {
-        try {
-            val realm = Realm.getDefaultInstance()
-            val musicList = ArrayList<MusicBean>()
-            musicList += realm.where(MusicBean::class.java)
-                    .equalTo("isOnline",false)
-                    .findAllSorted("musicTitle")
-            listener?.loadSuccess(musicList)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            listener?.loadFailed(e.message!!)
-        }
+//        try {
+//            val realm = Realm.getDefaultInstance()
+//            val musicList = ArrayList<MusicBean>()
+//            musicList += realm.where(MusicBean::class.java)
+//                    .equalTo("isOnline",false)
+//                    .findAllSorted("musicTitle")
+//            listener?.loadSuccess(musicList)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            listener?.loadFailed(e.message!!)
+//        }
     }
 
     fun loadRecentPlayFromDB(listener: OnMusicLoadListener?) {
-        val realm = Realm.getDefaultInstance()
-        try {
-            val results = realm.where(GedanBean::class.java)
-                    .equalTo("listId",Constant.RECENT_MUSIC_LIST_ID).findFirst()
-            listener?.loadSuccess(results.musicList.sort("lastPlayTime"))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            listener?.loadFailed(e.message!!)
-        }
+//        val realm = Realm.getDefaultInstance()
+//        try {
+//            val results = realm.where(GedanBean::class.java)
+//                    .equalTo("listId",Constant.RECENT_MUSIC_LIST_ID).findFirst()
+//            listener?.loadSuccess(results.musicList.sort("lastPlayTime"))
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            listener?.loadFailed(e.message!!)
+//        }
     }
 
     fun getRecentPlayCount(): Int {
         var count = 0
-        val realm = Realm.getDefaultInstance()
-        try {
-            count = realm.where(GedanBean::class.java)
-                    .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
-                    .findFirst().musicList.size
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+//        val realm = Realm.getDefaultInstance()
+//        try {
+//            count = realm.where(GedanBean::class.java)
+//                    .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
+//                    .findFirst().musicList.size
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
         return count
     }
 
     fun addRecentPlay2DB(musicBean: MusicBean) {
-        val realm = Realm.getDefaultInstance()
-        try {
-            realm.beginTransaction()
-            val recent = realm.where(GedanBean::class.java)
-                    .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
-                    .findFirst()
-            val first = recent.musicList.firstOrNull { it.musicId == musicBean.musicId }
-            if (first != null){
-                first.lastPlayTime = System.currentTimeMillis()
-                first.playCount += 1
-            }else{
-                musicBean.lastPlayTime = System.currentTimeMillis()
-                musicBean.playCount += 1
-                recent.musicList.add(musicBean)
-            }
-            realm.commitTransaction()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+//        val realm = Realm.getDefaultInstance()
+//        try {
+//            realm.beginTransaction()
+//            val recent = realm.where(GedanBean::class.java)
+//                    .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
+//                    .findFirst()
+//            val first = recent.musicList.firstOrNull { it.musicId == musicBean.musicId }
+//            if (first != null){
+//                first.lastPlayTime = System.currentTimeMillis()
+//                first.playCount += 1
+//            }else{
+//                musicBean.lastPlayTime = System.currentTimeMillis()
+//                musicBean.playCount += 1
+//                recent.musicList.add(musicBean)
+//            }
+//            realm.commitTransaction()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
     }
 
     fun clearRecentPlay() {
-        val realm = Realm.getDefaultInstance()
-        try {
-            realm.beginTransaction()
-            val recent = realm.where(GedanBean::class.java)
-                    .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
-                    .findFirst()
-            recent.musicList.clear()
-            realm.commitTransaction()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+//        val realm = Realm.getDefaultInstance()
+//        try {
+//            realm.beginTransaction()
+//            val recent = realm.where(GedanBean::class.java)
+//                    .equalTo("listId", Constant.RECENT_MUSIC_LIST_ID)
+//                    .findFirst()
+//            recent.musicList.clear()
+//            realm.commitTransaction()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
     }
 
     fun createMusicBill(title: String, listener: OnBillCreatedListener?) {
-        try {
-            val userId = FSharedPrefsUtils.getLong(Constant.PRE_USER_TABLE,
-                    Constant.PRE_USER_ID, 0)
-            val userName = FSharedPrefsUtils.getString(Constant.PRE_USER_TABLE,
-                    Constant.PRE_USER_NAME, "EzMusic")
-
-            val realm = Realm.getDefaultInstance()
-            val exit = realm.where(GedanBean::class.java)
-                    .beginsWith("listName", title)
-                    .equalTo("creatorId", userId)
-                    .count()
-            if (exit > 0) {
-                listener?.createdResult(-1, -1, "歌单已存在")
-                realm.close()
-                return
-            }
-
-            val max = realm.where(GedanBean::class.java).max("listId").toLong()
-            val listId = if (max == 0L) 50 else max + 1L
-            val listBean = GedanBean()
-            listBean.listId = listId
-            listBean.listName = title
-            listBean.createTime = System.currentTimeMillis()
-            listBean.creatorId = userId
-            listBean.creatorName = userName
-            realm.beginTransaction()
-            realm.insert(listBean)
-            realm.commitTransaction()
-            listener?.createdResult(0, listBean.listId, "Create Success")
-            realm.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            listener?.createdResult(-1, -1, e.message!!)
-        }
+//        try {
+//            val userId = FSharedPrefsUtils.getLong(Constant.PRE_USER_TABLE,
+//                    Constant.PRE_USER_ID, 0)
+//            val userName = FSharedPrefsUtils.getString(Constant.PRE_USER_TABLE,
+//                    Constant.PRE_USER_NAME, "EzMusic")
+//
+//            val realm = Realm.getDefaultInstance()
+//            val exit = realm.where(GedanBean::class.java)
+//                    .beginsWith("listName", title)
+//                    .equalTo("creatorId", userId)
+//                    .count()
+//            if (exit > 0) {
+//                listener?.createdResult(-1, -1, "歌单已存在")
+//                realm.close()
+//                return
+//            }
+//
+//            val max = realm.where(GedanBean::class.java).max("listId").toLong()
+//            val listId = if (max == 0L) 50 else max + 1L
+//            val listBean = GedanBean()
+//            listBean.listId = listId
+//            listBean.listName = title
+//            listBean.createTime = System.currentTimeMillis()
+//            listBean.creatorId = userId
+//            listBean.creatorName = userName
+//            realm.beginTransaction()
+//            realm.insert(listBean)
+//            realm.commitTransaction()
+//            listener?.createdResult(0, listBean.listId, "Create Success")
+//            realm.close()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            listener?.createdResult(-1, -1, e.message!!)
+//        }
     }
 
     fun deleteMusicList(listId: Long) {
-        val instance = Realm.getDefaultInstance()
-        instance.beginTransaction()
-        instance.where(GedanBean::class.java)
-                .equalTo("listId", listId)
-                .findFirst().deleteFromRealm()
-        instance.commitTransaction()
+//        val instance = Realm.getDefaultInstance()
+//        instance.beginTransaction()
+//        instance.where(GedanBean::class.java)
+//                .equalTo("listId", listId)
+//                .findFirst().deleteFromRealm()
+//        instance.commitTransaction()
     }
 
     fun loadMusicListAll(listener: OnListLoadListener?) {
-        try {
-            val realm = Realm.getDefaultInstance()
-            val realmResults = realm.where(GedanBean::class.java)
-                    .beginGroup()
-                    .notEqualTo("listId",Constant.RECENT_MUSIC_LIST_ID)
-                    .notEqualTo("listId",Constant.RECOM_MUSIC_LIST_ID)
-                    .endGroup()
-                    .findAll()
-            listener?.loadSuccess(realmResults)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            listener?.loadFailed(e.message!!)
-        }
+//        try {
+//            val realm = Realm.getDefaultInstance()
+//            val realmResults = realm.where(GedanBean::class.java)
+//                    .beginGroup()
+//                    .notEqualTo("listId",Constant.RECENT_MUSIC_LIST_ID)
+//                    .notEqualTo("listId",Constant.RECOM_MUSIC_LIST_ID)
+//                    .endGroup()
+//                    .findAll()
+//            listener?.loadSuccess(realmResults)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            listener?.loadFailed(e.message!!)
+//        }
     }
 
     fun getMusicListById(listId: Long, listener: OnListLoadListener?) {
-        try {
-            val realm = Realm.getDefaultInstance()
-            val results = realm.where(GedanBean::class.java)
-                    .equalTo("listId", listId)
-                    .findAll()
-            listener?.loadSuccess(results)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            listener?.loadFailed(e.message!!)
-        }
+//        try {
+//            val realm = Realm.getDefaultInstance()
+//            val results = realm.where(GedanBean::class.java)
+//                    .equalTo("listId", listId)
+//                    .findAll()
+//            listener?.loadSuccess(results)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            listener?.loadFailed(e.message!!)
+//        }
     }
 
     /**
@@ -199,13 +198,13 @@ object MusicDataHelper {
             recomBill.creatorId = 0
             recomBill.creatorName = "EzMusic"
 
-            val realm = Realm.getDefaultInstance()
-            realm.beginTransaction()
-            realm.insert(loveBill)
-            realm.insert(recentBill)
-            realm.insert(recomBill)
-            realm.commitTransaction()
-            realm.close()
+//            val realm = Realm.getDefaultInstance()
+//            realm.beginTransaction()
+//            realm.insert(loveBill)
+//            realm.insert(recentBill)
+//            realm.insert(recomBill)
+//            realm.commitTransaction()
+//            realm.close()
 
             listener?.createdResult(0, Constant.MY_LOVE_MUSIC_LIST_ID,
                     "Create Success")
@@ -218,20 +217,20 @@ object MusicDataHelper {
 
     fun addMusic2List(musicBean: MusicBean, listId: Long, listener: OnAddMusic2ListListener?) {
         try {
-            val realm = Realm.getDefaultInstance()
-            val results = realm.where(GedanBean::class.java)
-                    .equalTo("listId", listId).findFirst()
-            val findFirst = results.musicList.where().equalTo("musicId",
-                    musicBean.musicId).findFirst()
-            if (findFirst != null) {
-                listener?.addResult(-1, "歌单中已包含该歌曲~")
-                return
-            }
-            realm.beginTransaction()
-            results.musicList.add(musicBean)
-            realm.commitTransaction()
-            listener?.addResult(0, "收藏成功~~")
-            EventBus.getDefault().post(MusicListChangeEvent(listId))
+//            val realm = Realm.getDefaultInstance()
+//            val results = realm.where(GedanBean::class.java)
+//                    .equalTo("listId", listId).findFirst()
+//            val findFirst = results.musicList.where().equalTo("musicId",
+//                    musicBean.musicId).findFirst()
+//            if (findFirst != null) {
+//                listener?.addResult(-1, "歌单中已包含该歌曲~")
+//                return
+//            }
+//            realm.beginTransaction()
+//            results.musicList.add(musicBean)
+//            realm.commitTransaction()
+//            listener?.addResult(0, "收藏成功~~")
+//            EventBus.getDefault().post(MusicListChangeEvent(listId))
         } catch (e: Exception) {
             e.printStackTrace()
             listener?.addResult(-1, "添加发生错误,请重试")
@@ -291,13 +290,13 @@ object MusicDataHelper {
                 music.playStatus = Constant.PLAY_STATUS_NORMAL
                 songList.add(music)
             }
-            cursor.close()
-            val realm = Realm.getDefaultInstance()
-            realm.beginTransaction()
-            realm.insertOrUpdate(songList)
-            realm.commitTransaction()
-            realm.close()
-            listener?.onResult(0, "success")
+//            cursor.close()
+//            val realm = Realm.getDefaultInstance()
+//            realm.beginTransaction()
+//            realm.insertOrUpdate(songList)
+//            realm.commitTransaction()
+//            realm.close()
+//            listener?.onResult(0, "success")
         } catch (e: Exception) {
             e.printStackTrace()
             listener?.onResult(-1, e.message!!)

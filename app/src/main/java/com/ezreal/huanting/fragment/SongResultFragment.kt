@@ -21,7 +21,6 @@ import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.http.result.KeywordSearchResult.SongBean
 import com.ezreal.huanting.utils.Constant
-import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_music_result.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -52,24 +51,24 @@ class SongResultFragment :Fragment() {
         mAdapter = SongAdapter(context!!)
         mAdapter.setItemClickListener(object :RecycleViewAdapter.OnItemClickListener{
             override fun onItemClick(holder: RViewHolder, position: Int) {
-                val id = mSongList[position].songid
-                val realm = Realm.getDefaultInstance()
-                val findFirst = realm.where(MusicBean::class.java)
-                        .equalTo("musicId", id.toLong()).findFirst()
-                if (findFirst != null) {
-                    playMusic(findFirst)
-                }else{
-                    OnlineMusicHelper.loadAndSaveInfo(id,object :OnlineMusicHelper.OnInfoLoadedListener{
-                        override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
-                            if (code == 0 && musicBean != null){
-                                playMusic(musicBean)
-                            }else{
-                                FToastUtils.init().show("播放出错，请重试~")
-                            }
-                        }
-
-                    })
-                }
+//                val id = mSongList[position].songid
+//                val realm = Realm.getDefaultInstance()
+//                val findFirst = realm.where(MusicBean::class.java)
+//                        .equalTo("musicId", id.toLong()).findFirst()
+//                if (findFirst != null) {
+//                    playMusic(findFirst)
+//                }else{
+//                    OnlineMusicHelper.loadAndSaveInfo(id,object :OnlineMusicHelper.OnInfoLoadedListener{
+//                        override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
+//                            if (code == 0 && musicBean != null){
+//                                playMusic(musicBean)
+//                            }else{
+//                                FToastUtils.init().show("播放出错，请重试~")
+//                            }
+//                        }
+//
+//                    })
+//                }
             }
 
         })

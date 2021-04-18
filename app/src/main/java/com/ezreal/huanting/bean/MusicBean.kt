@@ -1,21 +1,19 @@
 package com.ezreal.huanting.bean
 
 import com.ezreal.huanting.utils.Constant
-import io.realm.RealmObject
-import io.realm.annotations.Ignore
-import io.realm.annotations.PrimaryKey
+
 
 /**
  * 歌曲 bean 基类
  * Created by wudeng on 2018/1/26.
  */
-open class MusicBean :RealmObject() {
+open class MusicBean {
 
     /**
      * 必要属性
      */
 
-    @PrimaryKey
+//    @PrimaryKey
     var musicId:Long = 0
 
     var musicTitle:String = ""
@@ -65,9 +63,9 @@ open class MusicBean :RealmObject() {
     /**
      * 播放辅助变量，不会存入数据库
      */
-    @Ignore
+//    @Ignore
     var playStatus:Int = Constant.PLAY_STATUS_NORMAL
 
-    @Ignore
+//    @Ignore
     var playFromListId:Long = 0
 }

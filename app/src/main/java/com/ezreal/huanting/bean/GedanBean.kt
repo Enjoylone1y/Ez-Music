@@ -1,17 +1,17 @@
 package com.ezreal.huanting.bean
 
-import io.realm.RealmList
-import io.realm.RealmObject
-import io.realm.annotations.PrimaryKey
+//import io.realm.RealmList
+//import io.realm.RealmObject
+//import io.realm.annotations.PrimaryKey
 
 /**
  * 歌单 bean
  * Created by wudeng on 2017/12/29.
  */
 
-open class GedanBean :RealmObject(){
+open class GedanBean {
 
-    @PrimaryKey
+    //    @PrimaryKey
     var listId:Long = -1
 
     lateinit var listName:String
@@ -22,7 +22,7 @@ open class GedanBean :RealmObject(){
     var sortFieldName:String ?= null
     var coverPathByEd:String ?= null
 
-    var musicList:RealmList<MusicBean> = RealmList()
+    var musicList:List<MusicBean> = ArrayList()
 
     var isOnline = false
 

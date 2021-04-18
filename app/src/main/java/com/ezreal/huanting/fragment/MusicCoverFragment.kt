@@ -17,7 +17,6 @@ import com.ezreal.huanting.event.PlayStatusChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.utils.Constant
-import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_music_cover.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe

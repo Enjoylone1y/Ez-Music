@@ -8,7 +8,6 @@ import com.ezreal.huanting.http.result.LrcPicSearchResult.SongInfoBean
 import com.ezreal.huanting.utils.Constant
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.model.Response
-import io.realm.Realm
 import java.io.File
 
 /**
@@ -48,16 +47,16 @@ object LrcLoadHelper {
         val path = Constant.APP_LRC_PATH + File.separator + song.song_id + ".lrc"
         OkGo.get<File>(url).execute(object :FileCallBack(path){
             override fun onSuccess(response: Response<File>?) {
-                if (response?.body() != null){
-                    listener.onSuccess(path)
-                    val realm = Realm.getDefaultInstance()
-                    realm.beginTransaction()
-                    musicBean.lrcPath = path
-                    realm.commitTransaction()
-
-                }else{
-                    listener.onFailed()
-                }
+//                if (response?.body() != null){
+//                    listener.onSuccess(path)
+//                    val realm = Realm.getDefaultInstance()
+//                    realm.beginTransaction()
+//                    musicBean.lrcPath = path
+//                    realm.commitTransaction()
+//
+//                }else{
+//                    listener.onFailed()
+//                }
             }
         })
     }

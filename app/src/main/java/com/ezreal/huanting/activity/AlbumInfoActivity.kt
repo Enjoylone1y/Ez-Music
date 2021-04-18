@@ -26,7 +26,7 @@ import com.ezreal.huanting.widget.ReNestedScrollView
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.BitmapCallback
 import com.lzy.okgo.model.Response
-import io.realm.Realm
+
 import kotlinx.android.synthetic.main.activity_album_info.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -149,41 +149,41 @@ class AlbumInfoActivity : BaseActivity() {
         var afterSize = mMusicList.size + list.size
         val index = ArrayList<String>()
 
-        val mainRealm = Realm.getDefaultInstance()
-        // 从数据库中读取已保存过的数据
-        for (bean in list) {
-            val music = mainRealm.where(MusicBean::class.java)
-                    .equalTo("musicId", bean.song_id.toLong()).findFirst()
-            if (music != null) {
-                mMusicList.add(music)
-            } else {
-                index.add(bean.song_id)
-            }
-        }
-        if (index.size == 0) {
-            mAdapter.notifyChangeWidthStatus()
-            return
-        }
 
-        // 对于未保存的数据，从网络获取，并存到数据库
-        mainRealm.beginTransaction()
-        for (id in index) {
-            OnlineMusicHelper.loadAndSaveInfo(id, object : OnlineMusicHelper.OnInfoLoadedListener {
-                override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
-                    if (code == 0 && musicBean != null) {
-                        mMusicList.add(musicBean)
-                        mainRealm.insert(musicBean)
-                        // 在添加完成后更新数据库，刷新页面
-                        if (mMusicList.size == afterSize) {
-                            mainRealm.commitTransaction()
-                            mAdapter.notifyChangeWidthStatus()
-                        }
-                    } else {
-                        afterSize -= 1
-                    }
-                }
-            })
-        }
+        // 从数据库中读取已保存过的数据
+//        for (bean in list) {
+//            val music = mainRealm.where(MusicBean::class.java)
+//                    .equalTo("musicId", bean.song_id.toLong()).findFirst()
+//            if (music != null) {
+//                mMusicList.add(music)
+//            } else {
+//                index.add(bean.song_id)
+//            }
+//        }
+//        if (index.size == 0) {
+//            mAdapter.notifyChangeWidthStatus()
+//            return
+//        }
+//
+//        // 对于未保存的数据，从网络获取，并存到数据库
+//        mainRealm.beginTransaction()
+//        for (id in index) {
+//            OnlineMusicHelper.loadAndSaveInfo(id, object : OnlineMusicHelper.OnInfoLoadedListener {
+//                override fun onResult(code: Int, musicBean: MusicBean?, message: String?) {
+//                    if (code == 0 && musicBean != null) {
+//                        mMusicList.add(musicBean)
+//                        mainRealm.insert(musicBean)
+//                        // 在添加完成后更新数据库，刷新页面
+//                        if (mMusicList.size == afterSize) {
+//                            mainRealm.commitTransaction()
+//                            mAdapter.notifyChangeWidthStatus()
+//                        }
+//                    } else {
+//                        afterSize -= 1
+//                    }
+//                }
+//            })
+//        }
     }
 
     private fun setHeadViewData() {

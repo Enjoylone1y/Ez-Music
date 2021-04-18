@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HuanTing.iml" filepath="$PROJECT_DIR$/HuanTing.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Ez-Music.iml" filepath="$PROJECT_DIR$/.idea/Ez-Music.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Ez-Music.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Ez-Music.app.iml" />
     </modules>
   </component>
 </project>

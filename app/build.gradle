@@ -2,14 +2,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-apply plugin: 'realm-android'
+//apply plugin: 'realm-android'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
     defaultConfig {
+
         applicationId "com.ezreal.huanting"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
+
         versionCode rootProject.versionCode
         versionName rootProject.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
