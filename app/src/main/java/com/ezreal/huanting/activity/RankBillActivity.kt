@@ -25,6 +25,7 @@ import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.http.BaiduMusicApi
 import com.ezreal.huanting.http.result.RankBillSearchResult
+import com.ezreal.huanting.present.BasePresentImpl
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.ConvertUtils
 import com.ezreal.huanting.widget.ReNestedScrollView

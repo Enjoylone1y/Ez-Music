@@ -18,9 +18,11 @@ import com.ezreal.huanting.fragment.MusicCoverFragment
 import com.ezreal.huanting.fragment.MusicLrcFragment
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.OnlineMusicHelper
+import com.ezreal.huanting.present.BasePresentImpl
 import com.ezreal.huanting.utils.Constant
 import com.ezreal.huanting.utils.ConvertUtils
 import com.ezreal.huanting.utils.PopupShowUtils
+import com.ezreal.huanting.view.BaseViewImpl
 import com.ezreal.huanting.widget.PlayListPopup
 import com.zhouwei.blurlibrary.EasyBlur
 import kotlinx.android.synthetic.main.activty_now_playing.*
@@ -34,7 +36,7 @@ import java.io.File
  * Created by wudeng on 2017/11/28.
  */
 
-class NowPlayingActivity : BaseActivity() {
+class NowPlayingActivity : BaseActivity<BaseViewImpl,BasePresentImpl>(), BaseViewImpl {
 
     private val mPlayMode = listOf(Constant.PLAY_MODE_LIST_RECYCLE,
             Constant.PLAY_MODE_SINGLE_RECYCLE, Constant.PLAY_MODE_RANDOM)
@@ -83,6 +85,10 @@ class NowPlayingActivity : BaseActivity() {
         EventBus.getDefault().register(this)
     }
 
+
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
+    }
 
     /**
      * 初始化各控件事件监听

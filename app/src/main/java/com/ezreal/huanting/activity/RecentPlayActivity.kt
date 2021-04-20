@@ -13,6 +13,7 @@ import com.ezreal.huanting.bean.MusicBean
 import com.ezreal.huanting.event.PlayMusicChangeEvent
 import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.MusicDataHelper
+import com.ezreal.huanting.present.BasePresentImpl
 import com.ezreal.huanting.utils.Constant
 import kotlinx.android.synthetic.main.activity_recnet_play.*
 import org.greenrobot.eventbus.EventBus
@@ -36,6 +37,7 @@ class RecentPlayActivity : AppCompatActivity() {
         loadSongList()
         EventBus.getDefault().register(this)
     }
+
 
     private fun initView() {
         mRvRecentPlay.layoutManager = LinearLayoutManager(this)

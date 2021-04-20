@@ -10,11 +10,13 @@ import com.ezreal.huanting.R
 import com.ezreal.huanting.fragment.DynamicFragment
 import com.ezreal.huanting.fragment.PersonalFragment
 import com.ezreal.huanting.fragment.OnlineFragment
+import com.ezreal.huanting.present.BasePresentImpl
+import com.ezreal.huanting.view.BaseViewImpl
 import com.ezreal.huanting.widget.MainMenuLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_main_title.*
 
-class MainActivity : BaseActivity(){
+class MainActivity :BaseActivity<BaseViewImpl,BasePresentImpl>(),BaseViewImpl{
 
     private val mPersonalView  by lazy { PersonalFragment() }
     private val mOnlineView  by lazy{ OnlineFragment() }
@@ -27,6 +29,11 @@ class MainActivity : BaseActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initView()
+    }
+
+
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
     }
 
     private fun initView(){

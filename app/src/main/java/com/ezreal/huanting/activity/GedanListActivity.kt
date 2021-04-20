@@ -18,6 +18,8 @@ import com.ezreal.huanting.http.BaiduMusicApi
 import com.ezreal.huanting.http.result.GedanInfoResult
 import com.ezreal.huanting.http.result.GedanListResult
 import com.ezreal.huanting.http.result.HotGedanResult.ContentBean.ListBean
+import com.ezreal.huanting.present.BasePresentImpl
+import com.ezreal.huanting.view.BaseViewImpl
 import com.jcodecraeer.xrecyclerview.XRecyclerView
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.BitmapCallback
@@ -31,7 +33,7 @@ import java.util.*
  * Created by wudeng on 2018/2/7.
  */
 
-class GedanListActivity : BaseActivity() {
+class GedanListActivity : BaseActivity<BaseViewImpl,BasePresentImpl>(), BaseViewImpl {
 
     private lateinit var mHeadView: View
     private lateinit var mHeadBack:ImageView
@@ -52,6 +54,11 @@ class GedanListActivity : BaseActivity() {
         initEvent()
         loadRecomGedan()
         loadGedanList()
+    }
+
+
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
     }
 
     private fun initView() {

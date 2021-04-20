@@ -12,8 +12,10 @@ import android.view.WindowManager
 import cn.hotapk.fastandrutils.utils.FSharedPrefsUtils
 import com.ezreal.huanting.R
 import com.ezreal.huanting.helper.MusicDataHelper
+import com.ezreal.huanting.present.BasePresentImpl
 import com.ezreal.huanting.service.MusicPlayService
 import com.ezreal.huanting.utils.Constant
+import com.ezreal.huanting.view.BaseViewImpl
 import java.io.File
 
 
@@ -22,7 +24,7 @@ import java.io.File
  * Created by wudeng on 2017/12/26.
  */
 
-class SplashActivity : BaseActivity() {
+class SplashActivity : BaseActivity<BaseViewImpl,BasePresentImpl>(), BaseViewImpl {
 
     private val mPermissions = listOf(Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -38,6 +40,10 @@ class SplashActivity : BaseActivity() {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.layout_splash)
         initPermission()
+    }
+
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
     }
 
     /**

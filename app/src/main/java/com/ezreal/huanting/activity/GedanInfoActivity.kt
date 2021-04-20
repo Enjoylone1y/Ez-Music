@@ -30,7 +30,9 @@ import com.ezreal.huanting.helper.MusicDataHelper
 import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.http.BaiduMusicApi
 import com.ezreal.huanting.http.result.GedanInfoResult
+import com.ezreal.huanting.present.BasePresentImpl
 import com.ezreal.huanting.utils.Constant
+import com.ezreal.huanting.view.BaseViewImpl
 import com.ezreal.huanting.widget.ReNestedScrollView
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.BitmapCallback
@@ -45,7 +47,7 @@ import org.greenrobot.eventbus.Subscribe
  * Created by wudeng on 2018/1/8.
  */
 
-class GedanInfoActivity : BaseActivity() {
+class GedanInfoActivity : BaseActivity<BaseViewImpl,BasePresentImpl>(), BaseViewImpl {
 
     private var mBackColor = Color.parseColor("#bfbfbf")
 
@@ -88,6 +90,10 @@ class GedanInfoActivity : BaseActivity() {
         EventBus.getDefault().register(this)
     }
 
+
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
+    }
 
     private fun initHeadView() {
         // 状态栏透明

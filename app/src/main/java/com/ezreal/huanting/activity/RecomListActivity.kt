@@ -14,7 +14,9 @@ import com.ezreal.huanting.helper.GlobalMusicData
 import com.ezreal.huanting.helper.OnlineMusicHelper
 import com.ezreal.huanting.http.BaiduMusicApi
 import com.ezreal.huanting.http.result.RecomSearchResult
+import com.ezreal.huanting.present.BasePresentImpl
 import com.ezreal.huanting.utils.Constant
+import com.ezreal.huanting.view.BaseViewImpl
 import kotlinx.android.synthetic.main.activity_recom_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -26,7 +28,7 @@ import java.util.*
  * Created by wudeng on 2018/1/30.
  */
 
-class RecomListActivity : BaseActivity() {
+class RecomListActivity : BaseActivity<BaseViewImpl,BasePresentImpl>(), BaseViewImpl {
 
     private val mMusicList = ArrayList<MusicBean>()
     private lateinit var mAdapter:MusicAdapter
@@ -41,6 +43,10 @@ class RecomListActivity : BaseActivity() {
         checkAndLoadRecom()
 
         EventBus.getDefault().register(this)
+    }
+
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
     }
 
     private fun initView(){

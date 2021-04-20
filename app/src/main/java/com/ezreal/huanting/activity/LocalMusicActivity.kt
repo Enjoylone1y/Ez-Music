@@ -11,6 +11,8 @@ import com.ezreal.huanting.fragment.AlbumListFragment
 import com.ezreal.huanting.fragment.FolderListFragment
 import com.ezreal.huanting.fragment.ArtistListFragment
 import com.ezreal.huanting.fragment.MusicListFragment
+import com.ezreal.huanting.present.BasePresentImpl
+import com.ezreal.huanting.view.BaseViewImpl
 import kotlinx.android.synthetic.main.activity_local_music.*
 import kotlin.collections.ArrayList
 
@@ -19,7 +21,7 @@ import kotlin.collections.ArrayList
  * Created by wudeng on 2017/11/17.
  */
 
-class LocalMusicActivity : BaseActivity() {
+class LocalMusicActivity : BaseActivity<BaseViewImpl,BasePresentImpl>(), BaseViewImpl {
 
     private lateinit var mAdapter:FragmentAdapter
     private var mFragmentList = ArrayList<Fragment>()
@@ -30,6 +32,11 @@ class LocalMusicActivity : BaseActivity() {
         setContentView(R.layout.activity_local_music)
         initViewPage()
         initListener()
+    }
+
+
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
     }
 
     private fun initViewPage() {

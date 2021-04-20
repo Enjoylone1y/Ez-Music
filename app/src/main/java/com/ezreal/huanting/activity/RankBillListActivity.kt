@@ -8,6 +8,8 @@ import com.ezreal.huanting.adapter.RViewHolder
 import com.ezreal.huanting.adapter.RecycleViewAdapter
 import com.ezreal.huanting.http.BaiduMusicApi
 import com.ezreal.huanting.http.result.RankBillListResult
+import com.ezreal.huanting.present.BasePresentImpl
+import com.ezreal.huanting.view.BaseViewImpl
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import kotlinx.android.synthetic.main.activity_bill_list.*
 
@@ -16,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_bill_list.*
  * 榜单列表页
  * Created by wudeng on 2018/1/30.
  */
-class RankBillListActivity : BaseActivity() {
+class RankBillListActivity : BaseActivity<BaseViewImpl,BasePresentImpl>(), BaseViewImpl {
 
     private val mRankBillList = ArrayList<RankBillListResult.RankBillBean>()
     private lateinit var mBillAdapter: RankBillListAdapter
@@ -26,6 +28,11 @@ class RankBillListActivity : BaseActivity() {
         setContentView(R.layout.activity_bill_list)
         init()
         loadData()
+    }
+
+
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
     }
 
     private fun init() {

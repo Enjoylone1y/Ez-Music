@@ -13,6 +13,8 @@ import com.ezreal.huanting.fragment.ArtistResultFragment
 import com.ezreal.huanting.fragment.SongResultFragment
 import com.ezreal.huanting.http.BaiduMusicApi
 import com.ezreal.huanting.http.result.KeywordSearchResult
+import com.ezreal.huanting.present.BasePresentImpl
+import com.ezreal.huanting.view.BaseViewImpl
 import kotlinx.android.synthetic.main.activity_global_search.*
 import org.greenrobot.eventbus.EventBus
 
@@ -21,7 +23,7 @@ import org.greenrobot.eventbus.EventBus
  * Created by wudeng on 2018/2/7.
  */
 
-class GlobalSearchActivity:BaseActivity() {
+class GlobalSearchActivity:BaseActivity<BaseViewImpl,BasePresentImpl>(), BaseViewImpl {
 
     private lateinit var mAdapter: FragmentAdapter
     private var mFragmentList = ArrayList<Fragment>()
@@ -32,6 +34,11 @@ class GlobalSearchActivity:BaseActivity() {
         setContentView(R.layout.activity_global_search)
         initViewPage()
         initEvent()
+    }
+
+
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
     }
 
     private fun initViewPage(){

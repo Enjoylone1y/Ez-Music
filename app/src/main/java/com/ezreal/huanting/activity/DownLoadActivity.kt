@@ -8,6 +8,8 @@ import com.ezreal.huanting.R
 import com.ezreal.huanting.adapter.FragmentAdapter
 import com.ezreal.huanting.fragment.DownDoneFragment
 import com.ezreal.huanting.fragment.DownIngFragment
+import com.ezreal.huanting.present.BasePresentImpl
+import com.ezreal.huanting.view.BaseViewImpl
 import kotlinx.android.synthetic.main.activity_down_manager.*
 
 /**
@@ -15,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_down_manager.*
  * Created by wudeng on 2018/2/2.
  */
 
-class DownLoadActivity : BaseActivity(){
+class DownLoadActivity : BaseActivity<BaseViewImpl,BasePresentImpl>(), BaseViewImpl {
 
     private var mAdapter: FragmentAdapter?= null
     private var mFragmentList = ArrayList<Fragment>()
@@ -28,6 +30,9 @@ class DownLoadActivity : BaseActivity(){
         initListener()
     }
 
+    override fun createPresent(): BasePresentImpl {
+        return BasePresentImpl(this)
+    }
 
     private fun initViewPage() {
         mFragmentList.add(DownDoneFragment())
@@ -39,6 +44,7 @@ class DownLoadActivity : BaseActivity(){
         mTabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this,
                 R.color.colorPrimary))
     }
+
 
     /**
      * 标题栏点击事件
